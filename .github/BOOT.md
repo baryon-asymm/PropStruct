@@ -144,8 +144,8 @@ time, and `.claude/` is not published. In addition:
   the local fast set takes 42 seconds, the packages 29.
 - **Release** (`release.yml`; a tag `v*`, manual dispatch), in order: `check`
   (`ubuntu-latest`); `hosted` (`windows-latest`, `actions/hosted-checks`); `gpu`
-  (`[self-hosted, windows, gpu]`, a timeout of 240 minutes, provisional until the
-  rehearsal measures the duration: the preflight, the Release build, `propstruct
+  (`[self-hosted, windows, gpu]`, a timeout of 45 minutes, set from the rehearsal's 12
+  minutes 6 seconds, one measurement: the preflight, the Release build, `propstruct
   devices`, the tests with `--filter "Category!=Legacy"` and
   `PROPSTRUCT_REQUIRE_CUDA=1`; no `setup-dotnet`, since the preflight demands the SDK on
   the machine); `pack` (`windows-latest`: `check_packages.py pack` and `verify`);

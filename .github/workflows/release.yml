@@ -127,7 +127,7 @@ jobs:
     name: CUDA (self-hosted GPU)
     needs: [check, hosted]
     runs-on: [self-hosted, windows, gpu]
-    timeout-minutes: 240
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v7

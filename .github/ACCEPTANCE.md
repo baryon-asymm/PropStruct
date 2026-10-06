@@ -51,12 +51,18 @@
       owner's own access holds (date; the output of the listing). Not met, by the owner's
       decision of 2026-10-06: the runner runs under the owner's account (`BOOT.md`,
       declared deviation); the criterion waits for the isolated account.
-- [ ] The preflight is right on the registered runner, on the rehearsal's GPU job (stage
-      S7; date, run id). On the reference machine's own environment, with no runner
-      up, it passed on 2026-10-04.
-- [ ] A dispatch rehearsal of `release.yml` is green through `pack`, its GPU job on the
-      self-hosted runner with `propstruct devices` naming the CUDA device and
-      `PROPSTRUCT_REQUIRE_CUDA=1`, and the timeout of the job is set from its duration
-      (date, run id, commit, the duration).
+- [x] 2026-10-06 — The preflight is right on the registered runner, on the rehearsal's
+      GPU job (stage S7): "preflight: all checks passed" in run 37511638251, with
+      APThermo's runner stopped and no compute process on the GPU. The red cases are
+      `scripts/test_preflight.py`'s, run before. On the reference machine's own
+      environment, with no runner up, it passed on 2026-10-04.
+- [x] 2026-10-06 — A dispatch rehearsal of `release.yml` is green through `pack`, its
+      GPU job on the self-hosted runner with `propstruct devices` naming the CUDA device
+      (`Cuda NVIDIA GeForce RTX 5070 Ti ... libdevice=yes`) and
+      `PROPSTRUCT_REQUIRE_CUDA=1`: run 37511638251 on `42fdaab`, `publish` and
+      `github-release` skipped as a dispatch's. Durations: the run 17 minutes 8 seconds,
+      the GPU job 12 minutes 6 seconds, its `Tests` step 690 seconds (11 projects, 3095
+      facts passed, 0 failed, 0 skipped, `Category!=Legacy`). The job's timeout is
+      45 minutes, 3.7 times one measurement: it guards a hang, not a slow run.
 - [ ] The release 0.1.0 ran as the root's criterion describes: tag, `publish` after the
       owner's approval, `github-release` (date, run id, nuget.org versions).
