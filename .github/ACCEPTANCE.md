@@ -46,7 +46,9 @@
       command not found leaves `$LASTEXITCODE` at 0 and the script had passed; fixed.
 - [ ] The runner account is isolated (stage S7): verified as that account, listing the
       legacy directory, the repositories and every bundle or clone is denied, and the
-      owner's own access holds (date; the output of the listing).
+      owner's own access holds (date; the output of the listing). Not met, by the owner's
+      decision of 2026-10-06: the runner runs under the owner's account (`BOOT.md`,
+      declared deviation); the criterion waits for the isolated account.
 - [ ] The preflight is right on the registered runner, on the rehearsal's GPU job (stage
       S7; date, run id). On the reference machine's own environment, with no runner
       up, it passed on 2026-10-04.

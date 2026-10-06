@@ -33,6 +33,13 @@ The scripts have a child node of their own ([scripts](scripts/BOOT.md)).
   and `Authenticated Users:(M)`, so any account reads the original. The owner's step 4
   below makes it true and verifies it as the runner account; until then the criterion
   stands unticked and the runner is not registered.
+
+  ⚠ Declared deviation, §12 (2026-10-06, owner): the runner is registered and runs under
+  the owner's own account, with administrator rights and access to the original. Was an
+  account without either, the isolation of step 4, now none: the owner weighed the risk
+  and takes it. What stays: the runner is no service, takes only tag and dispatch runs,
+  fork pull requests need approval, and only the owner's code reaches it. What lifts the
+  deviation: the isolated account of step 4, verified as that account.
 - **One GPU job on the machine at a time, and never with APThermo's.** A personal
   account registers a runner per repository, so one runner cannot serve both. The
   rule is the owner's discipline, runners started only for a release with the other
