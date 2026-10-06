@@ -296,6 +296,11 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       on the reference machine with it set (count, date, commit); every Legacy fact red
       with the variable unset and the gate red on a copy of the original with one byte
       changed (date).
+      Partly met 2026-10-06: the hosted run 37412082320 on `b76d3a3` is green with the
+      variable unset, and `Category=Legacy` is green on the reference machine with it
+      set, on that commit's tree: 19 facts of 19, 0 failed, 0 skipped (`Particle.Tests`
+      1, `Output.Tests` 2, `Fixtures.Tests` 4, `Statistics.Tests` 12). The clauses on the
+      red cases (variable unset, one byte changed) are not re-run here, so the tick waits.
 - [ ] The packages of 0.1.0, from CI: `PropStruct`'s `lib/net10.0` holds exactly the
       assemblies of `src/` but `Cli`, each with its XML documentation, and its `.snupkg`
       their PDBs, every document of which resolves through SourceLink to the public

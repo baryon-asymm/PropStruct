@@ -9,10 +9,12 @@
       three actions and `actionlint.yaml` parses, every `needs` and every local action
       resolves, every `run` step of an action names its shell. The run is a step of
       the owner's setup before the rehearsal.
-- [ ] `ci.yml` ran once on GitHub on the commit that introduced it, green, with the
-      fast set `Category!=Long&Category!=Legacy` on `windows-latest` and
+- [x] 2026-10-06 — `ci.yml` ran once on GitHub on the commit that introduced it, green,
+      with the fast set `Category!=Long&Category!=Legacy` on `windows-latest` and
       `PROPSTRUCT_LEGACY_DIR` unset, and the facts that the hosted CPU moved, if any,
-      reclassified as the Constraints say (date, run id, commit, the count of facts).
+      reclassified as the Constraints say. Run 37412082320 on `b76d3a3`, push of the
+      snapshot, about 4.5 minutes, every step green; no fact was moved by the hosted CPU
+      (none reclassified: 0 of the bit snapshots changed on that run).
 - [ ] The package-content check and the sample and tool steps of `ci.yml` are red once
       on a mutation and right once on the real packages: a project of `src/` left
       out of the merge, a dropped `.xml`, a second dependency (date, run ids).
