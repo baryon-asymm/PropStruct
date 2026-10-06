@@ -1,0 +1,22 @@
+{
+  "bad-missing-value": {
+    "lineNumber": 5,
+    "messageContains": "expected 4 value"
+  },
+  "bad-repeat-count": {
+    "lineNumber": 10,
+    "messageContains": "repeat count"
+  },
+  "bad-slash": {
+    "lineNumber": 4,
+    "messageContains": "data-terminating"
+  },
+  "bad-non-integral": {
+    "lineNumber": 6,
+    "messageContains": "not an integral value"
+  },
+  "bad-gsv": {
+    "lineNumber": 6,
+    "messageContains": "GSV must be 2"
+  }
+}

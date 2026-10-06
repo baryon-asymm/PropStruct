@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node tests/Benchmarks: records accepted-particles-per-second figures for the port's
+    execution paths and the original executable, with their provenance (BOOT.md, Purpose).
+    A console project, run by hand, never by `dotnet test` (BOOT.md, Constraints): it carries
+    no [Fact]/[Theory] and no test SDK reference, so `dotnet test PropStruct.sln` never selects
+    it as a test project in the first place; `IsTestProject` is set to false explicitly anyway,
+    the same defensive convention `tests/Harness`'s own plain-library `.csproj` already uses.
+
+    No BenchmarkDotNet package reference: BOOT.md's Dependencies lists it as an anticipated
+    outside the tree tool from the design session, but the command line this node's own API.md
+    settled on (formulation/paths/repeats flags, one process launch per repeat so a host-thread
+    figure can run under a forced processor count) does not fit BenchmarkDotNet's own
+    iteration/warmup model, and a reference to an unused package is dead weight. Removed from
+    BOOT.md's Dependencies in the same commit as this file (BOOT.md, "## Cycle 1 isolation").
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Simulation\PropStruct.Simulation.csproj" />
+    <ProjectReference Include="..\..\src\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\..\src\Execution\PropStruct.Execution.csproj" />
+    <ProjectReference Include="..\Harness\PropStruct.Tests.Harness.csproj" />
+  </ItemGroup>
+
+</Project>

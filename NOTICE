@@ -1,0 +1,15 @@
+PropStruct
+Copyright (c) 2026 Eduard Burachek. Licensed under the MIT License (LICENSE).
+
+PropStruct is a port to C# of PropStructV3, a Fortran program for modelling the structure
+of composite solid rocket propellants ("Программа моделирования структуры СТРТ"), by
+V. A. Babuk and A. A. Nizyaev, Baltic State Technical University "VOENMEH" named after
+D. F. Ustinov (Saint Petersburg). The model is described in V. A. Babuk and A. A.
+Nizyaev, "Modelling of structure of the composite solid propellants and problem of the
+description of agglomeration process", Khimicheskaya Fizika i Mezoskopiya (Chemical
+Physics and Mesoscopy), 2014, vol. 16, no. 1, pp. 31-42. The original program's source
+code and executable are not distributed with PropStruct.
+
+PropStruct depends on ILGPU (University of Illinois/NCSA Open Source License) and does not
+redistribute it. PropStruct.Cli does: it bundles ILGPU.dll, and ILGPU's licence is in
+THIRD-PARTY-NOTICES.txt in that package.

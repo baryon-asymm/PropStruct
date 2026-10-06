@@ -1,0 +1,25 @@
+name: Runner diagnostics
+description: >
+  Prints the CPU model and the logical core count of this runner, so that a log which shows a
+  bit snapshot moved on a hosted CPU (.github/BOOT.md, "Continuous integration") names the
+  hardware that produced it. One place for the logic every job's diagnostics step shares. The
+  shell of each step is named: Windows PowerShell 5.1 on Windows, since a self-hosted runner
+  has no PowerShell 7, and bash elsewhere.
+runs:
+  using: composite
+  steps:
+    - name: CPU model and logical core count (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        $cpu = (Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name)
+        Write-Host "CPU model: $cpu"
+        Write-Host "Logical cores: $([Environment]::ProcessorCount)"
+
+    - name: CPU model and logical core count (Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        cpu=$(grep -m1 '^model name' /proc/cpuinfo | cut -d: -f2- | sed 's/^ *//')
+        echo "CPU model: $cpu"
+        echo "Logical cores: $(nproc)"

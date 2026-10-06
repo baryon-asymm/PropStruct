@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Node tests/Harness: the scaffolding the test nodes share. A plain library, not a test project. -->
+  <PropertyGroup>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ILGPU" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Tail coverage's sensitivity sweeps (this node's BOOT.md, ## Tail coverage (2026-09-18), step 4) need
+         FixedWidthPrefixLength to build their own mutated candidates without a second copy of the formula. -->
+    <InternalsVisibleTo Include="PropStruct.Tests.Harness.Tests" />
+    <!-- tests/DispersionTool writes tests/Fixtures/dispersion.approved.txt from DispersionTable.Compute(),
+         the same implementation tests/Harness.Tests/DispersionApprovedTests checks against (BOOT.md, ## Dispersion table). -->
+    <InternalsVisibleTo Include="PropStruct.DispersionTool" />
+  </ItemGroup>
+
+</Project>

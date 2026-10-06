@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Simulation: the front door of the library (BOOT.md, Purpose). Options, the simulator and the
+    structured result; owns the cycle loop of the original (label 700), alternating batches with
+    Statistics between cycles, and turns a failure status into an exception.
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\Random\PropStruct.Random.csproj" />
+    <ProjectReference Include="..\Particle\PropStruct.Particle.csproj" />
+    <ProjectReference Include="..\Statistics\PropStruct.Statistics.csproj" />
+    <ProjectReference Include="..\Execution\PropStruct.Execution.csproj" />
+  </ItemGroup>
+
+  <!--
+    PropStruct.Cli calls SimulationOptionsValidator.IsContinuedStreamsCombinationInvalid so its own
+    parse-time check of that one combination rule is not a second copy of the condition (architecture audit
+    finding R1, 2026-09-24; src/Cli/BOOT.md's own note).
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Simulation.Tests" />
+    <!-- The assembly name of src/Cli is "propstruct", not "PropStruct.Cli" (its own csproj's own note). -->
+    <InternalsVisibleTo Include="propstruct" />
+  </ItemGroup>
+
+</Project>

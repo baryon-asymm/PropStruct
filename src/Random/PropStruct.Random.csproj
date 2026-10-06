@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Random: the original's GSV=2 generator (Fortran subroutine random2, source lines 1642-1691,
+    seeds on lines 52-63), jump-ahead and a particle's six streams. Kernel-compatible C# only (BOOT.md,
+    Invariants and Constraints): static methods, blittable structs, no allocation, no exceptions.
+  -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Random.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Particle" />
+    <InternalsVisibleTo Include="PropStruct.Particle.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Execution" />
+    <InternalsVisibleTo Include="PropStruct.Execution.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Simulation" />
+    <InternalsVisibleTo Include="ILGPURuntime" />
+  </ItemGroup>
+
+</Project>

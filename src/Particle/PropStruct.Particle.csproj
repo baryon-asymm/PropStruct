@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Particle: one attempt at a base particle with its surroundings (Fortran main loop,
+    source lines 425-767, subroutines SIZE, DM and VM), the kernel form of the model setup and
+    cycle inputs, the accumulator layouts and the fixed-order fold. Kernel-compatible C# only
+    (BOOT.md, Invariants and Constraints): static methods, blittable structs, no allocation,
+    no exceptions.
+  -->
+
+  <ItemGroup>
+    <PackageReference Include="ILGPU" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Random\PropStruct.Random.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Particle.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Statistics" />
+    <InternalsVisibleTo Include="PropStruct.Statistics.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Execution" />
+    <InternalsVisibleTo Include="PropStruct.Execution.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Simulation" />
+    <InternalsVisibleTo Include="PropStruct.Simulation.Tests" />
+    <InternalsVisibleTo Include="ILGPURuntime" />
+  </ItemGroup>
+
+</Project>

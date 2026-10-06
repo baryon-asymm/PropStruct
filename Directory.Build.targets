@@ -1,0 +1,25 @@
+<Project>
+
+  <!-- Package metadata and symbols (root BOOT.md, ## Delivery), packable projects only (src/Output, src/Cli):
+       a .targets file sees the IsPackable a project sets in its body. ContinuousIntegrationBuild is passed on
+       the pack command line only: tests/Harness' RepositoryPaths finds the tree from [CallerFilePath]. -->
+  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+    <Authors>Eduard Burachek</Authors>
+    <Copyright>Copyright (c) 2026 Eduard Burachek</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/baryon-asymm/PropStruct</PackageProjectUrl>
+    <PackageTags>solid-propellant;composite-propellant;microstructure;monte-carlo;agglomeration;ilgpu;cuda</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <!-- MIT unless the project states another expression: the tool, which bundles ILGPU, states MIT AND NCSA. -->
+  <PropertyGroup Condition="'$(IsPackable)' == 'true' And '$(PackageLicenseExpression)' == ''">
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)NOTICE" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+</Project>

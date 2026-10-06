@@ -1,0 +1,134 @@
+{
+  "script": "formulas_particle.py",
+  "fortranLines": "1761-1776",
+  "subroutine": "SIZE",
+  "convention": "arrays and fraction/cell indices are the Fortran 1-based convention of the transcribed subroutine, not the port's own 0-based one (this node's API.md, '## Particle formula cases').",
+  "cases": [
+    {
+      "name": "uniform_in_d_interior",
+      "sizeLaw": 2,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 0.3,
+      "x1": 0.25,
+      "expected": {
+        "fraction": 1,
+        "diameter": 20.0
+      }
+    },
+    {
+      "name": "uniform_in_reciprocal_square_interior",
+      "sizeLaw": 1,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 0.8,
+      "x1": 0.5,
+      "expected": {
+        "fraction": 2,
+        "diameter": 201.741268349084
+      }
+    },
+    {
+      "name": "fraction_boundary_at_cumulative_picks_lower",
+      "sizeLaw": 2,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 0.6,
+      "x1": 0.9,
+      "expected": {
+        "fraction": 1,
+        "diameter": 46.0
+      }
+    },
+    {
+      "name": "fraction_boundary_just_above_cumulative_picks_upper",
+      "sizeLaw": 2,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 0.6000000001,
+      "x1": 0.1,
+      "expected": {
+        "fraction": 2,
+        "diameter": 175.5
+      }
+    },
+    {
+      "name": "fraction_boundary_at_upper_end_of_last_interval",
+      "sizeLaw": 1,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 1.0,
+      "x1": 0.0,
+      "expected": {
+        "fraction": 2,
+        "diameter": 160.0
+      }
+    },
+    {
+      "name": "x1_at_upper_edge_reproduces_upper_bound",
+      "sizeLaw": 2,
+      "bounds": [
+        10.0,
+        50.0,
+        160.0,
+        315.0
+      ],
+      "cumulative": [
+        0.0,
+        0.6,
+        1.0
+      ],
+      "x": 0.3,
+      "x1": 1.0,
+      "expected": {
+        "fraction": 1,
+        "diameter": 50.0
+      }
+    }
+  ]
+}

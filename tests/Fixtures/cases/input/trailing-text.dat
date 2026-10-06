@@ -1,0 +1,10 @@
+ label PLOT1 PLOT2 GGG Gm
+1950.0 1800.0 0.6 0.2 ignored trailing text on this record
+ label AK1 AK2 AK3 AK4
+0.5 2.0 0.27 4.7 stray extra
+ label NMM JZZ KXX N NNZ GSV
+2 1 0 100 6E6 2 999
+ label mass shares
+0.6 0.4 extra share that must never be read
+ label fraction bounds
+10 50 160 315 700 800

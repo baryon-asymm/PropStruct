@@ -1,0 +1,272 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+# A release is never cancelled by another run of itself.
+concurrency:
+  group: release-${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # A dispatch (the rehearsal) checks the version and the CHANGELOG.md section; a push of a tag
+  # checks, besides, the tag, its annotated message and the rehearsal run it names
+  # (.github/BOOT.md, "The release check"). Everything it reads is a file.
+  check:
+    name: Version, CHANGELOG, tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Version and release notes
+        shell: bash
+        env:
+          TAG: ${{ github.event_name == 'push' && github.ref_name || '' }}
+        run: |
+          set -euo pipefail
+          tag_arguments=()
+          if [ -n "$TAG" ]; then
+            tag_arguments=(--tag "$TAG")
+          fi
+          python -X utf8 .github/scripts/check_release.py notes "${tag_arguments[@]}" --notes release-notes.md
+
+      - name: Tag message
+        if: github.event_name == 'push'
+        id: tag
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git fetch --force origin "+refs/tags/${TAG}:refs/tags/${TAG}"
+          commit=$(git rev-parse "refs/tags/${TAG}^{commit}")
+          if [ "$commit" != "$GITHUB_SHA" ]; then
+            echo "the tag ${TAG} is at ${commit}, the run is for ${GITHUB_SHA}" >&2
+            exit 1
+          fi
+          git tag --list --format='%(contents)' "$TAG" > tag-message.txt
+          echo "commit=${commit}" >> "$GITHUB_OUTPUT"
+          python -X utf8 .github/scripts/check_release.py message --tag-message tag-message.txt \
+            --commit "$commit" --tag-type "$(git cat-file -t "refs/tags/${TAG}")" >> "$GITHUB_OUTPUT"
+
+      - name: Rehearsal run
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.tag.outputs.rehearsal }}
+          COMMIT: ${{ steps.tag.outputs.commit }}
+        run: |
+          set -euo pipefail
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --json status,conclusion,event,workflowName,headSha > rehearsal-run.json
+          python -X utf8 .github/scripts/check_release.py run --run-json rehearsal-run.json \
+            --run-id "$RUN_ID" --commit "$COMMIT"
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  # The CI build up to the fast set, on a hosted runner without CUDA.
+  hosted:
+    name: Windows - lint, build, test
+    needs: check
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      PROPSTRUCT_NO_CUDA: '1'
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget-packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Hosted checks
+        uses: ./.github/actions/hosted-checks
+        with:
+          diagnostics-name: bit-snapshot-diagnostics-hosted
+
+  # The one GPU run of the release, on the reference machine's self-hosted runner, which runs
+  # only on a tag or a dispatch (.github/BOOT.md, Invariants): CUDA runs here and nowhere
+  # else, every fact but the Legacy ones, and a CUDA fact that finds CUDA refused fails. The
+  # timeout is provisional until the rehearsal measures the duration. No pull request's code
+  # reaches this job, and every step names its shell: there is no PowerShell 7 here.
+  gpu:
+    name: CUDA (self-hosted GPU)
+    needs: [check, hosted]
+    runs-on: [self-hosted, windows, gpu]
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Preflight
+        uses: ./.github/actions/preflight
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Build
+        shell: powershell
+        run: dotnet build PropStruct.sln --configuration Release
+
+      - name: Devices
+        shell: powershell
+        run: dotnet run --project src/Cli/PropStruct.Cli.csproj --configuration Release --no-build -- devices
+
+      - name: Tests
+        shell: powershell
+        env:
+          PROPSTRUCT_REQUIRE_CUDA: '1'
+        run: dotnet test PropStruct.sln --configuration Release --no-build --filter "Category!=Legacy"
+
+      - name: Upload bit-snapshot diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: bit-snapshot-diagnostics-gpu
+          path: |
+            **/*.actual.*
+            **/*.received.*
+          if-no-files-found: ignore
+
+  pack:
+    name: Pack
+    needs: gpu
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget-packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Pack and check the contents
+        shell: bash
+        run: |
+          python -X utf8 .github/scripts/check_packages.py pack
+          python -X utf8 .github/scripts/check_packages.py verify
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: artifacts/packages
+          if-no-files-found: error
+
+  # Only a tag publishes: a dispatch is the rehearsal and ends at pack. The environment
+  # `release` waits for the owner's approval and admits tags v* only; the push is authorised
+  # by Trusted Publishing, no API key exists. No checkout and no tree code here, so no
+  # runner diagnostics step either.
+  publish:
+    name: Publish to NuGet
+    needs: pack
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: artifacts/packages
+
+      - name: NuGet login (Trusted Publishing)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # Pushing a .nupkg pushes the .snupkg beside it to the symbol server: no second push.
+      - name: Push the packages
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push "artifacts/packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+
+  github-release:
+    name: GitHub release
+    needs: publish
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: artifacts/packages
+
+      - name: Download release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: .
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" artifacts/packages/* \
+            --notes-file release-notes.md \
+            --verify-tag

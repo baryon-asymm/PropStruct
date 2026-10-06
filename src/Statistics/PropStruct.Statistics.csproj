@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Statistics: the host-side arithmetic around the particle loop (Fortran
+    lines 267-277, 376-406, subroutine PARAM 1695-1757, and the end-of-cycle processing
+    771-1175). Host code, double precision, allocation allowed (BOOT.md, Constraints).
+    No accelerator dependency: the tail draw's diameter comes from Particle.SizeLaw.Sample,
+    called by Simulation (the driver that owns the accelerator through Execution), not
+    from here (API.md, "Setup hand-off"; root BOOT.md, "Execution is the only node that
+    knows accelerators exist").
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Particle\PropStruct.Particle.csproj" />
+    <ProjectReference Include="..\Input\PropStruct.Input.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Statistics.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Simulation" />
+    <InternalsVisibleTo Include="PropStruct.Simulation.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Particle.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Execution.Tests" />
+  </ItemGroup>
+
+</Project>

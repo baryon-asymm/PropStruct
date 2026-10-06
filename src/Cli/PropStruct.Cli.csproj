@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Cli: the `propstruct` command-line tool (BOOT.md, Purpose) - argument parsing, the mapping
+    of arguments onto SimulationOptions and ModelParameters, exit codes and progress lines. No model
+    arithmetic and no output format of its own; every type is internal (API.md: "no library surface").
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- The tool command is `propstruct` (root BOOT.md, "Language and build"), not the project's own name. -->
+    <AssemblyName>propstruct</AssemblyName>
+    <!-- The package `PropStruct.Cli` is the .NET tool `propstruct` (root BOOT.md, ## Delivery, Packages). -->
+    <IsPackable>true</IsPackable>
+    <PackageId>PropStruct.Cli</PackageId>
+    <Description>The propstruct command line: the pocket model of the local structure of composite solid propellants, a formulation file in the original .dat format in, results.m in the original's layout out, on the CPU or on an NVIDIA GPU.</Description>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>propstruct</ToolCommandName>
+    <!-- The tool bundles ILGPU.dll, ILGPU 1.5.3 is NCSA-licensed: THIRD-PARTY-NOTICES.txt below reproduces it. -->
+    <PackageLicenseExpression>MIT AND NCSA</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\nuget\PropStruct.Cli.md" Pack="true" PackagePath="README.md" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Simulation\PropStruct.Simulation.csproj" />
+    <ProjectReference Include="..\Output\PropStruct.Output.csproj" />
+    <ProjectReference Include="..\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\Execution\PropStruct.Execution.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Cli.Tests" />
+  </ItemGroup>
+
+</Project>

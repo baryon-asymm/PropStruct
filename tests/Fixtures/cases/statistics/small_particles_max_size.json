@@ -1,0 +1,48 @@
+{
+  "script": "formulas_statistics.py",
+  "fortranLines": "1066-1074",
+  "subroutine": "the largest base size the small-particle probability still reaches (SmallParticles.MaxSize)",
+  "convention": "arrays and cell indices are 0-based, matching this node's own C# signatures (src/Statistics/API.md) directly -- unlike formulas_particle.py, there is no Fortran-1-based caller convention to preserve here.",
+  "cases": [
+    {
+      "name": "threshold_reached_at_kilo_two",
+      "ndok": 4,
+      "cellSize": 1.0,
+      "ddokmax": 5.0,
+      "karmcoef": 1.0,
+      "mkmcoef": 10.0,
+      "pdoksmall": [
+        0.0,
+        0.11003521126760564,
+        0.11003521126760564,
+        0.11003521126760564
+      ],
+      "expected": {
+        "dmaxxx": 2.0
+      },
+      "expectedOriginal": {
+        "dmaxxx": 2.0
+      }
+    },
+    {
+      "name": "threshold_never_reached",
+      "ndok": 4,
+      "cellSize": 1.0,
+      "ddokmax": 5.0,
+      "karmcoef": 1.0,
+      "mkmcoef": 5.0,
+      "pdoksmall": [
+        0.0,
+        0.11003521126760564,
+        0.11003521126760564,
+        0.11003521126760564
+      ],
+      "expected": {
+        "dmaxxx": 5.0
+      },
+      "expectedOriginal": {
+        "dmaxxx": 5.0
+      }
+    }
+  ]
+}

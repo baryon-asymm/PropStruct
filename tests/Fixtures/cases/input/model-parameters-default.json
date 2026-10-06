@@ -1,0 +1,16 @@
+{
+  "dminMetres": 1e-5,
+  "cellSizeMetres": 1e-5,
+  "categoryStepMetres": 1e-5,
+  "epsDok": 0.05,
+  "alpha": 0.25,
+  "nnMin": 3,
+  "pocketCoefficient": 8.2,
+  "bridgeCoefficient": 7.73,
+  "tailProbability": 0,
+  "nnMax": 100,
+  "homogenizedOxidizerFraction": 0,
+  "readPocketFormingFractions": false,
+  "variant": 0,
+  "aggregatedOxideFraction": 0
+}

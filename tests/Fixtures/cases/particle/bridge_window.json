@@ -1,0 +1,176 @@
+{
+  "script": "formulas_particle.py",
+  "fortranLines": "582-625,1573-1586",
+  "subroutine": "the bridge window (build, lines 582-611) and DM (lines 1573-1586, SamplePocket)",
+  "convention": "arrays and fraction/cell indices are the Fortran 1-based convention of the transcribed subroutine, not the port's own 0-based one (this node's API.md, '## Particle formula cases').",
+  "cases": [
+    {
+      "name": "ordinary_window_truncation_at_natural_end",
+      "cellSize": 1.0,
+      "ak3": 1.0,
+      "ak4": 3.0,
+      "dr": 1.0,
+      "qks1": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ],
+      "expected": {
+        "emptyWindow": false,
+        "minCell": 2,
+        "maxCell": 4,
+        "cellCount": 4,
+        "boundaries": [
+          2.0,
+          3.0,
+          4.0,
+          5.0
+        ],
+        "cumulative": [
+          0.0,
+          0.2222222222222222,
+          0.5555555555555556,
+          1.0
+        ]
+      },
+      "samples": [
+        {
+          "x3": 0.0,
+          "expected": {
+            "pocketSize": 2.0
+          }
+        },
+        {
+          "x3": 0.25,
+          "expected": {
+            "pocketSize": 3.0833333333333335
+          }
+        },
+        {
+          "x3": 0.9999999,
+          "expected": {
+            "pocketSize": 4.999999775
+          }
+        }
+      ]
+    },
+    {
+      "name": "early_truncation_from_trailing_zero_cells",
+      "cellSize": 1.0,
+      "ak3": 1.0,
+      "ak4": 4.0,
+      "dr": 1.0,
+      "qks1": [
+        1.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": {
+        "emptyWindow": false,
+        "minCell": 2,
+        "maxCell": 2,
+        "cellCount": 2,
+        "boundaries": [
+          2.0,
+          3.0
+        ],
+        "cumulative": [
+          0.0,
+          1.0
+        ]
+      },
+      "samples": [
+        {
+          "x3": 0.0,
+          "expected": {
+            "pocketSize": 2.0
+          }
+        },
+        {
+          "x3": 0.5,
+          "expected": {
+            "pocketSize": 2.5
+          }
+        },
+        {
+          "x3": 0.9999999,
+          "expected": {
+            "pocketSize": 2.9999999
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty_window_all_cells_zero",
+      "cellSize": 1.0,
+      "ak3": 1.0,
+      "ak4": 2.0,
+      "dr": 1.0,
+      "qks1": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": {
+        "emptyWindow": true
+      },
+      "samples": []
+    },
+    {
+      "name": "mindk_at_one_identity_shift",
+      "cellSize": 5.0,
+      "ak3": 0.1,
+      "ak4": 1.0,
+      "dr": 5.0,
+      "qks1": [
+        3.0,
+        7.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": {
+        "emptyWindow": false,
+        "minCell": 1,
+        "maxCell": 2,
+        "cellCount": 3,
+        "boundaries": [
+          5.0,
+          10.0,
+          15.0
+        ],
+        "cumulative": [
+          0.0,
+          0.30000000000000004,
+          1.0
+        ]
+      },
+      "samples": [
+        {
+          "x3": 0.0,
+          "expected": {
+            "pocketSize": 5.0
+          }
+        },
+        {
+          "x3": 0.3,
+          "expected": {
+            "pocketSize": 10.0
+          }
+        },
+        {
+          "x3": 0.9999999,
+          "expected": {
+            "pocketSize": 14.999999285714285
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+# PrecisionKind.Double -> PrecisionKind.Binary64 rename map, 2026-09-24 (CA1720: an
+# identifier may not contain a type name; owner's decision, root BOOT.md "Language and
+# build"). Applied across the whole tree in coding mode (the fix touches Simulation,
+# Particle, Statistics, Execution, Cli, Output and every test project that names the
+# kind, which is why it needed a cross-node task rather than a single node's coding
+# session): source, BOOT.md and API.md alike, excluding HISTORY.md files (append-only,
+# left as they were). "Double precision only" (the root's own invariant name, about
+# double vs. float, not this enum) is untouched everywhere it occurs.
+#
+# The enum rename is the fix; the identifier renames below are the same rename carried
+# into test names, cache fields and local helpers that spelled the enum's old case name
+# out in English rather than referencing it through <see cref>, kept here so a reader
+# who greps for the old name finds every site that changed.
+#
+# Format: FullyQualifiedType.OldMember -> NewMember  (or OldIdentifier -> NewIdentifier
+# for a local/private identifier with no useful fully-qualified form)
+
+PropStruct.Simulation.PrecisionKind.Double -> Binary64
+PropStruct.Particle.PrecisionKind.Double -> Binary64
+
+# CLI: the enum member is renamed, but the flag *value* spelling "double" is kept as an
+# accepted alias of "binary64" (src/Cli/FlagCatalog.cs) so an existing command line still
+# parses; this is not part of the mechanical identifier rename below, it is a compatibility
+# decision recorded in src/Cli/BOOT.md and src/Cli/API.md.
+
+# Test and cache identifiers (English spellings of the enum's old case, not the token
+# `PrecisionKind.Double` itself, so not caught by a plain string search for that token):
+PropStruct.Harness.Tests.RateCriterionTests.PortRateDoublePrecisionIsSignificantlyHigherThanTheOriginalsNullRateOnHpepa3AndHmx -> PortRateBinary64PrecisionIsSignificantlyHigherThanTheOriginalsNullRateOnHpepa3AndHmx
+PropStruct.Particle.Tests.PrecisionKindClassificationTests.UnsetKindBehavesAsDouble -> UnsetKindBehavesAsBinary64
+PropStruct.Simulation.Tests.PrecisionKindTests.RunOriginalPrecisionDisagreesWithDoublePrecisionAtTheSameSeed -> RunOriginalPrecisionDisagreesWithBinary64PrecisionAtTheSameSeed
+PropStruct.Simulation.Tests.PrecisionKindTests.RunWithPrecisionUnsetDefaultsToDoubleAndIsRecordedAsSuch -> RunWithPrecisionUnsetDefaultsToBinary64AndIsRecordedAsSuch
+PropStruct.Simulation.Tests.StreamLayoutTests.RunWithPrecisionUnsetDefaultsToDoubleAndIsRecordedAsSuch -> RunWithPrecisionUnsetDefaultsToBinary64AndIsRecordedAsSuch
+PropStruct.Simulation.Tests.StatisticalCriterionTests.BatchedModeCpuIndependentLayoutDoublePrecisionAgreesWithReferenceModeAcrossEightSeeds -> BatchedModeCpuIndependentLayoutBinary64PrecisionAgreesWithReferenceModeAcrossEightSeeds
+PropStruct.Simulation.Tests.StatisticalCriterionTests.BatchedModeCudaIndependentLayoutDoublePrecisionAgreesWithReferenceModeAcrossEightSeeds -> BatchedModeCudaIndependentLayoutBinary64PrecisionAgreesWithReferenceModeAcrossEightSeeds
+PropStruct.Simulation.Tests.StatisticalCriterionTests.ReferenceIndependentDoubleCache -> ReferenceIndependentBinary64Cache
+PropStruct.Simulation.Tests.StatisticalCriterionTests.ReferenceSetsIndependentDouble -> ReferenceSetsIndependentBinary64
+PropStruct.Output.Tests.PocketCoefficientHeaderEchoTests.PortsCoefficientLineUnderDoubleDoesNotMatchTheArchivedOriginal -> PortsCoefficientLineUnderBinary64DoesNotMatchTheArchivedOriginal
+
+# Explicitly NOT renamed, reviewed and left as English prose about the C# `double` type
+# or about un-rounded (as opposed to binary32-rounded) values, not about this enum:
+# every "Double precision only"/"Double precision, literals as written" invariant-name
+# reference; local variables such as doubleRun/doubleResult/doubleLines in
+# tests/Simulation.Tests/PrecisionKindTests.cs; DoubleTotal, DoubleRealField,
+# DoubleMantissaBits, NextDouble, AssertEqualDoubles, afterDoubleDash and similar
+# identifiers naming the primitive type or a double-dash CLI token, found across
+# src/Statistics/Binary32.cs, src/Output/FortranFormat.cs, src/Cli/CommandLine.cs and
+# several test projects; tests/Output.Tests/EpsHeaderEchoTests.cs's
+# EpsHeaderLineGivenThePortsDoubleUnroundedPrintsItUnchanged and
+# tests/Output.Tests/PocketCoefficientHeaderEchoTests.cs's
+# CoefficientLineGivenThePortsDoubleUnroundedDiffersFromTheOriginalsRealFourStore, whose
+# "Double" means the unrounded double value, not PrecisionKind.Double (neither calls
+# Setup/Attempt with the kind).

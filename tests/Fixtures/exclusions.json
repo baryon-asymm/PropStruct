@@ -1,0 +1,16 @@
+[
+  {
+    "formulation": "*",
+    "quantity": "pdoksmall",
+    "rule": "reference cells below 1e-30 compare as zero",
+    "reason": "uninitialized pdoksmall(1) copied forward, Fortran 1062-1064",
+    "evidence": "Legacy/outputs/rc166.m.txt: six leading cells 0.762E-38"
+  },
+  {
+    "formulation": "*",
+    "quantity": "epsx(4)",
+    "rule": "not compared against independent replicas",
+    "reason": "stream-4 shifts of the independent replica set span a tenth of the circle, so the replica sd is not the quantity's spread",
+    "evidence": "../Random.Tests/ReplicaShiftTests.cs: rigid-shift proof, the generator positive control against all 32 HPEPA3 independent replicas, and the replica-arc-vs-whole-circle sd comparison"
+  }
+]

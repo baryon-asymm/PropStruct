@@ -1,0 +1,9 @@
+# Line endings are LF in the working tree on every platform.
+* text=auto eol=lf
+# The original program and its data are kept byte for byte.
+*.zip binary
+*.exe binary
+*.dll binary
+*.for -text
+*.dat -text
+*.m -text

@@ -1,0 +1,40 @@
+{
+  "generator": "python tools/defect-report/defect_report.py . --declared-output docs/declared-differences.json",
+  "rows": [
+    {
+      "node": "src/Particle",
+      "fortran": "478, 533, 1761–1776",
+      "kind": "numeric",
+      "port": "declared, not reproduced",
+      "entries": [
+        {
+          "formulations": [
+            "HPEPA3",
+            "HMX"
+          ],
+          "quantity": "ConditionBreaking(2)",
+          "first": null,
+          "last": null,
+          "originalBelow": null
+        }
+      ]
+    },
+    {
+      "node": "src/Statistics",
+      "fortran": "1021–1065",
+      "kind": "dead",
+      "port": "declared, not reproduced",
+      "entries": [
+        {
+          "formulations": [
+            "*"
+          ],
+          "quantity": "pdoksmall",
+          "first": null,
+          "last": null,
+          "originalBelow": 1e-30
+        }
+      ]
+    }
+  ]
+}

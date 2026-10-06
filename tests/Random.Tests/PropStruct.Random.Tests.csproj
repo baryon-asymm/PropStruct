@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Node tests/Random.Tests: what "Random is ready" means (BOOT.md). -->
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!--
+    Snapshots/*.approved.txt are read straight from the source tree by BitSnapshot.Verify's
+    [CallerFilePath] (tests/Harness/API.md), never copied to the output directory.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Random\PropStruct.Random.csproj" />
+    <ProjectReference Include="..\Harness\PropStruct.Tests.Harness.csproj" />
+  </ItemGroup>
+
+  <!-- The internal kernel entry points of KernelEqualityTests.cs are JIT-compiled into ILGPU's dynamic runtime assembly. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="ILGPURuntime" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,149 @@
+{
+  "baseline": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "record-continuation": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "tabs-and-commas": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "mixed-units-bounds": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 0.1, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 0.099999, "upperBound": 0.00015 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "utf8-bom-label": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "trailing-text": {
+    "readPocketFormingFractions": false,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": null
+  },
+  "pocket-forming-fractions": {
+    "readPocketFormingFractions": true,
+    "oxidizerDensity": 1950.0,
+    "propellantDensity": 1800.0,
+    "oxidizerMassFraction": 0.6,
+    "metalMassFraction": 0.2,
+    "ak1": 0.5,
+    "ak2": 2.0,
+    "ak3": 0.27,
+    "ak4": 4.7,
+    "sizeLawCode": 1,
+    "sizeLaw": "UniformInReciprocalSquare",
+    "cycles": 1,
+    "particlesPerCycle": 100,
+    "generatorWarmup": 6000000.0,
+    "fractions": [
+      { "massShare": 0.6, "lowerBound": 10.0, "upperBound": 50.0 },
+      { "massShare": 0.4, "lowerBound": 160.0, "upperBound": 315.0 }
+    ],
+    "pocketFormingFractions": [1, 0]
+  }
+}

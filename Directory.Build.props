@@ -1,0 +1,38 @@
+<Project>
+
+  <!-- Shared build settings of every project in the tree (root BOOT.md, Constraints: "Language and build"). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisMode>All</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic>true</Deterministic>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsPackable>false</IsPackable>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!-- The one version of both packages (root BOOT.md, ## Delivery): a release tag v<version> must equal it. -->
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+  </PropertyGroup>
+
+  <!--
+    Owner's decision, 2026-09-25 (root BOOT.md, "Language and build"): GenerateDocumentationFile is on for src
+    projects only, so IDE0005 (remove unnecessary usings) can run in build there without pulling every test
+    project's public API into the same requirement (root .editorconfig's [src/**.cs] section raises IDE0005 to
+    warning for exactly this scope; tests leave the rule at its own default). A project is a src project when
+    its directory starts with this file's own directory plus "src\" - the same test the reflection checks use
+    to assign a project to a node by path, not by name (AGENTS.md §13).
+  -->
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.StartsWith('$(MSBuildThisFileDirectory)src\'))">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

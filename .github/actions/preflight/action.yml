@@ -1,0 +1,16 @@
+name: Preflight
+description: >
+  Asserts what the self-hosted GPU runner must provide before the release workflow's GPU job
+  builds or tests anything (.github/BOOT.md, "What a self-hosted runner must provide"): git,
+  the .NET SDK of global.json, Python 3.8 or newer, an NVIDIA driver, libnvvm and
+  libdevice.10.bc where src/Execution's discovery looks, PROPSTRUCT_NO_CUDA and
+  PROPSTRUCT_LEGACY_DIR unset, no runner of another repository, no compute process of the
+  tree's or APThermo's kind on the GPU. Fails naming every missing item. The first step after
+  checkout. Windows PowerShell 5.1, no PowerShell 7 and no Git Bash.
+runs:
+  using: composite
+  steps:
+    - name: Preflight (Windows)
+      shell: powershell
+      run: |
+        & "${{ github.action_path }}/../../scripts/preflight-windows.ps1"

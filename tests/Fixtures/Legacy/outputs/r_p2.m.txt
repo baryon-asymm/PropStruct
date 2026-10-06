@@ -1,0 +1,157 @@
+ clear fmdokkarm EPSMdok Dok43karm
+ % =============================================
+ % Input filename: p2      .dat
+ % =============================================
+ Plot1 = 1950.0; Plot2 = 1831.0; Gdok = 0.640; Gm = 0.240;
+ Nfr =  1; JZ = 2; Cycles =  1; N = 500000; GSV = 2;
+ Gfr = [0.100E+01  ];
+ Dfr = [0.100E-04 0.500E-04  ];
+ % =============================================
+ % Additional data:
+ % Dmin =          10 ; % mkm
+   Di =          10 ; % mkm
+ % Dj =          10 ; % mkm
+ % NN = [   3.000000       1000000.     ];
+ % alphaOX =  0.2500000     ;
+ % Statistical significance =  0.000000000000000E+000 ;
+ % eps =  5.0000001E-02 ;
+ 
+ % =============================================
+ % Results:
+ % =============================================
+ % Cycles:           1
+ % Total basic particles number:
+ % Nbase =      500000 +      500000 ;
+ % Total defined pockets number:
+   Nkarm =              84079981 ;
+ % Total calls of random generator:
+ % NFX =               9192400 ;  NFY =             188876400 ;
+ % NFQ =              55230176 ;  NFW =             132242818 ;
+ % Accuracy of random numbers modeling :
+ % EPS(1)=  4.7028065E-05 ; EPS(2)=  4.7028065E-05 ; EPS(3)=  5.8472157E-05 ;
+ % EPS(4)=  5.8352947E-05 ; EPS(5)=  2.9087067E-05 ; EPS(6)=  8.9645386E-05 ;
+ % __________
+ % Accuracy of all <particles> sizes modeling:
+ % EPSX1=  1.3439904E-04 ; EPSX2=  2.0645508E-05 ;
+ % Mass-medium diameter of all <particles>, mkm:
+ Dok43a =  40.05; %(analytical calculation, all particles)
+ Dok43all = [ 40.05  39.73]; %(all particles, 2 variants)
+ Dok43(1) =  40.05; %(basic only)
+ Dok43(2) =  40.05; %(surrounding only)
+ Ddokmax =  50.00; %(maximum size of particles)
+ % Mass density distribution function of <fractions>:
+ fmfract = [0.651E+00  ];
+ % Accuracy of <fractions> distribution function modeling:
+ epsffract = [0.438E-09  ];
+ % Mass density distribution function of all<particles> sizes (step = 10mkm)
+ fmdok = [0.000E+00 0.249E-02 0.815E-02 0.290E-01 0.604E-01 0.000E+00...
+ ];
+ % __________
+ % Accuracy of <pockets> distribution function modeling:
+ EPSYkarm =  5.6204991E-04 ;
+ % Accuracy of <pockets> distribution moments determination (4-th and 3-th):
+ EPSMkarm(1)=  4.5517614E-04 ; EPSMkarm(2)=  3.2971930E-04 ;
+ % Mass-medium size of <pockets> (variant #1), mkm:
+ Dkarm43(1) =   26.49;
+ % Mass fraction of <pockets> in binder-metal composition (normal and cor.#1,2):
+ Zkarm = [  0.3130900      0.3130900      0.3620223      ];
+ % Distribution of Zk on basic dok sizes:
+ zk0 = [ NaN      0.247E+00 0.350E+00 0.318E+00 0.313E+00 0.313E+00...
+ ];
+ zk1 = [ NaN      0.247E+00 0.350E+00 0.318E+00 0.313E+00 0.313E+00...
+ ];
+ % Mass density distribution function of <pocketssizes (step = 10mkm):
+ fmkarm = [0.143E-03 0.170E-01 0.532E-01 0.274E-01 0.227E-02 0.425E-04...
+           0.137E-06 0.000E+00  ];
+ % Mass-medium size of <pockets> (variant #2) and standard deviation, mkm:
+ Dkarm43(2) =   26.48;   StDkarm =   7.23; %(0.273 relative)
+ % Cor. Mass density distribution function of <pockets> sizes (step = 10mkm) (cor. var #1):
+ fmkarm_cor = [0.151E-03 0.152E-01 0.537E-01 0.285E-01 0.241E-02 0.456E-04...
+               0.158E-06 0.000E+00  ];
+ % Cor. Mass-medium size of <pockets> and standard deviation (cor. var #1), mkm:
+ Dkarm43_cor =   26.80;   StDkarm_cor =   7.15; %(0.267 relative)
+ % Cor. Mass density distribution function of  <pockets> sizes (step = 10mkm) (cor. var#2):
+ fmkarm_2 = [0.105E-03 0.159E-01 0.527E-01 0.287E-01 0.255E-02 0.507E-04...
+             0.188E-06 0.000E+00  ];
+ % Mass-medium size of <pockets> and standard deviation (cor. var#2), mkm:
+ Dkarm43_2 =   26.79;   StDkarm2 =   7.25; %(0.271 relative)
+ % __________
+ % <Agglomerate> size coefficient:
+ mp =   0.7416693     ;
+ Dagg43(1) =   19.65;
+ Dagg43(2) =   19.88;
+ Dagg43_2 =   19.87;
+ % __________
+ % Pockets sizes (mkm):
+ Dkarm = [0.100E+02 0.200E+02 0.300E+02 0.400E+02 0.700E+02  ];
+ % Numeric density distribution function of <particles> on pockets categories:
+ fdokcat = [0.255E-01 0.468E+00 0.416E+00 0.870E-01 0.352E-02  ];
+ % Accuracy of <particles> sizes modeling on pockets categories:
+ EPSYdok = [0.223E-02 0.336E-03 0.370E-03 0.101E-02 0.631E-02  ];
+ % Accuracy of <particles> distribution moments determination (4-th and 3-th):
+ EPSMdok(1,:) = [0.176E-02 0.259E-03 0.286E-03 0.790E-03 0.505E-02  ];
+ EPSMdok(2,:) = [0.138E-02 0.214E-03 0.234E-03 0.630E-03 0.378E-02  ];
+ % Dependency of <Dok43> on pockets sizes (2 variants):
+ Dok43karm(1,:) = [0.290E-04 0.508E-04 0.455E-04 0.402E-04 0.359E-04  ];
+ Dok43karm(2,:) = [0.303E-04 0.422E-04 0.419E-04 0.401E-04 0.362E-04  ];
+ % Mass density distribution functions of <particles> on pockets categories:
+ % Dp =     10 mkm
+ fmdokkarm(  1,:) = [0.000E+00 0.273E+03 0.420E+04 0.552E+04 0.000E+00 0.000E+00...
+ ];
+ % Dp =     20 mkm
+ fmdokkarm(  2,:) = [0.000E+00 0.551E+01 0.273E+03 0.223E+04 0.749E+04 0.000E+00...
+ ];
+ % Dp =     30 mkm
+ fmdokkarm(  3,:) = [0.000E+00 0.718E+00 0.333E+03 0.247E+04 0.719E+04 0.000E+00...
+ ];
+ % Dp =     40 mkm
+ fmdokkarm(  4,:) = [0.000E+00 0.420E-01 0.750E+03 0.341E+04 0.584E+04 0.000E+00...
+ ];
+ % Dp =     70 mkm
+ fmdokkarm(  5,:) = [0.000E+00 0.000E+00 0.207E+04 0.471E+04 0.322E+04 0.000E+00...
+ ];
+ % __________
+ % Results of local structure analysis:
+ % Coefficient [Lij/Ddok+1] distribution (step = 0.01):
+ coef = [0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.693E-08 0.105E-01...
+         0.168E-01 0.285E-01 0.472E-01 0.639E-01 0.792E-01 0.950E-01...
+         0.112E+00 0.126E+00 0.123E+00 0.999E-01 0.710E-01 0.465E-01...
+         0.301E-01 0.198E-01 0.129E-01 0.823E-02 0.497E-02 0.279E-02...
+         0.141E-02 0.656E-03 0.281E-03 0.111E-03 0.425E-04 0.164E-04...
+         0.684E-05 0.288E-05 0.150E-05 0.776E-06 0.450E-06 0.326E-06...
+         0.152E-06 0.125E-06 0.485E-07 0.416E-07 0.693E-08 0.693E-08...
+         0.000E+00 0.693E-08 0.693E-08 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00 0.000E+00...
+         0.000E+00 0.000E+00 0.000E+00 0.000E+00  ];
+ % Distribution of volumetric fraction of small particles (D < Dbase/k2):
+ vdoksmall = [0.000E+00 0.000E+00 0.185E-01 0.364E-01 0.918E-01  ];
+ % Distribution of [D43/Dbase] of small particles(D < Dbase/k2):
+ ddoksmall = [0.000E+00 0.000E+00 0.417E+00 0.375E+00 0.394E+00  ];
+ % Distribution of pocket-in-pocket possibility:
+ pdoksmall = [0.775E-38 0.775E-38 0.597E-01 0.105E+00 0.280E+00  ];
+ % Medium number of bridges:   5.059596    
+ % Medium ratio between pockets and bridges numbers:   4.464994    
+ % Medium relative number of paricles in jammed pack:  7.1306802E-02
+ % Total number of conditions breakings:
+ %    1) Dok > Dmax      :                     0
+ %    2) Dok < Dmin      :                     0
+ %    3) Dbase < 0.5Dok  :               3230895
+ %    4) Dbase > 2.0Dok  :              41289370
+ %    5) l > 4.7Dbase    :                     0
+ %    6) Nkarm = 0       :                     2
+ %    7) Nmkm < 2        :                   525
+ %    8) Nkarm/Nmkm < min:               4960978
+ %    9) Nkarm/Nmkm > max:                     0
+ % Calculation time:  0 :  2 : 17
+ % __________________________
+ hold on
+ plot(mp*[Di:Di:Di*size(fmkarm,2)],fmkarm/mp)
+ plot(mp*[Di:Di:Di*size(fmkarm_cor,2)],fmkarm_cor/mp,'r')
+ plot(mp*[Di:Di:Di*size(fmkarm_2,2)],fmkarm_2/mp,'g:')

@@ -1,0 +1,108 @@
+# Hand-written map of the print-time expressions (src/Output/BOOT.md, "## Print-time
+# expressions"): one row per row of PrintExpressions.generated.txt, giving the
+# ResultsMWriter method and the C# fragments that carry it, or the result member that
+# carries it computed, or why it is not ported. Checked by
+# tests/Output.Tests/PrintExpressionMapTests (generated -> map, map -> generated, map ->
+# code, code -> map, upstream members by reflection, the reasons against their BOOT.md,
+# upstream members against src/Simulation/API.md); the grammars are
+# src/Output/API.md, "## Print-expression map".
+#
+# line | role | expression | member | fragments | upstream
+#   member: ResultsMWriter.<Method>, or not ported: <reason> (BOOT.md, "<phrase>")
+#   fragments: C# fragments joined by " && ", each on a line ending // Fortran <line>,
+#     or -
+#   upstream: <Record>.<Member> of PropStruct.Simulation that carries the value
+#     computed, or -
+#
+# Idioms accepted as the same expression: x**0.5 and Math.Sqrt(x); int(x) and Trunc(x)
+# or (int)(x), both toward zero; int(x,kind=2) and I2Field(Trunc(x)); real(i) and the
+# implicit long to double conversion; .gt. and >.
+1196 | condition | gsv.ne.1 | not ported: only the GSV = 2 generator is ported (root BOOT.md, "the original's generators GSV=1 and GSV=3") | - | -
+1202 | length | 2*nmm | ResultsMWriter.WriteHeader | storedSetup.FractionBounds | StoredSetup.FractionBounds
+1204 | item | int(dmin*1.00001e6) | ResultsMWriter.WriteHeader | Trunc(storedSetup.Dmin * 1.00001e6) | -
+1205 | item | int(di*1.00001e6) | ResultsMWriter.WriteHeader | Trunc(storedSetup.CellSize * 1.00001e6) | -
+1206 | item | int(dj*1.00001e6) | ResultsMWriter.WriteHeader | Trunc(storedSetup.CategoryStep * 1.00001e6) | -
+1216 | condition | sfr(iks).eq.0 | ResultsMWriter.WriteHeader | sfr.Any(v => v == 0) | -
+1218 | array | real(sfr) | ResultsMWriter.WriteHeader | asReal[i] = sfr[i] | -
+1242 | item | real(ibridge_total)/(fi) | ResultsMWriter.WriteResults | counters.IbridgeTotal / fi | -
+1243 | item | nn_total/(fi) | ResultsMWriter.WriteResults | counters.NnTotal / fi | -
+1245 | item | jammed_total/(fi) | ResultsMWriter.WriteResults | counters.JammedTotal / fi | -
+1248 | item | real(conditions(1))/(fi+n) | ResultsMWriter.WriteResults | conditions[0] / fiPlusN && fi + nbase | -
+1249 | item | real(conditions(2))/(fi+n) | ResultsMWriter.WriteResults | conditions[1] / fiPlusN && fi + nbase | -
+1250 | item | real(conditions(3))/(fi+n) | ResultsMWriter.WriteResults | conditions[2] / fiPlusN && fi + nbase | -
+1251 | item | real(conditions(4))/(fi+n) | ResultsMWriter.WriteResults | conditions[3] / fiPlusN && fi + nbase | -
+1252 | item | real(conditions(5))/(fi+n) | ResultsMWriter.WriteResults | conditions[4] / fiPlusN && fi + nbase | -
+1253 | item | real(conditions(6))/fi | ResultsMWriter.WriteResults | conditions[5] / fi | -
+1254 | item | real(conditions(7))/fi | ResultsMWriter.WriteResults | conditions[6] / fi | -
+1255 | item | real(conditions(8))/fi | ResultsMWriter.WriteResults | conditions[7] / fi | -
+1256 | item | real(conditions(9))/fi | ResultsMWriter.WriteResults | conditions[8] / fi | -
+1261 | item | dokm*1e6 | ResultsMWriter.WriteResults | header.Dokm * 1e6 | -
+1263 | item | alldok43*1e6 | ResultsMWriter.WriteResults | sizes.Alldok43 * 1e6 | -
+1263 | item | alldok432*1e6 | ResultsMWriter.WriteResults | sizes.Alldok432 * 1e6 | -
+1265 | item | dok43b*1e6 | ResultsMWriter.WriteResults | sizes.Dok43b * 1e6 | -
+1266 | item | dok43s*1e6 | ResultsMWriter.WriteResults | sizes.Dok43s * 1e6 | -
+1272 | condition | alfa.gt.0 | ResultsMWriter.WriteResults | header.TailProbabilityModified > 0 | -
+1273 | item | dmax*1e6 | ResultsMWriter.WriteResults | header.Dmax * 1e6 | -
+1276 | item | ddokmax*1e6 | ResultsMWriter.WriteResults | header.Ddokmax * 1e6 | -
+1279 | item | doksd**0.5*1e6 | ResultsMWriter.WriteResults | Math.Sqrt(header.Doksd) * 1e6 | -
+1286 | item | gdokns+gdokleft/ggg | ResultsMWriter.WriteResults | result.StoredSetup.HomogenizedOxidizerFraction + local.Gdokleft / header.Ggg | -
+1296 | item | dp43*1e6 | ResultsMWriter.WriteResults | pockets.Dp43 * 1e6 | -
+1300 | item | d432*1e6 | ResultsMWriter.WriteResults | pockets.D432 * 1e6 | -
+1300 | item | sdevp43*1e6 | ResultsMWriter.WriteResults | pockets.Sdevp43 * 1e6 | -
+1300 | item | sdevp43/d432 | ResultsMWriter.WriteResults | pockets.Sdevp43 / pockets.D432 | -
+1304 | item | dkarm43_cor*1e6 | ResultsMWriter.WriteResults | pockets.Dkarm43Cor * 1e6 | -
+1304 | item | sdevp43_cor*1e6 | ResultsMWriter.WriteResults | pockets.Sdevp43Cor * 1e6 | -
+1304 | item | sdevp43_cor/dkarm43_cor | ResultsMWriter.WriteResults | pockets.Sdevp43Cor / pockets.Dkarm43Cor | -
+1308 | item | dfmk432*1e6 | ResultsMWriter.WriteResults | pockets.Dfmk432 * 1e6 | -
+1308 | item | sdevp243*1e6 | ResultsMWriter.WriteResults | pockets.Sdevp243 * 1e6 | -
+1308 | item | sdevp243/dfmk432 | ResultsMWriter.WriteResults | pockets.Sdevp243 / pockets.Dfmk432 | -
+1311 | item | dqkarm*1e6 | ResultsMWriter.WriteResults | pockets.Dqkarm * 1e6 | -
+1313 | item | dqkarm_cor*1e6 | ResultsMWriter.WriteResults | pockets.DqkarmCor * 1e6 | -
+1318 | item | 1.-dolm1 | ResultsMWriter.WriteResults | 1.0 - mass.DolM1 | -
+1321 | item | 1-dolm2 | ResultsMWriter.WriteResults | 1.0 - mass.DolM2 | -
+1321 | item | 1-dolm3 | ResultsMWriter.WriteResults | 1.0 - mass.DolM3 | -
+1328 | item | dp43*1e6*mp | ResultsMWriter.WriteResults | pockets.Dp43 * 1e6 * local.Mp | -
+1329 | item | d432*1e6*mp | ResultsMWriter.WriteResults | pockets.D432 * 1e6 * local.Mp | -
+1330 | item | dkarm43_cor*1e6*mp | ResultsMWriter.WriteResults | pockets.Dkarm43Cor * 1e6 * local.Mp | -
+1331 | item | dfmk432*1e6*mp | ResultsMWriter.WriteResults | pockets.Dfmk432 * 1e6 * local.Mp | -
+1343 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1345 | array | allvdokso/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(histograms.Allvdokso.AsSpan(), cellSize) && values[i] / (cellSize * 1e6) | -
+1348 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1350 | array | vkso/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(Take(histograms.Vkso, dpLength), cellSize) && values[i] / (cellSize * 1e6) | -
+1350 | length | int(dpmax/di)+2 | ResultsMWriter.WriteFunctions | (int)(pockets.DpMax / cellSize) + 2 | -
+1351 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1353 | array | fmkarm_cor/sum(fmkarm_cor)/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(Take(histograms.FmkarmCorNormalized, dpCorLength), cellSize) && values[i] / (cellSize * 1e6) | Histograms.FmkarmCorNormalized
+1353 | length | int(dpmax_cor/di)+2 | ResultsMWriter.WriteFunctions | (int)(pockets.DpMaxCor / cellSize) + 2 | -
+1355 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1357 | array | fmkarm2/sum(fmkarm2)/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(Take(histograms.Fmkarm2Normalized, dpCorLength), cellSize) && values[i] / (cellSize * 1e6) | Histograms.Fmkarm2Normalized
+1357 | length | int(dpmax_cor/di)+2 | ResultsMWriter.WriteFunctions | (int)(pockets.DpMaxCor / cellSize) + 2 | -
+1359 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1361 | array | qks1/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(Take(histograms.Qks1, dpLength), cellSize) && values[i] / (cellSize * 1e6) | -
+1361 | length | int(dpmax/di)+2 | ResultsMWriter.WriteFunctions | (int)(pockets.DpMax / cellSize) + 2 | -
+1362 | item | int(di*1.00001e6) | ResultsMWriter.WriteFunctions | Trunc(cellSize * 1.00001e6) | -
+1364 | array | real(fqkarm_cor)/sum(fqkarm_cor)/(di*1e6) | ResultsMWriter.WriteFunctions | Scale(Take(histograms.FqkarmCorNormalized, dpCorLength), cellSize) && values[i] / (cellSize * 1e6) | Histograms.FqkarmCorNormalized
+1364 | length | int(dpmax_cor/di)+2 | ResultsMWriter.WriteFunctions | (int)(pockets.DpMaxCor / cellSize) + 2 | -
+1370 | array | real(qmkm1)/sum(qmkm1) | ResultsMWriter.WriteFunctions | histograms.Qmkm1Normalized | Histograms.Qmkm1Normalized
+1370 | length | qmkm1_nmax+2 | ResultsMWriter.WriteFunctions | agglomerates.Qmkm1Nmax + 2 | -
+1373 | array | real(qmkm2)/sum(qmkm2) | ResultsMWriter.WriteFunctions | histograms.Qmkm2Normalized | Histograms.Qmkm2Normalized
+1373 | length | qmkm2_nmax+2 | ResultsMWriter.WriteFunctions | agglomerates.Qmkm2Nmax + 2 | -
+1377 | array | real(coef)/sum(coef) | ResultsMWriter.WriteFunctions | histograms.CoefNormalized | Histograms.CoefNormalized
+1377 | length | coef_nmax+2 | ResultsMWriter.WriteFunctions | agglomerates.CoefNmax + 2 | -
+1386 | length | ndok-1 | ResultsMWriter.WriteFunctions | histograms.Pdoksmall | Histograms.Pdoksmall
+1393 | array | dpockets*1.00001e6 | ResultsMWriter.WriteFunctions | ScaleByMicron(pockets.Dpockets) && values[i] * 1.00001e6 | -
+1396 | array | dokp43*1.00001e6 | ResultsMWriter.WriteFunctions | ScaleByMicron(pockets.Dokp43) && values[i] * 1.00001e6 | -
+1400 | array | qdokkarm*1.00001e6 | ResultsMWriter.WriteFunctions | ScaleByMicron(pockets.Qdokkarm) && values[i] * 1.00001e6 | -
+1414 | item | int(dpockets(irow)*1.00001e6,kind=2) | ResultsMWriter.WriteFunctions | I2Field(Trunc(pockets.Dpockets[irow - 1] * 1.00001e6)) | -
+1416 | array | qdokso(irow,:)/(di*1e6) | ResultsMWriter.WriteFunctions | qdoksoRow[i] / (cellSize * 1e6) | -
+1418 | condition | kxx.gt.1 | ResultsMWriter.WriteFunctions | result.Convergence is { } series | SimulationResult.Convergence
+1430 | assignment | ihr-hour | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1431 | condition | hour1.lt.0 | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1432 | assignment | 24-abs(hour1) | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1434 | assignment | imin-minut | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1435 | condition | minut1.lt.0 | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1436 | assignment | hour1-1 | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1437 | assignment | 60-abs(minut1) | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1439 | assignment | isec-sec | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1440 | condition | sec1.lt.0 | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1441 | assignment | minut1-1 | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -
+1442 | assignment | 60-abs(sec1) | not ported: the time line prints RunDiagnostics.Elapsed, so the clock arithmetic has no counterpart (BOOT.md, "The time line is the only line that depends on wall time") | - | -

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node samples/Quickstart: the library example as a running program (BOOT.md, Purpose). Not packable and
+    part of no package. TargetFramework, ImplicitUsings and Nullable come from the root Directory.Build.props.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <!-- Default build mode: the library projects directly, so a change in src/ is seen at once. -->
+  <ItemGroup Condition="'$(PropStructPackageVersion)' == ''">
+    <ProjectReference Include="..\..\src\Execution\PropStruct.Execution.csproj" />
+    <ProjectReference Include="..\..\src\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\..\src\Output\PropStruct.Output.csproj" />
+    <ProjectReference Include="..\..\src\Simulation\PropStruct.Simulation.csproj" />
+  </ItemGroup>
+
+  <!-- Package-feed build mode: the MSBuild property PropStructPackageVersion restores the packed PropStruct
+       package, from a feed given on the dotnet command line or a scratch nuget.config, instead of the
+       projects above. VersionOverride is used because the tree's package versions are centrally managed
+       (Directory.Packages.props) and carry no entry for this in-tree package. The region of Program.cs
+       uses the package surface only, so it compiles unchanged in either mode. -->
+  <ItemGroup Condition="'$(PropStructPackageVersion)' != ''">
+    <PackageReference Include="PropStruct" VersionOverride="$(PropStructPackageVersion)" />
+  </ItemGroup>
+
+</Project>

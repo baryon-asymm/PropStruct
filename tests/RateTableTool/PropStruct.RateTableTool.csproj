@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node tests/RateTableTool: the reference-mode runner and the two fixture generators built on
+    it (BOOT.md, Purpose). A console project, run by hand, never by `dotnet test` (BOOT.md,
+    Constraints): it carries no [Fact]/[Theory] and no test SDK reference, so `dotnet test
+    PropStruct.sln` never selects it as a test project in the first place; `IsTestProject` is set
+    to false explicitly anyway, the convention `tests/Benchmarks` and `tests/Harness` already use.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Simulation\PropStruct.Simulation.csproj" />
+    <ProjectReference Include="..\..\src\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\..\src\Execution\PropStruct.Execution.csproj" />
+    <ProjectReference Include="..\..\src\Output\PropStruct.Output.csproj" />
+    <ProjectReference Include="..\Harness\PropStruct.Tests.Harness.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- tests/Simulation.Tests keeps one genuine assertion (the seed-0 snapshot check) built on
+         ReferenceModeRunner, which stays internal here rather than becoming public (CA1034/CA1515,
+         ReferenceModeRunner.cs's own note); the same InternalsVisibleTo pattern tests/Harness already
+         uses for tests/Harness.Tests. -->
+    <InternalsVisibleTo Include="PropStruct.Simulation.Tests" />
+  </ItemGroup>
+
+</Project>

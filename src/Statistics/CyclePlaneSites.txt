@@ -1,0 +1,108 @@
+# Hand-written site map of the per-cycle plane (src/Statistics/BOOT.md, "## Report", "The
+# per-cycle plane from the executable's listing"): one row per rounding site of
+# CyclePlane.listing.generated.txt (every row whose `rounds` column is yes: kinds S, T, P, X, B<n>,
+# C<n> and the E rows that store), giving the C# members whose CyclePlaneRounding call carries it
+# (`Store` for every kind but T, `Temporary` for T), or why none does. Sites that store nothing
+# (R, K, M, Q, CMP, B<n> of REAL*8, exact E) need no row. The three columns after `at` repeat the
+# table's own `lines` and `target` and the kind, so a row cannot name another site than its address;
+# tests/Statistics.Tests/CyclePlaneSiteMapTests checks the file four ways: table -> map, map ->
+# table, map -> code (a call of the kind's method, citing a line of the site, inside a member) and
+# code -> map.
+#
+# at | lines | kind | target | C# members (comma separated), or not ported: <reason>
+408ABE | 378+380 | T | sLamd ; DOKM | CycleStatistics.Matrix, Setup.Prepare
+408AD6 | 378 | S | sLamd | CycleStatistics.Matrix, Setup.Prepare
+40950F | 1008+1010 | T | PLOTsmdok ; vdokleft | CycleStatistics.MassFractions, CycleStatistics.Matrix, SmallParticles.Probability
+409521 | 1008+1010 | T | PLOTsmdok ; vdokleft | CycleStatistics.MassFractions, CycleStatistics.Matrix, SmallParticles.Probability
+409539 | 1011 | S | PLOTsm | CycleStatistics.Matrix
+40956D | 1015+1016 | T | mp ; mp | CycleStatistics.Matrix
+409595 | 1015+1016 | T | mp ; mp | CycleStatistics.Matrix
+40BDBB | 771 | S | XSR0 | CycleStatistics.GeneratorAccuracy
+40BDD5 | 772 | S | EPS1 | CycleStatistics.GeneratorAccuracy
+40BDE4 | 773 | S | XSR1 | CycleStatistics.GeneratorAccuracy
+40BDFE | 774 | S | EPS2 | CycleStatistics.GeneratorAccuracy
+40BE0D | 775 | S | XSR2 | CycleStatistics.GeneratorAccuracy
+40BE27 | 776 | S | EPS3 | CycleStatistics.GeneratorAccuracy
+40BE36 | 777 | S | XSR3 | CycleStatistics.GeneratorAccuracy
+40BE50 | 778 | S | EPS4 | CycleStatistics.GeneratorAccuracy
+40BE5F | 779 | S | XSR4 | CycleStatistics.GeneratorAccuracy
+40BE79 | 780 | S | EPS5 | CycleStatistics.GeneratorAccuracy
+40BE8B | 781 | S | XSR5 | CycleStatistics.GeneratorAccuracy
+40BEA5 | 782 | S | EPS6 | CycleStatistics.GeneratorAccuracy
+40BEB7 | 783 | S | XSR6 | CycleStatistics.GeneratorAccuracy
+40BED1 | 784 | S | EPS7 | CycleStatistics.GeneratorAccuracy
+40BEE3 | 789 | S | DOK43b | CycleStatistics.OxidizerSizes
+40BF07 | 790 | S | DOK43s | CycleStatistics.OxidizerSizes
+40C007 | 796 | S | epsalldok(kilo) | CycleStatistics.OxidizerSizes
+40C1E5 | 804 | S | ALLVDOKSO(kilo) | CycleStatistics.OxidizerSizes
+40C22C | 808 | C6 | FMDOK(kilo+1) | CycleStatistics.OxidizerSizes
+40C3B7 | 805 | B6 | ALLDOK432 | CycleStatistics.OxidizerSizes
+40C46E | 810 | S | ALLDOK43 | CycleStatistics.OxidizerSizes
+40C493 | 812 | S | ALLDOKsd | CycleStatistics.OxidizerSizes
+40C4B3 | 814 | S | EPSX1 | CycleStatistics.OxidizerSizes
+40C4DF | 815 | S | EPSX2 | CycleStatistics.OxidizerSizes
+40C505 | 816 | S | EPSX3 | CycleStatistics.OxidizerSizes
+40C61E | 828 | S | Dpockets(irow) | Categories.MergeAndDescribe
+40CE8F | 848 | S | QDOKS1(irow, iks) | Categories.MergeAndDescribe
+40D13A | 859 | S | DOKP431(irow) | not ported: BOOT.md "## Categories", step 2 (DOKP431 never printed)
+40D45C | 875 | T | Epsydok(irow) | Categories.MergeAndDescribe
+40D48F | 875 | S | Epsydok(irow) | Categories.MergeAndDescribe
+40D4C6 | 877 | S | Epsmdok3(irow) | not ported: BOOT.md "## Categories", step 2 (Epsmdok3 never printed)
+40D4F9 | 879 | T | Epsmdok4(irow) | not ported: BOOT.md "## Categories", step 2 (Epsmdok4 never printed)
+40D68F | 891 | S | VDOKSO(irow,iks) | not ported: BOOT.md "## Categories", step 2 (VDOKSO never printed)
+40D6CC | 893 | P | DOKP432(irow) | not ported: BOOT.md "## Categories", step 2 (DOKP432 never printed)
+40D713 | 897 | S | QDOKSO(irow,iks) | Categories.MergeAndDescribe
+40D769 | 899 | P | qdokkarm(irow) | Categories.MergeAndDescribe
+40D7D8 | 905 | S | DOKP43(irow) | Categories.MergeAndDescribe
+40D9F6 | 918 | P | DOKP41(irow) | Categories.MergeAndDescribe
+40DA01 | 919 | P | DOKP31(irow) | Categories.MergeAndDescribe
+40DEC6 | 950 | S | DOKP41(DPRow-1) | Categories.MergeAndDescribe
+40DEDF | 951 | S | DOKP31(DPRow-1) | Categories.MergeAndDescribe
+40E52A | 975+976+977+978 | T | EPSY ; qkss_inverse ; qkss_inverse ; qkss_inverse | CycleStatistics.Pockets
+40E559 | 975 | S | EPSY | CycleStatistics.Pockets
+40E627 | 980 | S | epsMD4 | CycleStatistics.Pockets
+40E66D | 981 | S | epsMD3 | CycleStatistics.Pockets
+40E744 | 988 | T | VKSO(kilo) | CycleStatistics.Pockets
+40E758 | 988 | S | VKSO(kilo) | CycleStatistics.Pockets
+40E925 | 989 | B6 | D432 | CycleStatistics.Pockets
+40E94B | 991 | B6 | Dqkarm | CycleStatistics.Pockets
+40E9D7 | 994 | S | DP43 | CycleStatistics.Pockets
+40EA0A | 996 | S | sdevP43 | CycleStatistics.Pockets
+40EA32 | 1001 | S | gdokleft | CycleStatistics.Matrix
+40EA6F | 1006 | S | gdokleft | CycleStatistics.Matrix
+40EA8D | 1006+1008 | T | gdokleft ; PLOTsmdok | CycleStatistics.MassFractions, CycleStatistics.Matrix, SmallParticles.Probability
+40EAB7 | 1008 | S | PLOTsmdok | CycleStatistics.Matrix
+40EAC9 | 1010 | T | vdokleft | CycleStatistics.MassFractions, CycleStatistics.Matrix, SmallParticles.Probability
+40EAE7 | 1010 | S | vdokleft | CycleStatistics.Matrix
+40EB4A | 1016 | S | mp | CycleStatistics.Matrix
+40ECB8 | 1024+1025+1026 | T | realkilo ; Xr ; realkilo | SmallParticles.Probability
+40ECDF | 1025 | S | Xr | SmallParticles.Probability
+40EDFF | 1028 | X | zdoksmall(kilo) | SmallParticles.Probability
+40EEBC | 1031 | P | zdoksmall(kilo) | SmallParticles.Probability
+40EFC2 | 1036 | X | ddoksmall(kilo) | SmallParticles.Probability
+40F077 | 1039 | P | ddoksmall(kilo) | SmallParticles.Probability
+40F100 | 1047 | S | zdoksmall | SmallParticles.Probability
+40F1DD | 1053 | S | vdoksmall(kilo) | SmallParticles.Probability
+40F1F7 | 1056 | S | ddoksmall(kilo) | SmallParticles.Probability
+40F496 | 1059+1061+1062+1063+1064+1065 | T | t45c ; pdoksmall(kilo) ; t45c ; pdoksmall(kilo) ; t45c ; t45c | not ported: the executable stores t45c and never reads it back (ListingOracle: terminal), so its rounding reaches no value
+40F4A5 | 1061+1063 | S | pdoksmall(kilo) ; pdoksmall(kilo) | SmallParticles.Probability
+40F728 | 1066+1070 | S | Dmaxxx ; Dmaxxx | SmallParticles.MaxSize
+40F891 | 1089 | P | Dkarm43_cor | CycleStatistics.CorrectedPockets
+40F9FC | 1093 | P | Dqkarm_cor | CycleStatistics.CorrectedPockets
+40FA29 | 1097 | S | sdevP43_cor | CycleStatistics.CorrectedPockets
+40FB1A | 1101 | P | Dfmk432 | CycleStatistics.CorrectedPockets
+40FBD3 | 1105 | S | sdevP243 | CycleStatistics.CorrectedPockets
+40FD31 | 1110 | P | Dqmkm1 | CycleStatistics.CorrectedPockets
+40FDF9 | 1111 | P | Dqmkm2 | CycleStatistics.CorrectedPockets
+40FF07 | 1112 | P | qmcoef | CycleStatistics.CorrectedPockets
+4100D3 | 1130 | E | gk0(kilo) | not ported: gk0 is computed and read by no line (E in the table)
+4100FD | 1132 | E | gk1(kilo) | not ported: gk1 is computed and read by no line (E in the table)
+410222 | 1137 | S | DolM1 | CycleStatistics.MassFractions
+41023A | 1145 | T | Vdok_total | CycleStatistics.MassFractions
+410261 | 1145 | S | Vdok_total | CycleStatistics.MassFractions
+4103A2 | 1146 | S | DolM2 | CycleStatistics.MassFractions
+4103C2 | 1150 | S | Vdok_total2 | CycleStatistics.MassFractions
+410400 | 1151 | S | DolM3 | CycleStatistics.MassFractions
+4104E6 | 1172 | S | par4(kpris) | CycleStatistics.Convergence
+41050F | 1173 | S | par5(kpris) | CycleStatistics.Convergence
+410526 | 1174 | S | par6(kpris) | CycleStatistics.Convergence

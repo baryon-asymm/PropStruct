@@ -1,0 +1,6 @@
+# Every ".m.txt" in this node -- Legacy/outputs/ (raw archive copies) and the
+# references/ and replicas/ this node's generate.py writes -- carries the CRLF line
+# endings PropStructV3.exe writes, or (for Legacy/outputs/) the archive's own. The
+# root's `*.m -text` does not match "*.m.txt", so without this rule the root's
+# `* text=auto eol=lf` would renormalize them on checkout.
+*.m.txt -text

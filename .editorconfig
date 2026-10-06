@@ -1,0 +1,91 @@
+root = true
+
+# IDE code-style rules raised to warning (root BOOT.md, "Language and build", decided
+# 2026-09-25). Every preference option below is set to the direction measured on the
+# tree's own code, not chosen by taste; the counts are the same-day measurement quoted
+# in the decision and in the commit that added this file. A rule with no line here has
+# no measured preference conflicting with the SDK's own default: the tree already
+# matches it.
+
+[*]
+# Line endings are LF, as `.gitattributes` fixes them in every working tree. Without this
+# line the formatter (IDE0055) expects the platform's own newline, so a Windows checkout
+# of the committed files fails the build while a copy holding CRLF passes (measured
+# 2026-09-26: 43 IDE0055 errors on the merged tree, none in the coder's CRLF worktree).
+end_of_line = lf
+
+[*.cs]
+
+# .NET style: parentheses. Measured: 232 places omit clarity parentheses on arithmetic/
+# relational/other-binary expressions against 9 that add them (never_if_unnecessary
+# matches the tree; IDE0048 232→0).
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:warning
+dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:warning
+dotnet_style_parentheses_in_other_binary_operators = never_if_unnecessary:warning
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
+
+# .NET style: collection expressions. Measured: 245 suggested conversions
+# (IDE0300/0301/0303/0305) and zero existing collection-expression literals in the
+# tree: the tree does not use them.
+dotnet_style_prefer_collection_expression = false:warning
+
+# .NET style: conditional expression over if/return and if/assign. Measured: flipping
+# to false clears all 20 IDE0046 (return) violations with none introduced; the tree
+# writes the if statement rather than the ternary.
+dotnet_style_prefer_conditional_expression_over_return = false:warning
+dotnet_style_prefer_conditional_expression_over_assignment = false:warning
+
+# .NET style: unused expression-statement value (IDE0058). Measured direction: 165
+# places call a value without discarding it, so csharp_style_unused_value_expression_
+# statement_preference = unused_value_expression_statement matches the tree. That value
+# is not set here: it reproducibly crashes the SDK's own analyzer on this toolchain
+# (.NET SDK 10.0.112) — 'Microsoft.CodeAnalysis.CSharp.RemoveUnusedParametersAndValues.
+# CSharpRemoveUnusedParametersAndValuesDiagnosticAnalyzer' throws
+# 'System.Collections.Generic.KeyNotFoundException: The given key (0, False, False) was
+# not present in the dictionary' (AD0001), reproduced with no other option set, isolated
+# to this repository's own tests/Harness project. The option is left at the SDK default
+# (discard_variable) instead, and the 165 call sites are fixed to the SDK's own
+# direction (an explicit `_ = ` discard) rather than the tree's, to keep the analyzer
+# usable. Reported in the task's evidence; not a suppression, since the rule still runs
+# at warning and every violation is fixed, only in the other direction.
+
+# C# style: var. Measured: IDE0008 (explicit type recommended over the tree's var)
+# fired 5403 times against 69 the other way (IDE0007); var is the tree's direction
+# throughout.
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:warning
+
+# C# style: namespace declarations. Measured: IDE0160 (block-scoped recommended) fired
+# 273 times against the tree's file-scoped namespaces, none the other way.
+csharp_style_namespace_declarations = file_scoped:warning
+
+# C# style: expression-bodied members. Measured per member kind, each independently:
+# methods 205 block→expression against 23 the other way (expression is the tree's
+# direction); local functions 7 block→expression against 0 the other way (expression,
+# unanimous). Constructors split close to even (18 block→expression against 17
+# expression→block under the opposite setting) and are left at the SDK default (block
+# body), the near-even split reported rather than chosen (root BOOT.md, "Language and
+# build", method step 1).
+csharp_style_expression_bodied_methods = when_on_single_line:warning
+csharp_style_expression_bodied_local_functions = when_on_single_line:warning
+
+# C# style: primary constructors. Measured: 32 suggested conversions (IDE0290) and
+# zero existing primary constructors in the tree: the tree does not use them.
+csharp_style_prefer_primary_constructors = false:warning
+
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+
+# IDE0005 (remove unnecessary usings) cannot run in build without
+# GenerateDocumentationFile=true (https://github.com/dotnet/roslyn/issues/41640), which
+# the category-Style line above requests regardless. Owner's decision, 2026-09-25: src
+# gets GenerateDocumentationFile (the [src/**.cs] section below raises IDE0005 there,
+# alongside real XML doc comments for every member CS1591 named); tests do not, so
+# IDE0005 is held at its own default severity for them — not raised, never lowered —
+# by this override of the category line, specific to the one rule the prerequisite
+# blocks. `default` here is not a suppression: it asks for the rule's own out-of-the-box
+# severity, the same one every rule in this file had before this .editorconfig existed.
+dotnet_diagnostic.IDE0005.severity = default
+
+[src/**.cs]
+dotnet_diagnostic.IDE0005.severity = warning

@@ -1,0 +1,8 @@
+# actionlint configuration (https://github.com/rhysd/actionlint/blob/main/docs/config.md).
+# The release workflow's GPU job runs on the self-hosted runner of the reference machine, which
+# carries a third, project-chosen label, "gpu" (.github/BOOT.md, "What a self-hosted runner
+# must provide"); actionlint's built-in list does not know it. Declaring it here is the tool's
+# own way to stop it flagging a real label as unknown; it changes no runner selection.
+self-hosted-runner:
+  labels:
+    - gpu

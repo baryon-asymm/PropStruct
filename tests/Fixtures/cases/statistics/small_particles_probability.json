@@ -1,0 +1,134 @@
+{
+  "script": "formulas_statistics.py",
+  "fortranLines": "1021-1065",
+  "subroutine": "the small-particle probability (SmallParticles.Probability)",
+  "convention": "arrays and cell indices are 0-based, matching this node's own C# signatures (src/Statistics/API.md) directly -- unlike formulas_particle.py, there is no Fortran-1-based caller convention to preserve here.",
+  "cases": [
+    {
+      "name": "concentrated_source_clamps_the_tail",
+      "ndok": 4,
+      "cellSize": 1.0,
+      "ak2": 2.0,
+      "ggg": 0.5,
+      "gdokleft": 0.1,
+      "karmcoef": 1.0,
+      "oxidizerDensity": 2.0,
+      "propellantDensity": 2.0,
+      "vdokstr": [
+        5.0,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "expected": {
+        "pdoksmall": [
+          0.0,
+          0.11003521126760564,
+          0.11003521126760564,
+          0.11003521126760564
+        ]
+      },
+      "expectedOriginal": {
+        "pdoksmall": [
+          0.0,
+          0.11003521084785461,
+          0.11003521084785461,
+          0.11003521084785461
+        ]
+      }
+    },
+    {
+      "name": "near_empty_source_skips_the_early_cells",
+      "ndok": 4,
+      "cellSize": 1.0,
+      "ak2": 2.0,
+      "ggg": 0.5,
+      "gdokleft": 0.1,
+      "karmcoef": 1.0,
+      "oxidizerDensity": 2.0,
+      "propellantDensity": 2.0,
+      "vdokstr": [
+        1e-09,
+        5.0,
+        5.0,
+        5.0
+      ],
+      "expected": {
+        "pdoksmall": [
+          0.0,
+          0.0,
+          0.050813008132758276,
+          0.08152173912807184
+        ]
+      },
+      "expectedOriginal": {
+        "pdoksmall": [
+          0.0,
+          0.0,
+          0.05081300437450409,
+          0.08152173459529877
+        ]
+      }
+    },
+    {
+      "name": "whole_fraction_count_binary32_boundary",
+      "ndok": 2,
+      "cellSize": 1.0,
+      "ak2": 2.0000000000000004,
+      "ggg": 0.5,
+      "gdokleft": 0.0,
+      "karmcoef": 1.0,
+      "oxidizerDensity": 2.0,
+      "propellantDensity": 2.0,
+      "vdokstr": [
+        3.0,
+        5.0
+      ],
+      "expected": {
+        "pdoksmall": [
+          0.0,
+          0.28124999999999994
+        ]
+      },
+      "expectedOriginal": {
+        "pdoksmall": [
+          0.0,
+          0.28125
+        ]
+      }
+    },
+    {
+      "name": "register_reads_and_loop_sums_reach_a_stored_bit",
+      "ndok": 4,
+      "cellSize": 1.0,
+      "ak2": 2.0,
+      "ggg": 0.5,
+      "gdokleft": 0.1,
+      "karmcoef": 1.0,
+      "oxidizerDensity": 2.0,
+      "propellantDensity": 1.7,
+      "vdokstr": [
+        2.0,
+        3.1,
+        0.7,
+        9.7
+      ],
+      "expected": {
+        "pdoksmall": [
+          0.0,
+          0.01917870036101083,
+          0.03545060873886345,
+          0.048422060899374876
+        ]
+      },
+      "expectedOriginal": {
+        "pdoksmall": [
+          0.0,
+          0.01917869783937931,
+          0.03545060381293297,
+          0.04842205345630646
+        ]
+      }
+    }
+  ]
+}

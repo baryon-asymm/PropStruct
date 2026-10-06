@@ -1,0 +1,66 @@
+name: Hosted checks
+description: >
+  What a GitHub-hosted Windows runner checks without CUDA (.github/BOOT.md, "Continuous
+  integration", steps 2 and 3): the protocol lint, the self-tests of the tools, the defect
+  report, the scan of the tree for the original's code, the Release build, the self-tests of
+  the scripts and the fast set. Shared by ci.yml and the release's hosted job, so that the two
+  cannot drift. Runs after checkout, setup-dotnet and setup-python, with PROPSTRUCT_NO_CUDA=1
+  set by the job; the Legacy category is never run here (PROPSTRUCT_LEGACY_DIR is unset).
+inputs:
+  diagnostics-name:
+    description: The name of the artifact that holds the bit-snapshot files of a failed fast set.
+    required: false
+    default: bit-snapshot-diagnostics
+runs:
+  using: composite
+  steps:
+    - name: Protocol lint
+      shell: bash
+      run: python -X utf8 tools/protocol-lint/protocol_lint.py . --exclude templates
+
+    - name: Tool self-tests
+      shell: bash
+      run: |
+        set -euo pipefail
+        for selftest in tools/*/test_*.py; do
+          echo "== $selftest"
+          python -X utf8 "$selftest"
+        done
+        python -X utf8 tools/legacy/legacy.py selftest
+
+    - name: Defect report is up to date
+      shell: bash
+      run: python -X utf8 tools/defect-report/defect_report.py . --check
+
+    - name: The tree holds no code of the original
+      shell: bash
+      run: python -X utf8 tools/legacy/scan.py . --hashes
+
+    - name: Build
+      shell: bash
+      run: dotnet build PropStruct.sln --configuration Release
+
+    - name: Script self-tests
+      shell: bash
+      run: |
+        set -euo pipefail
+        for selftest in .github/scripts/test_*.py; do
+          echo "== $selftest"
+          python -X utf8 "$selftest"
+        done
+
+    - name: Fast test set
+      shell: bash
+      run: dotnet test PropStruct.sln --configuration Release --no-build --filter "Category!=Long&Category!=Legacy"
+
+    # The files the bit snapshots write when a case moved or is missing, and the surface
+    # snapshot's own: the runner diagnostics step names the CPU that produced them.
+    - name: Upload bit-snapshot diagnostics
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.diagnostics-name }}
+        path: |
+          **/*.actual.*
+          **/*.received.*
+        if-no-files-found: ignore

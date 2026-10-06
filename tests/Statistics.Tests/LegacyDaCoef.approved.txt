@@ -1,0 +1,24 @@
+match C166
+match CSPX01
+match HMX
+match HPEPA
+match HPEPA10
+match HPEPA180
+match HPEPA2
+match HPEPA3
+match HPEPA50
+match INPT
+match NANO2
+match P18050
+match P33
+match P350
+match P35030
+match P35050
+match P35050N
+match P777
+match PSAN01
+match PSAN02
+match PSAN02N
+match T56
+excluded p777out1: outlier: prints 0.6497304 where the other 4 outputs of P777 print 0.6313832
+excluded r2: header: printed Plot2 = 1800 where the shipped input has 1900

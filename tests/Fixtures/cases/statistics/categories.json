@@ -1,0 +1,502 @@
+{
+  "script": "formulas_statistics.py",
+  "fortranLines": "825-959",
+  "subroutine": "the category merge (Categories.MergeAndDescribe)",
+  "convention": "arrays and cell indices are 0-based, matching this node's own C# signatures (src/Statistics/API.md) directly -- unlike formulas_particle.py, there is no Fortran-1-based caller convention to preserve here.",
+  "cases": [
+    {
+      "name": "single_merge_pass_two_rows",
+      "ndok": 3,
+      "ncat": 4,
+      "cellSize": 1.0,
+      "categoryStep": 1.0,
+      "epsDok": 1e-06,
+      "dpMax": 1.0,
+      "qdoks": [
+        [
+          5,
+          5,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ]
+      ],
+      "dokp41": [
+        5.0,
+        7.0
+      ],
+      "dokp31": [
+        1.0,
+        1.0
+      ],
+      "expected": {
+        "dpRow": 1,
+        "dpockets": [
+          2.0
+        ],
+        "dokp43": [
+          6.0
+        ],
+        "qdokkarm": [
+          1.75
+        ],
+        "qdokso": [
+          [
+            0.25,
+            0.25,
+            0.5
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            5,
+            5,
+            10
+          ],
+          [
+            0,
+            0,
+            10
+          ]
+        ],
+        "dokp41After": [
+          12.0,
+          7.0
+        ],
+        "dokp31After": [
+          2.0,
+          1.0
+        ]
+      },
+      "expectedOriginal": {
+        "dpRow": 1,
+        "dpockets": [
+          2.0
+        ],
+        "dokp43": [
+          6.0
+        ],
+        "qdokkarm": [
+          1.75
+        ],
+        "qdokso": [
+          [
+            0.25,
+            0.25,
+            0.5
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            5,
+            5,
+            10
+          ],
+          [
+            0,
+            0,
+            10
+          ]
+        ],
+        "dokp41After": [
+          12.0,
+          7.0
+        ],
+        "dokp31After": [
+          2.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "merge_then_shift_three_rows",
+      "ndok": 3,
+      "ncat": 4,
+      "cellSize": 1.0,
+      "categoryStep": 1.0,
+      "epsDok": 0.5,
+      "dpMax": 2.0,
+      "qdoks": [
+        [
+          5,
+          5,
+          0
+        ],
+        [
+          0,
+          20,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ]
+      ],
+      "dokp41": [
+        5.0,
+        7.0,
+        9.0
+      ],
+      "dokp31": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "expected": {
+        "dpRow": 2,
+        "dpockets": [
+          2.0,
+          3.0
+        ],
+        "dokp43": [
+          6.0,
+          9.0
+        ],
+        "qdokkarm": [
+          1.3333333333333333,
+          1.5
+        ],
+        "qdokso": [
+          [
+            0.16666666666666666,
+            0.8333333333333334,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            5,
+            25,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ],
+        "dokp41After": [
+          12.0,
+          9.0,
+          9.0
+        ],
+        "dokp31After": [
+          2.0,
+          1.0,
+          1.0
+        ]
+      },
+      "expectedOriginal": {
+        "dpRow": 2,
+        "dpockets": [
+          2.0,
+          3.0
+        ],
+        "dokp43": [
+          6.0,
+          9.0
+        ],
+        "qdokkarm": [
+          1.3333332538604736,
+          1.5
+        ],
+        "qdokso": [
+          [
+            0.1666666716337204,
+            0.8333333134651184,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            5,
+            25,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ],
+        "dokp41After": [
+          12.0,
+          9.0,
+          9.0
+        ],
+        "dokp31After": [
+          2.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "last_row_merge_without_recompute",
+      "ndok": 3,
+      "ncat": 4,
+      "cellSize": 1.0,
+      "categoryStep": 1.0,
+      "epsDok": 0.5,
+      "dpMax": 2.0,
+      "qdoks": [
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          5,
+          5,
+          0
+        ]
+      ],
+      "dokp41": [
+        5.0,
+        7.0,
+        9.0
+      ],
+      "dokp31": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "expected": {
+        "dpRow": 2,
+        "dpockets": [
+          1.0,
+          3.0
+        ],
+        "dokp43": [
+          5.0,
+          7.0
+        ],
+        "qdokkarm": [
+          1.5,
+          1.5
+        ],
+        "qdokso": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            0,
+            10,
+            0
+          ],
+          [
+            5,
+            15,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ],
+        "dokp41After": [
+          5.0,
+          16.0,
+          9.0
+        ],
+        "dokp31After": [
+          1.0,
+          2.0,
+          1.0
+        ]
+      },
+      "expectedOriginal": {
+        "dpRow": 2,
+        "dpockets": [
+          1.0,
+          3.0
+        ],
+        "dokp43": [
+          5.0,
+          7.0
+        ],
+        "qdokkarm": [
+          1.5,
+          1.5
+        ],
+        "qdokso": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            0,
+            10,
+            0
+          ],
+          [
+            5,
+            15,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ],
+        "dokp41After": [
+          5.0,
+          16.0,
+          9.0
+        ],
+        "dokp31After": [
+          1.0,
+          2.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "empty_row_qdokss_zero",
+      "ndok": 2,
+      "ncat": 4,
+      "cellSize": 1.0,
+      "categoryStep": 1.0,
+      "epsDok": 1e-06,
+      "dpMax": 1.0,
+      "qdoks": [
+        [
+          0,
+          0
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "dokp41": [
+        0.0,
+        5.0
+      ],
+      "dokp31": [
+        0.0,
+        1.0
+      ],
+      "expected": {
+        "dpRow": 1,
+        "dpockets": [
+          2.0
+        ],
+        "dokp43": [
+          0.0
+        ],
+        "qdokkarm": [
+          0.0
+        ],
+        "qdokso": [
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            10,
+            10
+          ],
+          [
+            10,
+            10
+          ]
+        ],
+        "dokp41After": [
+          5.0,
+          5.0
+        ],
+        "dokp31After": [
+          1.0,
+          1.0
+        ]
+      },
+      "expectedOriginal": {
+        "dpRow": 1,
+        "dpockets": [
+          2.0
+        ],
+        "dokp43": [
+          0.0
+        ],
+        "qdokkarm": [
+          0.0
+        ],
+        "qdokso": [
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "qdoksAfter": [
+          [
+            10,
+            10
+          ],
+          [
+            10,
+            10
+          ]
+        ],
+        "dokp41After": [
+          5.0,
+          5.0
+        ],
+        "dokp31After": [
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

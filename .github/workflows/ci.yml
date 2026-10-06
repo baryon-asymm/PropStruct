@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Windows - lint, build, test, pack
+    runs-on: windows-latest
+    # Provisional: the first run measures the duration (.github/BOOT.md, "Continuous integration").
+    timeout-minutes: 90
+    env:
+      # No CUDA on a hosted runner: the CUDA facts assert the refusal (root BOOT.md, Invariants).
+      PROPSTRUCT_NO_CUDA: '1'
+      # Job-local, so that a run never restores a package a previous run or another job left in
+      # a shared NuGet cache: the freshly packed PropStruct must be the one every restore sees.
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget-packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Runner diagnostics
+        uses: ./.github/actions/runner-diagnostics
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      # The protocol lint, the tool self-tests, the defect report, the scan for the original's
+      # code, the Release build, the script self-tests and the fast set, one place shared with
+      # the release's hosted job.
+      - name: Hosted checks
+        uses: ./.github/actions/hosted-checks
+
+      # Packing, the package-content check and its red on every mutation, the packed tool's
+      # approved example and the sample built against the package, in one script
+      # (.github/scripts/API.md): ContinuousIntegrationBuild is on its pack command lines only.
+      - name: Packages
+        shell: bash
+        run: python -X utf8 .github/scripts/check_packages.py all
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: artifacts/packages
+          if-no-files-found: error

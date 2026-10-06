@@ -1,0 +1,152 @@
+{
+  "script": "formulas_statistics.py",
+  "fortranLines": "267-277, 376-406, 1695-1757",
+  "subroutine": "the setup plane under PrecisionKind.Original (Setup.Prepare/FractionLaw/Setup.AnalyticSizes)",
+  "convention": "arrays and cell indices are 0-based, matching this node's own C# signatures (src/Statistics/API.md) directly -- unlike formulas_particle.py, there is no Fortran-1-based caller convention to preserve here.",
+  "cases": [
+    {
+      "name": "HPEPA3",
+      "datFile": "HPEPA3.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          0.9992661328830491,
+          1.0
+        ],
+        "zx": [
+          0.9992661328830491,
+          0.0007338117467600741
+        ],
+        "zss": 118130013634560.0,
+        "lambda": 63572122009600.0,
+        "dmax": 0.0003150000120513141,
+        "dokm": 0.00013067899271845818,
+        "doksd": 1.1794684340316053e-08,
+        "ddokmax": 0.0003150000120513141,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.5830000042915344
+      }
+    },
+    {
+      "name": "inpt",
+      "datFile": "inpt.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          1.0
+        ],
+        "zx": [
+          0.99999997299719
+        ],
+        "zss": 73771458560.0,
+        "lambda": 44792516608.0,
+        "dmax": 0.0003429999924264848,
+        "dokm": 0.0003000000142492354,
+        "doksd": 6.163243804202523e-10,
+        "ddokmax": 0.0003429999924264848,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.6399999856948853
+      }
+    },
+    {
+      "name": "P33",
+      "datFile": "P33.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          0.9960689750148808,
+          1.0
+        ],
+        "zx": [
+          0.9960689750148808,
+          0.00393106327951283
+        ],
+        "zss": 19675582824448.0,
+        "lambda": 11300847484928.0,
+        "dmax": 0.0003150000120513141,
+        "dokm": 0.00017252600810024887,
+        "doksd": 5.69311264797534e-09,
+        "ddokmax": 0.0003150000120513141,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.6399999856948853
+      }
+    },
+    {
+      "name": "PSAN02n",
+      "datFile": "PSAN02n.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          0.08251593913878658,
+          0.4181617800284964,
+          0.8309191071595945,
+          0.9834438280149499,
+          1.0
+        ],
+        "zx": [
+          0.08251593913878658,
+          0.33564584088970983,
+          0.41275732713109814,
+          0.15252472085535543,
+          0.016556217224399723
+        ],
+        "zss": 156340060160.0,
+        "lambda": 100633739264.0,
+        "dmax": 0.0003146611852571368,
+        "dokm": 0.00023749998945277184,
+        "doksd": 8.10995159916672e-10,
+        "ddokmax": 0.0003146611852571368,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.6809999942779541
+      }
+    },
+    {
+      "name": "HMX",
+      "datFile": "HMX.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          0.9805162142289333,
+          0.9979872282174928,
+          0.9999126050109235,
+          1.0
+        ],
+        "zx": [
+          0.9805162142289333,
+          0.01747101398855947,
+          0.0019253767934307212,
+          8.731868933958707e-05
+        ],
+        "zss": 10718389731328.0,
+        "lambda": 6507986419712.0,
+        "dmax": 0.000699999975040555,
+        "dokm": 0.0002955000090878457,
+        "doksd": 2.6383082385450507e-08,
+        "ddokmax": 0.000699999975040555,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.6399999856948853
+      }
+    },
+    {
+      "name": "P350",
+      "datFile": "P350.dat",
+      "expected": {
+        "z11": [
+          0.0,
+          1.0
+        ],
+        "zx": [
+          1.0000000262904287
+        ],
+        "zss": 322743369728.0,
+        "lambda": 173685587968.0,
+        "dmax": 0.0003150000120513141,
+        "dokm": 0.00021399999968707561,
+        "doksd": 3.4003369009383277e-09,
+        "ddokmax": 0.0003150000120513141,
+        "tailProbabilityModified": 0.0,
+        "oxidizerMassFractionEffective": 0.5830000042915344
+      }
+    }
+  ]
+}

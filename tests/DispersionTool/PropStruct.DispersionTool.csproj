@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node tests/DispersionTool: writes tests/Fixtures/dispersion.approved.txt from
+    tests/Harness/DispersionTable.cs (BOOT.md, Purpose). A console project, run by hand, never by
+    `dotnet test` (BOOT.md, Constraints): it carries no [Fact]/[Theory] and no test SDK reference,
+    so `dotnet test PropStruct.sln` never selects it as a test project in the first place;
+    `IsTestProject` is set to false explicitly anyway, the convention `tests/Benchmarks`,
+    `tests/Harness` and `tests/RateTableTool` already use.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Harness\PropStruct.Tests.Harness.csproj" />
+  </ItemGroup>
+
+</Project>

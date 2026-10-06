@@ -1,0 +1,523 @@
+# CyclePlaneListing.map.txt -- the hand-written address map of the per-cycle plane.
+#
+# What it is, what each line kind says and what checks it: `listing_map.py` (the format) and
+# `src/Statistics/API.md`, "## Cycle listing map". Nothing here is derived: the executable
+# carries no symbols and no line tables, so the Fortran name of every address and the Fortran
+# lines of every stretch of code are this file's claims, and `classify-cycle-plane-listing.py
+# check` holds each of them against the listing excerpt.
+#
+# Regions: the eight ranges of the excerpt, by how the reader treats each.
+region | prologue | 0x401000 | 0x40100C | prologue | push ebp, mov ebp,esp, sub esp,4B4h: the frame is 0x4B4 bytes
+region | prelude  | 0x401F92 | 0x408A93 | layout   | the ALLOCATE sites, the descriptors, the setup: integer content only
+region | preloop  | 0x408A93 | 0x409A10 | executed | line 378, the trip-count flags, the hoisted temporaries
+region | loop     | 0x409A10 | 0x40BD9E | scan     | the cycle head and the particle loop: integer content only
+region | plane    | 0x40BD9E | 0x41058F | executed | the per-cycle plane, Fortran 771-1175
+region | param    | 0x4181A5 | 0x418577 | callee   | PARAM, run by the oracle through the pre-loop's call; no float event of it is a row's
+region | thunks   | 0x418BA4 | 0x418C22 | thunks   | the runtime thunks the plane calls
+region | startup  | 0x418CE1 | 0x418D8B | startup  | the C start-up: _controlfp(0x10000, 0x30000)
+#
+# Scopes: the ranges whose float events the rows below must claim.
+scope | 0x408A93 | 0x408ADC | line 378
+scope | 0x4094BC | 0x40959B | the hoisted temporaries
+scope | 0x40BD9E | 0x41058F | the per-cycle plane
+#
+# Arrays: descriptor address, name, element type, rank (checked against the ALLOCATE statements).
+array | 0x421218 | GDOK | r4 | 1
+array | 0x4211f8 | DDOK | r4 | 1
+array | 0x4212b8 | SFR | i4 | 1
+array | 0x420ce8 | par1 | r4 | 1
+array | 0x420cc8 | par2 | r4 | 1
+array | 0x420ca8 | par3 | r4 | 1
+array | 0x420c88 | par4 | r4 | 1
+array | 0x420c68 | par5 | r4 | 1
+array | 0x420c48 | par6 | r4 | 1
+array | 0x4211d8 | ZX | r8 | 1
+array | 0x4211b8 | Z11 | r8 | 1
+array | 0x420d48 | ALLDOK_fract | i8 | 1
+array | 0x420e28 | epsalldok | r4 | 1
+array | 0x420e48 | FMDOK | r4 | 1
+array | 0x420e88 | ALLVDOK | r4 | 1
+array | 0x420e68 | ALLVDOKSO | r4 | 1
+array | 0x420e08 | ALLVDOK_FR | r4 | 1
+array | 0x420d28 | ALLDOK | i8 | 1
+array | 0x421458 | VSMKM | r4 | 1
+array | 0x421438 | SVD | r4 | 1
+array | 0x421478 | Vdok_total | r4 | 1
+array | 0x421498 | Vmkm_total | r4 | 1
+array | 0x4213d8 | VKSO | r4 | 1
+array | 0x4213b8 | QKS1 | r4 | 1
+array | 0x421398 | FQKS | r4 | 1
+array | 0x421378 | DPOC | r4 | 1
+array | 0x421418 | gk0 | r4 | 1
+array | 0x421298 | QKS | i8 | 1
+array | 0x421318 | fmkarm_cor | r4 | 1
+array | 0x4213f8 | gk1 | r4 | 1
+array | 0x420de8 | zdoksmall | r4 | 1
+array | 0x420dc8 | vdoksmall | r4 | 1
+array | 0x420da8 | Vdokstr | r4 | 1
+array | 0x420d88 | ddoksmall | r4 | 1
+array | 0x420d68 | pdoksmall | r4 | 1
+array | 0x420d08 | qdokstr | i8 | 1
+array | 0x4212d8 | VKS | r8 | 1
+array | 0x421358 | fmkarm2 | r4 | 1
+array | 0x421338 | fmkarm2_loc | r4 | 1
+array | 0x4212f8 | fqkarm_cor | i8 | 1
+array | 0x420f18 | QDOKSO | r4 | 2
+array | 0x421198 | DOKP31 | r4 | 1
+array | 0x421178 | DOKP41 | r4 | 1
+array | 0x421158 | DOKP43 | r4 | 1
+array | 0x421138 | DOKP431 | r4 | 1
+array | 0x421118 | DOKP432 | r4 | 1
+array | 0x4210d8 | MDOK3 | r8 | 1
+array | 0x4210b8 | MDOK4 | r8 | 1
+array | 0x421098 | DDOK3 | r8 | 1
+array | 0x421078 | DDOK4 | r8 | 1
+array | 0x421058 | Epsydok | r4 | 1
+array | 0x421038 | Epsmdok3 | r4 | 1
+array | 0x421018 | Epsmdok4 | r4 | 1
+array | 0x420fe8 | VDOKS | r8 | 2
+array | 0x420fc8 | VVDOKS | r8 | 1
+array | 0x420f48 | Dpockets | r4 | 1
+array | 0x420f98 | VDOKSO | r4 | 2
+array | 0x420f68 | QDOKS1 | r4 | 2
+array | 0x4210f8 | qdokkarm | r4 | 1
+array | 0x420ee8 | QDOKS | i8 | 2
+array | 0x420ec8 | QDOKSS | i8 | 1
+array | 0x420ea8 | QDOK | i8 | 1
+array | 0x421278 | qmkm1 | i8 | 1
+array | 0x421258 | qmkm2 | i8 | 1
+array | 0x421238 | coef | i8 | 1
+#
+# Cells: the scalar homes in .data and the frame slots. A slot the compiler shares among several
+# variables lists every tenant; `:temp` marks a compiler temporary no Fortran name stands for;
+# `:hi` the upper dword of the REAL*8 tenant whose lower dword is the cell 4 bytes below.
+# .data homes (the formulation's and the run's scalars, then the plane's outputs)
+cell | 0x422168 | sd4:r8
+cell | 0x422170 | sd3:r8
+cell | 0x422178 | xss6:r8
+cell | 0x422180 | xss5:r8
+cell | 0x4221D8 | dolm3:r4
+cell | 0x4221DC | dolm2:r4
+cell | 0x4221EC | dolm1:r4
+cell | 0x4221F0 | sdevp243:r4
+cell | 0x4221F4 | sdevp43_cor:r4
+cell | 0x422200 | xr:r4
+cell | 0x422208 | vdokleft:r4
+cell | 0x42220C | plotsmdok:r4
+cell | 0x422210 | gdokleft:r4
+cell | 0x422214 | sdevp43:r4
+cell | 0x422218 | dp43:r4
+cell | 0x42221C | epsmd3:r4
+cell | 0x422220 | epsmd4:r4
+cell | 0x422228 | epsx3:r4
+cell | 0x42222C | epsx2:r4
+cell | 0x422230 | epsx1:r4
+cell | 0x422234 | alldoksd:r4
+cell | 0x422238 | alldok43:r4
+cell | 0x422240 | dok43s:r4
+cell | 0x422244 | dok43b:r4
+cell | 0x422248 | eps7:r4
+cell | 0x422250 | eps6:r4
+cell | 0x422258 | eps5:r4
+cell | 0x422260 | eps4:r4
+cell | 0x422268 | eps3:r4
+cell | 0x422270 | eps2:r4
+cell | 0x422278 | eps1:r4
+cell | 0x422284 | dmaxxx:r4
+cell | 0x4222B4 | slamd:r4
+cell | 0x4222BC | zss:r4
+cell | 0x422304 | vmkm_total2:r4
+cell | 0x42230C | epsy:r4
+cell | 0x422360 | ak2:r4
+cell | 0x422368 | gm:r4
+cell | 0x422370 | plot2:r4
+cell | 0x422374 | plot1:r4
+cell | 0x422380 | eps_dok:r4
+cell | 0x42238C | dj:r4
+cell | 0x4223D0 | eta:r4
+cell | 0x4223D4 | mp:r4
+cell | 0x4223F4 | karmcoef:r4
+cell | 0x4223F8 | mkmcoef:r4
+# frame: the plane's inputs and locals
+cell | ebp-0xC | di:r4
+cell | ebp-0x34 | dpmax:r4
+cell | ebp-0x3C | doksd:r4
+cell | ebp-0x60 | xss0:r8
+cell | ebp-0x68 | xss1:r8
+cell | ebp-0x70 | xss2:r8
+cell | ebp-0x78 | xss3:r8
+cell | ebp-0x80 | xss4:r8
+cell | ebp-0x88 | d41:r8
+cell | ebp-0x90 | d31:r8
+cell | ebp-0xE0 | dp31:r8
+cell | ebp-0xE8 | dp41:r8
+cell | ebp-0x128 | vdok_total2:r4
+cell | ebp-0x228 | dok_base31:r8
+cell | ebp-0x230 | dok_base41:r8
+cell | ebp-0x238 | dok_sur31:r8
+cell | ebp-0x240 | dok_sur41:r8
+cell | ebp-0x25C | ggg:r4
+cell | ebp-0x260 | g378:r4:temp plotsm:r4
+cell | ebp-0x264 | dokm:r4
+cell | ebp-0x364 | t1:r4:temp
+cell | ebp-0x368 | t2:r4:temp
+cell | ebp-0x36C | t3:r4:temp
+cell | ebp-0x370 | t4:r4:temp
+# frame: slots the compiler shares among the plane's variables and temporaries; `t<slot>` is
+# the temporary a REAL*4 result passes through on its way to its home or its array element
+cell | ebp-0x438 | xsr0:r4 xsr1:r4 xsr2:r4 xsr3:r4 xsr4:r4 xsr5:r4 xsr6:r4 t438:r4:temp int_scratch:i4:temp
+cell | ebp-0x440 | alldok432:r4 int_scratch:i4:temp
+cell | ebp-0x448 | gdokleft:r4 d1145:r4:temp int_scratch:i4:temp
+cell | ebp-0x44C | md3:r8:hi t44c:r4:temp d432:r4 int_scratch:i4:temp
+cell | ebp-0x450 | epsx3_argument:r4:temp md3:r8 dqkarm:r4 int_scratch:i4:temp
+cell | ebp-0x454 | md4:r8:hi t454:r4:temp s1:r4:temp int_scratch:i4:temp
+cell | ebp-0x458 | md4:r8 s2:r4:temp int_scratch:i4:temp
+cell | ebp-0x45C | dd3:r8:hi t45c:r4:temp dkarm43_cor:r4 int_scratch:i4:temp
+cell | ebp-0x460 | dd3:r8 dqkarm_cor:r4 int_scratch:i4:temp
+cell | ebp-0x464 | dd4:r8:hi dfmk432:r4 int_scratch:i4:temp
+cell | ebp-0x468 | dd4:r8 dqmkm1:r4 int_scratch:i4:temp
+cell | ebp-0x46C | qkss_inverse:r4:temp dqmkm2:r4 int_scratch:i4:temp
+cell | ebp-0x470 | t470:r4:temp realkilo:r4:temp qmcoef:r4 int_scratch:i4:temp
+cell | ebp-0x478 | epsy_argument:r4:temp int_scratch:i4:temp
+cell | ebp-0x49C | t49c:r4:temp int_scratch:i4:temp
+cell | ebp-0x4A0 | mdok3_irow:r8:temp
+cell | ebp-0x4A4 | qdokss_inverse:r4:temp
+cell | ebp-0x4A8 | t4a8:r4:temp
+cell | ebp-0x4B0 | mdok4_irow:r8:temp t4b0:r4:temp
+#
+# Inputs: float cells the plane reads before the walk has written them, and where they come from.
+input | 0x422168 | loop | sd4: the REAL*8 sum the particle loop accumulates
+input | 0x422170 | loop | sd3
+input | 0x422178 | loop | xss6
+input | 0x422180 | loop | xss5
+input | 0x4222BC | external | zss, set by the PARAM call (which the oracle executes)
+input | 0x422360 | external | ak2, from the formulation
+input | 0x422368 | external | gm, from the formulation
+input | 0x422370 | external | plot2, from the formulation
+input | 0x422374 | external | plot1, from the formulation
+input | 0x422380 | external | eps_dok, a model parameter
+input | 0x42238C | prelude | dj, a model parameter
+input | 0x4223D0 | external | eta, a model parameter
+input | 0x4223F4 | external | karmcoef, a model parameter
+input | 0x4223F8 | external | mkmcoef, a model parameter
+input | ebp-0x468 | plane | dd4 and dqmkm1: a loop-carried local, zeroed before its loop
+input | ebp-0x464 | plane | dd4 (upper dword) and dfmk432
+input | ebp-0x460 | plane | dd3 and dqkarm_cor
+input | ebp-0x45C | plane | dd3 (upper dword) and dkarm43_cor
+input | ebp-0x458 | plane | md4
+input | ebp-0x450 | plane | md3 and dqkarm
+input | ebp-0x44C | plane | md3 (upper dword) and d432
+input | ebp-0x264 | preloop | dokm
+input | ebp-0x25C | prelude | ggg
+input | ebp-0x34 | prelude | dpmax
+input | ebp-0xC | prelude | di
+#
+# Integer slots no float variable shares: what the plane reads or writes of them and which region
+# writes them (`external`: written through a pointer by the runtime, no store in the excerpt).
+ints | 0x420B30 | 0x420B50 | loop | NFW, NFQ, NFZ, NFY, NFX: the INTEGER*8 counts the generator test divides by
+ints | 0x4221D0 | 0x4221D0 | loop | QKSS: the INTEGER*8 pocket count
+ints | 0x422314 | 0x422318 | prelude | KPRIS and IPRIS: the cycle counters
+ints | 0x42232C | 0x42232C | prelude | an INTEGER loop bound the plane reads
+ints | 0x422348 | 0x422348 | external | an INTEGER read at the end of the plane, set by the runtime
+ints | 0x42234C | 0x42234C | prelude | KXX: the cycle count
+ints | 0x422350 | 0x422354 | external | JZZ and NMM, set by the runtime
+ints | 0x4223B0 | 0x4223B0 | plane | an INTEGER the plane counts up
+ints | ebp-0x4AC | ebp-0x4AC | plane | an irow loop counter
+ints | ebp-0x498 | ebp-0x474 | loop | integer scratch of the irow and iks loops: counters, trip counts, bases
+ints | ebp-0x46E | ebp-0x46E | plane | the high word of a saved x87 control word
+ints | ebp-0x44E | ebp-0x44E | loop | the high word of a saved x87 control word
+ints | ebp-0x444 | ebp-0x43C | loop | integers the particle loop leaves for the plane
+ints | ebp-0x3FC | ebp-0x374 | preloop | loop-invariant bases, strides and trip counts of the plane's loops
+ints | ebp-0x362 | ebp-0x360 | preloop | int(Dmin/Di) and the control word saved beside it
+ints | ebp-0x35C | ebp-0x29C | preloop | trip-count flags, bases and strides of the plane's loops
+ints | ebp-0x290 | ebp-0x28C | preloop | trip-count flags of the Ndok loops
+ints | ebp-0x280 | ebp-0x26C | preloop | bases and flags of the Ndok loops
+ints | ebp-0x250 | ebp-0x244 | prelude | strides of the ZX and epsalldok arrays
+ints | ebp-0x21C | ebp-0xEC | prelude | descriptor-derived bases and strides of the plane's arrays
+ints | ebp-0xD8 | ebp-0xC4 | prelude | descriptor-derived bases of the Nkarm arrays
+ints | ebp-0xB0 | ebp-0xB0 | prelude | a descriptor-derived base
+ints | ebp-0x9C | ebp-0x9C | prelude | a descriptor-derived base
+ints | ebp-0x54 | ebp-0x4C | prelude | Nkarm, Ndok and Ncat
+ints | ebp-0x38 | ebp-0x38 | prelude | an array base
+ints | ebp-0x30 | ebp-0x30 | prelude | the I/O descriptor the write statements build
+ints | ebp-0x8 | ebp-0x8 | plane | a loop counter
+ints | ebp-0x4 | ebp-0x4 | prelude | a loop counter
+#
+# Rows: the plane's code in address order, one row per Fortran statement or group of statements,
+# tiling each scope. `register=NAME:LINE@FIRST-END:OP` names a value of a Fortran variable that
+# the executable holds in an x87 register and never stores: the nodes of operator OP born by
+# the instructions in [FIRST, END).
+row | r378 | 0x408A93 | 0x408ADC | 378 380 | ggg plot1 g378 zss plot2 slamd dokm
+row | rh1 | 0x4094BC | 0x409503 | - | - | parts=1001
+row | rh2 | 0x409503 | 0x409527 | - | plot2 t1 ggg t2 | parts=1008,1010
+row | rh3 | 0x409527 | 0x409539 | - | t1 g378 t2 | parts=1011
+row | rh4 | 0x409539 | 0x40953F | 1011 | plotsm
+row | rh5 | 0x40953F | 0x40959B | - | eta t3 t4 | parts=1015,1016
+row | r771 | 0x40BD9E | 0x40BDDB | 771 772 | xss0 xsr0 eps1
+row | r773 | 0x40BDDB | 0x40BE04 | 773 774 | xss1 xsr1 eps2
+row | r775 | 0x40BE04 | 0x40BE2D | 775 776 | xss2 xsr2 eps3
+row | r777 | 0x40BE2D | 0x40BE56 | 777 778 | xss3 xsr3 eps4
+row | r779 | 0x40BE56 | 0x40BE7F | 779 780 | xss4 xsr4 eps5
+row | r781 | 0x40BE7F | 0x40BEAB | 781 782 | xss5 xsr5 eps6
+row | r783 | 0x40BEAB | 0x40BED7 | 783 784 | xss6 xsr6 eps7
+row | r789 | 0x40BED7 | 0x40BF19 | 789 790 | sd4 sd3 dok43b d41 d31 dok43s t438
+row | r795 | 0x40BF19 | 0x40C10F | 792 794 795 796 | epsalldok ZX t44c | stores=epsalldok:796 register=epsalldok:795@0x40BFFD+0x40C019+0x40C035+0x40C051+0x40C06D+0x40C092+0x40C0B7+0x40C0E9:/
+row | r798 | 0x40C10F | 0x40C175 | 798 | ALLVDOK | register=allvdoks:798@0x40C175:phi
+row | r799 | 0x40C175 | 0x40C1D6 | 799 800 801 802 | alldok432 FMDOK | register=alldok243:800@0x40C181:const
+row | r804 | 0x40C1D6 | 0x40C44C | 802 804 805 806 808 809 | ALLVDOK ALLVDOKSO alldok432 FMDOK di | register=alldok243:806@0x40C44C:phi
+row | r810 | 0x40C44C | 0x40C50B | 810 812 814 815 816 | dok_base41 dok_base31 dok_sur41 dok_sur31 alldok43 alldoksd epsx1 epsx2 epsx3 dokm t44c alldok432
+row | r817 | 0x40C50B | 0x40C595 | 817 818 819 | epsx3 eps_dok epsx3_argument
+row | r825 | 0x40C595 | 0x40C70A | 825 827 828 829 | dpmax dj Dpockets
+row | r830 | 0x40C70A | 0x40CC17 | 830 831 832 833 834 835 836 837 | MDOK3 MDOK4 DDOK3 DDOK4 VVDOKS DOKP432 qdokkarm
+row | r838 | 0x40CC17 | 0x40CEA6 | 838 840 841 842 844 845 846 848 849 850 | QDOKS1
+row | r852 | 0x40CEA6 | 0x40D0E9 | 852 853 854 855 | di QDOKS1 MDOK4 MDOK3
+row | r856 | 0x40D0E9 | 0x40D175 | 856 857 858 859 860 | MDOK3 MDOK4 DOKP431 mdok3_irow mdok4_irow t4a8 | temp=mdok3_irow:856,mdok4_irow:856
+row | r862 | 0x40D175 | 0x40D3E5 | 862 863 864 865 866 867 | di DDOK4 DDOK3 QDOKS1 mdok3_irow mdok4_irow
+row | r869 | 0x40D3E5 | 0x40D537 | 869 870 871 872 873 874 875 876 877 878 879 880 881 | mdok3_irow mdok4_irow DDOK4 DDOK3 Epsydok Epsmdok3 Epsmdok4 qdokss_inverse t4a8 t49c | temp=qdokss_inverse:875,t49c:879
+row | r884 | 0x40D537 | 0x40D5BF | 884 885 886 | VVDOKS VDOKS
+row | r887 | 0x40D5BF | 0x40D798 | 887 888 889 890 891 892 893 894 895 896 897 898 899 900 | VVDOKS VDOKS VDOKSO DOKP432 QDOKSO qdokkarm di t4b0
+row | r902 | 0x40D798 | 0x40D7DA | 902 903 904 905 906 | DOKP31 DOKP41 DOKP43
+row | r908 | 0x40D7DA | 0x40D8EE | 908 | -
+row | r911a | 0x40D8EE | 0x40DBC2 | 911 912 913 914 915 917 918 919 920 921 922 923 924 925 926 | Epsydok eps_dok DOKP41 DOKP31 VDOKS Dpockets
+row | r911b | 0x40DBC2 | 0x40DDF5 | 927 929 930 931 932 933 934 935 936 937 938 939 941 943 944 945 | DOKP41 DOKP31 VDOKS Dpockets
+row | r947 | 0x40DDF5 | 0x40E04B | 947 949 950 951 952 953 954 955 956 958 959 | Epsydok eps_dok DOKP41 DOKP31 VDOKS
+row | r963 | 0x40E04B | 0x40E0F0 | 963 964 965 966 | md3 md4 dd3 dd4
+row | r967 | 0x40E0F0 | 0x40E2B5 | 967 968 969 970 | di QKS1 md4 md3
+row | r971 | 0x40E2B5 | 0x40E4F6 | 971 972 973 974 | di QKS1 md4 md3 dd4 dd3
+row | r975 | 0x40E4F6 | 0x40E5F8 | 975 976 977 978 | qkss_inverse epsy t470 epsy_argument eps_dok md4 md3 dd4 dd3
+row | r979 | 0x40E5F8 | 0x40E69D | 979 980 981 | md4 md3 dd4 dd3 qkss_inverse t454 t44c epsmd4 epsmd3 | eliminated=d43:979
+row | r982 | 0x40E69D | 0x40E6D1 | 982 983 984 985 | VKS | register=vvks:982@0x40E679:const,vvks:984@0x40E6D1:phi
+row | r986 | 0x40E6D1 | 0x40E73D | 986 | d432 dqkarm | register=d243:986@0x40E6DD:const
+row | r987 | 0x40E73D | 0x40E9CB | 987 988 989 990 991 992 | VKS VKSO d432 dqkarm QKS1 di t454 | temp=t454:988 register=d243:990@0x40E9CB:phi
+row | r994 | 0x40E9CB | 0x40EA10 | 994 996 | dp41 dp31 dp43 sdevp43 t454 d432
+row | r1001 | 0x40EA10 | 0x40EA48 | 1001 1002 | FMDOK ggg gdokleft | register=gdoksfr:1002@0x40EA38:const
+row | r1003 | 0x40EA48 | 0x40EA62 | 1003 1004 1005 | GDOK ggg | register=gdoksfr:1004@0x40EA62:phi
+row | r1006 | 0x40EA62 | 0x40EABD | 1006 1008 | gdokleft ggg s1 plot1 t1 plotsmdok
+row | r1010 | 0x40EABD | 0x40EAED | 1010 | t2 gdokleft s2 plotsmdok plot1 vdokleft
+row | r1014 | 0x40EAED | 0x40EB50 | 1014 1015 1016 | plotsmdok gm s2 t3 t4 mp | stores=mp:1016 register=mp:1014@0x40EAFF:/,mp:1015@0x40EB05:*
+row | r1022 | 0x40EB50 | 0x40EC5E | 1022 1023 | ddoksmall zdoksmall
+row | r1024 | 0x40EC5E | 0x40ED6D | 1024 1025 1026 | ak2 xr realkilo
+row | r1027 | 0x40ED6D | 0x40EE0D | 1027 1028 1029 1030 | Vdokstr zdoksmall
+row | r1031 | 0x40EE0D | 0x40EEBE | 1031 1032 1034 | zdoksmall Vdokstr xr
+row | r1035 | 0x40EEBE | 0x40EFCA | 1034 1035 1036 1037 1038 | ddoksmall Vdokstr di
+row | r1039 | 0x40EFCA | 0x40F0B9 | 1039 1040 1041 1042 1043 | ddoksmall Vdokstr di xr
+row | r1047 | 0x40F0B9 | 0x40F153 | 1047 | ggg zdoksmall
+row | r1048 | 0x40F153 | 0x40F41A | 1048 1050 1051 1053 1054 1056 1057 | zdoksmall vdoksmall ddoksmall t1 s1 s2 plot1 di | register=pl:1050@0x40F1C7+0x40F21C+0x40F276+0x40F2D0+0x40F32D+0x40F380+0x40F3EC:/
+row | r1059 | 0x40F41A | 0x40F5F6 | 1059 1061 1062 1063 1064 1065 | vdoksmall ddoksmall karmcoef pdoksmall t45c | stores=pdoksmall:1061+1063
+row | r1066 | 0x40F5F6 | 0x40F72E | 1066 1068 1069 1070 1071 1072 1073 1074 | mkmcoef karmcoef pdoksmall di dmaxxx | stores=dmaxxx:1066+1070 eliminated=zdmaxxx:1071
+row | r1078 | 0x40F72E | 0x40F781 | 1078 1079 1080 1081 1082 | -
+row | r1087b | 0x40F781 | 0x40F7A1 | 1087 | dkarm43_cor dqkarm_cor | register=dkarm243_cor:1087@0x40F781:const
+row | r1087 | 0x40F7A1 | 0x40FA08 | 1088 1089 1090 1091 1092 1093 1094 1095 | fmkarm_cor di dkarm43_cor dqkarm_cor | register=dkarm243_cor:1091@0x40FA08:phi
+row | r1097 | 0x40FA08 | 0x40FA3B | 1097 | dkarm43_cor sdevp43_cor
+row | r1099 | 0x40FA3B | 0x40FBB2 | 1099 1100 1101 1102 1103 | fmkarm2 di dfmk432 | register=dfmk243:1099@0x40FA3B:const,dfmk243:1102@0x40FBB2:phi
+row | r1105 | 0x40FBB2 | 0x40FBE5 | 1105 | dfmk432 sdevp243
+row | r1108 | 0x40FBE5 | 0x40FF13 | 1108 1109 1110 1111 1112 1113 | dqmkm1 dqmkm2 qmcoef
+row | r1119 | 0x40FF13 | 0x410114 | 1119 1120 1121 1122 1123 1124 1125 1126 1127 1128 1129 1130 1131 1132 1133 1134 | VSMKM SVD Vmkm_total Vdok_total plot1 plotsmdok s1 s2 gk0 gk1 | register=sumvsmkm:1120@0x40FF50:const,sumsvd:1121@0x40FF60:const,sumvmkmt:1122@0x40FF70:const,sumvdokt:1123@0x40FF84:const,sumvsmkm:1125@0x41007C~0:phi,sumsvd:1126@0x41007C~1:phi,sumvmkmt:1127@0x41007C~2:phi,sumvdokt:1128@0x41007C~3:phi
+row | r1137 | 0x410114 | 0x410228 | 1137 1138 1140 1141 1142 | VSMKM SVD plotsmdok plot1 s1 s2 dolm1 | eliminated=Vdok_total0:1140,Vdok_total1:1141,deltaVdok:1142
+row | r1145 | 0x410228 | 0x41023A | - | gdokleft ggg | parts=1145
+row | r1145b | 0x41023A | 0x4102DD | 1145 | d1145 Vdok_total
+row | r1146 | 0x4102DD | 0x4103A8 | 1146 1147 | Vmkm_total Vdok_total vdokleft plot1 t2 ggg plotsm dolm2
+row | r1150 | 0x4103A8 | 0x4103C8 | 1150 | vdok_total2 d1145
+row | r1151 | 0x4103C8 | 0x410415 | 1151 | vdok_total2 plot1 t2 ggg plotsm vdokleft vmkm_total2 dolm3
+row | r1154 | 0x410415 | 0x410432 | 1154 1155 | -
+row | r1168 | 0x410432 | 0x410542 | 1168 1169 1170 1171 1172 1173 1174 1175 | par1 par2 par3 par4 par5 par6 epsy epsmd3 epsmd4 alldok43 dokm alldoksd doksd dolm2
+row | r1177 | 0x410542 | 0x41058F | 1177 1178 1179 1180 | -
+#
+# The listing oracle's data (`tests/Fixtures/cycle_plane_oracle.py`; the format of each kind is
+# `src/Statistics/API.md`, "## Cycle listing map and table"). Nothing above reads these rows and
+# nothing here is checked by `classify-cycle-plane-listing.py`: the oracle checks them itself, and
+# an address it executes is the excerpt's, so a wrong claim is a stop, never a quiet value.
+#
+# Where the oracle starts. The pre-loop's first instruction reads frame slots the allocation and
+# sizing code left; they are derived there, so the executed range begins at the last ALLOCATE's
+# return (0x406754), where every descriptor and the persistent slots listed below are the state.
+oracle | run | init  | 0x406754 | 0x409A10 | the init block, PARAM's return, line 378 and the hoisted block: the pre-loop
+oracle | run | plane | 0x40BD9C | 0x41058F | the plane, from the `xor edi,edi` that the loop leaves for it
+# A routine the pre-loop calls and the oracle runs: its instructions are executed through the call and
+# its `ret`, its stack frame is the machine's, and no stub stands for it.
+oracle | callee | param | 0x4181A5 | 0x418577 | PARAM, called at 0x408A8E: ZSS, ZX and Z11 are the executable's own
+oracle | exit | 0x40F77C | warm-up   | the jump back to the cycle head after cycle 0
+oracle | exit | 0x41058A | continue  | the jump back to the cycle head after a cycle with more to run
+oracle | exit | 0x41058F | print     | the print plane, after the last cycle
+#
+# The runtime's thunks: a stub by address (`x87_machine.py` runs a call only through one).
+oracle | call | 0x418577 | size  | SIZE, PARAM's last call: its results (Dmax, Nfract) are not read, `ret 20h`
+oracle | call | 0x418BA4 | io     | a formatted write: no effect, eax = 0, the caller cleans
+oracle | call | 0x418BAA | io     | the same
+oracle | call | 0x418BB0 | io     | the same
+oracle | call | 0x418C16 | sqrt   | _FIsqrt: st(0) = sqrt(st(0)); not read, assumed fsqrt
+oracle | call | 0x418C10 | pow    | _FIIfexp_: base st(1), exponent st(0), one result; not read, assumed
+oracle | call | 0x418C1C | mod    | _FXAMOD: two pointer arguments, the callee pops them; not read, assumed
+#
+# One slice the cycle head runs and the plane reads the result of: `[ebp-43Ch] = (IPRIS != 1)`.
+oracle | slice | 0x409BF8 | 0x409C0C | the cycle head's flag that the end of the plane tests
+#
+# What is injected before the init block runs: the formulation's and the menu's values as READ and
+# the menu leave them, in the home the code reads. `source` is a key of `oracle_setup`
+# (`tests/Fixtures/formulas_statistics.py`) or a Python expression over those keys.
+oracle | inject | 0x42236C | ggg0     | r4 | ggg0     | line 375: GGG = GGG0 - gdokns*GGG0
+oracle | inject | 0x42237C | gdokns   | r4 | gdokns   | the menu's [11]
+oracle | inject | 0x422374 | plot1    | r4 | plot1    | the formulation's PLOT1
+oracle | inject | 0x422370 | plot2    | r4 | plot2    | the formulation's PLOT2
+oracle | inject | 0x422368 | gm       | r4 | gm       | the formulation's Gm
+oracle | inject | 0x422360 | ak2      | r4 | ak2      | the formulation's AK2
+oracle | inject | 0x422388 | dmin     | r4 | dmin     | the menu's [1], after the unit conversion at 0x403E24-0x403E43
+oracle | inject | ebp-0xC  | di       | r4 | di       | the menu's [2], converted the same way
+oracle | inject | 0x42238C | dj       | r4 | dj       | the menu's [3], converted the same way
+oracle | inject | 0x422380 | eps_dok  | r4 | eps_dok  | the menu's [4]
+oracle | inject | 0x4223F4 | karmcoef | r4 | karmcoef | the menu's [7]
+oracle | inject | 0x4223F8 | mkmcoef  | r4 | mkmcoef  | the menu's [8]
+oracle | inject | 0x4223D0 | eta      | r4 | eta      | the menu's [14]
+oracle | inject | 0x422188 | alfa     | r8 | alfa     | the menu's tail probability, which PARAM reads and changes
+oracle | inject | 0x42232C | ddokmax  | r4 | ddokmax  | line 271, the Ddokmax the sizing code leaves
+oracle | inject | 0x422354 | nmm      | i4 | nmm      | read from the formulation
+oracle | inject | 0x422350 | jzz      | i4 | jzz      | read from the formulation
+oracle | inject | 0x42234C | kxx      | i4 | kxx      | read from the formulation
+oracle | inject | 0x4223AC | gsv      | i4 | gsv      | read from the formulation
+oracle | inject | ebp-0x54 | nkarm    | i4 | nkarm    | line 273, stored at 0x403EF4
+oracle | inject | ebp-0x50 | ndok     | i4 | ndok     | line 272, stored at 0x403EBF
+oracle | inject | 0x422328 | ndok     | i4 | ndok     | line 272, stored at 0x403EB5
+oracle | inject | 0x422320 | ncat     | i4 | ncat     | line 274, stored at 0x403F2B
+oracle | inject | 0x4223B0 | kpart | i4 | 0 | the running count of particles the plane adds N to, empty before the first cycle
+oracle | inject | 0x422348 | npart | i4 | n | N, the particles of a cycle, as the runtime leaves it
+oracle | pointer | ebp-0x38 | GDOK | the address of element 0 that the first ALLOCATE's tail derives, 0x40221B-0x402222
+oracle | pointer | ebp-0x3C | DDOK | the same for DDOK, 0x402297-0x4022AD
+oracle | pointer | ebp-0x4C | SFR  | the same for SFR, 0x4022F4-0x402331
+oracle | array | GDOK | gdok | the formulation's mass shares, as READ stores them
+oracle | array | DDOK | ddok | the formulation's bounds, after the unit conversion
+oracle | array | SFR  | sfr  | the pocket-forming flags: 1, or menu [12]'s
+#
+# What the particle loop leaves, built before every plane run, in order, each expression over the
+# setup keys, the helpers of the oracle (`randint`, `uniform`, `gauss`, `f32`, `partition`,
+# `partition_w`, `grid`) and the totals above it. A 2-D total is a list of rows. These model the
+# loop's accumulation loosely: the oracle needs totals the plane can run on, never typical ones.
+# The identities they obey are the loop's: NFZ = NFY (one draw each per attempt), the fraction
+# and size counts both sum to NFX + NFZ, QKSS is the sum of QKS and QKS1 its normalisation,
+# QDOK(row) the row sum of QDOKS, and the volumes are count x sphere volume of the cell centre.
+oracle | total | ebp-0x444 | ipart | i4 | n + 1
+oracle | total | 0x420B50 | NFX | i8 | int(10 ** uniform(3.3, 5.6))
+oracle | total | 0x420B48 | NFY | i8 | int(10 ** uniform(3.3, 5.6))
+oracle | total | 0x420B40 | NFZ | i8 | NFY
+oracle | total | 0x420B38 | NFQ | i8 | randint(NFY // 5, NFY // 2)
+oracle | total | 0x420B30 | NFW | i8 | randint(NFQ // 2, NFQ)
+oracle | total | ebp-0x60 | xss0 | r8 | NFX * (0.5 + gauss(0, 0.01))
+oracle | total | ebp-0x68 | xss1 | r8 | NFX * (0.5 + gauss(0, 0.01))
+oracle | total | ebp-0x70 | xss2 | r8 | NFY * (0.5 + gauss(0, 0.01))
+oracle | total | ebp-0x78 | xss3 | r8 | NFZ * (0.5 + gauss(0, 0.01))
+oracle | total | ebp-0x80 | xss4 | r8 | NFZ * (0.5 + gauss(0, 0.01))
+oracle | total | 0x422180 | xss5 | r8 | NFQ * (0.5 + gauss(0, 0.01))
+oracle | total | 0x422178 | xss6 | r8 | NFW * (0.5 + gauss(0, 0.01))
+oracle | total | 0x422170 | sd3 | r8 | NFX * (ddokmax * uniform(0.3, 0.6)) ** 3
+oracle | total | 0x422168 | sd4 | r8 | sd3 * ddokmax * uniform(0.3, 0.6)
+oracle | total | ebp-0x228 | dok_base31 | r8 | NFX * (dokm * uniform(0.8, 1.2)) ** 3
+oracle | total | ebp-0x230 | dok_base41 | r8 | dok_base31 * dokm * uniform(0.9, 1.1)
+oracle | total | ebp-0x238 | dok_sur31 | r8 | NFZ * (dokm * uniform(0.8, 1.2)) ** 3
+oracle | total | ebp-0x240 | dok_sur41 | r8 | dok_sur31 * dokm * uniform(0.9, 1.1)
+oracle | total | ebp-0x90 | d31 | r8 | NFZ * (dokm * uniform(0.8, 1.2)) ** 3
+oracle | total | ebp-0x88 | d41 | r8 | d31 * dokm * uniform(0.9, 1.1)
+oracle | total | array | ALLDOK_fract | i8 | [max(1, round((NFX + NFZ) * z * uniform(0.97, 1.03))) for z in zx]
+oracle | total | array | ALLDOK | i8 | partition(NFX + NFZ, ndok)
+oracle | total | array | ALLVDOK | r4 | [c * 0.5236 * (di * (i + 0.5)) ** 3 for i, c in enumerate(ALLDOK)]
+oracle | total | - | decay | r8 | choice(1.0, 1.5, 2.0, 3.0)
+oracle | total | array | Vdokstr | r4 | [v * uniform(0.4, 1.0) * decay ** (-i) for i, v in enumerate(ALLVDOK)]
+oracle | total | - | kmax | i4 | randint(nkarm // 8, nkarm // 3)
+oracle | total | array | QKS | i8 | partition_w(randint(NFY // 2, NFY), [uniform(0, 1) ** 2 if i < kmax else 0.0 for i in range(nkarm)])
+oracle | total | 0x4221D0 | QKSS | i8 | sum(QKS)
+# Line 718, QKS1 = QKS/real(QKSS), is the particle loop's, outside the executed ranges; its bytes are read, not run
+# (0x40B7FA-0x40B8AF): QKSS is stored as INTEGER*8, `fild qword` loads it into a register exactly (0x40B823), and each
+# cell is `fild qword [q]; fdiv st,st(1); fstp dword`, so the divisor is the exact count and only the quotient rounds.
+oracle | total | array | QKS1 | r4 | [f32(q / QKSS) for q in QKS]
+oracle | total | array | VKS | r8 | [q * 0.5236 * (di * (i + 0.5)) ** 3 for i, q in enumerate(QKS)]
+oracle | total | ebp-0xE0 | dp31 | r8 | sum(q * (di * (i + 0.5)) ** 3 for i, q in enumerate(QKS))
+oracle | total | ebp-0xE8 | dp41 | r8 | sum(q * (di * (i + 0.5)) ** 4 for i, q in enumerate(QKS))
+oracle | total | ebp-0x34 | dpmax | r4 | di * (max(i for i, q in enumerate(QKS) if q > 0) + 1)
+oracle | total | array | fqkarm_cor | i8 | [int(q * uniform(0.2, 0.9)) for q in QKS]
+oracle | total | array | fmkarm_cor | r4 | [q * 0.5236 * (di * (i + 0.5)) ** 3 * uniform(0.2, 0.9) for i, q in enumerate(QKS)]
+oracle | total | array | fmkarm2 | r4 | [q * 0.5236 * (di * (i + 0.5)) ** 3 * uniform(0.1, 0.6) for i, q in enumerate(QKS)]
+oracle | total | array | QDOKS | i8 | grid(ncat, ndok, int(dpmax / dj) + 1, sum(QKS), 0.15)
+oracle | total | array | QDOK | i8 | [sum(row) for row in QDOKS]
+oracle | total | array | DOKP41 | r4 | [sum(c * (di * (i + 0.5)) ** 4 for i, c in enumerate(row)) for row in QDOKS]
+oracle | total | array | DOKP31 | r4 | [sum(c * (di * (i + 0.5)) ** 3 for i, c in enumerate(row)) for row in QDOKS]
+oracle | total | array | VDOKS | r8 | [[c * 0.5236 * (di * (i + 0.5)) ** 3 for i, c in enumerate(row)] for row in QDOKS]
+oracle | total | array | VSMKM | r4 | [v * uniform(0.1, 0.5) for v in ALLVDOK]
+oracle | total | array | SVD | r4 | [v * uniform(0.1, 0.5) for v in ALLVDOK]
+oracle | total | array | Vdok_total | r4 | [v * uniform(0.1, 0.5) for v in ALLVDOK]
+oracle | total | array | Vmkm_total | r4 | [v * uniform(0.1, 0.5) for v in ALLVDOK]
+oracle | total | ebp-0x128 | vdok_total2 | r4 | sum(Vdok_total) * uniform(0.1, 0.5)
+oracle | total | 0x422304 | vmkm_total2 | r4 | sum(Vmkm_total) * uniform(0.1, 0.5)
+oracle | total | array | qmkm1 | i8 | partition(randint(200, 1500), nc)
+oracle | total | array | qmkm2 | i8 | partition(randint(200, 1500), nc)
+oracle | total | array | coef | i8 | partition(randint(200, 1500), nc)
+oracle | total | array | pdoksmall | r4 | [0.0] * ndok
+#
+# What the executed pre-loop leaves, set beside the setup model's own value: a `setup key`
+# (`oracle_setup`) and the cell the bytes leave it in, as binary32 bits. The bytes are the answer;
+# a difference is recorded in the fixture for the port's setup to be held to, never a stop.
+oracle | expect | ggg    | ggg   | r4 | line 375: GGG = GGG0 - gdokns*GGG0
+oracle | expect | lambda | slamd | r4 | line 378: (ZSS * G) * PLOT2
+oracle | expect | zss    | zss   | r4 | PARAM's ZS, the sum of the unnormalised fractions
+oracle | expect | zx     | ZX    | r8 | PARAM's normalised fractions
+oracle | expect | z11    | Z11   | r8 | PARAM's cumulative fractions
+oracle | expect | dokm   | dokm  | r4 | the setup's DOKM, which PARAM's return leaves in the frame
+oracle | expect | doksd  | doksd | r4 | the setup's DOKSD, the same
+#
+# The unrolled loops: guard (the `jne` to the remainder, executed once per run of the loop), the
+# block's back branch (executed once per block pass), the remainder's head (once per remainder
+# pass), the block size and the sites of the generated table that sit inside. The trip count of a
+# run of the loop is block x passes + remainder passes, measured, never typed.
+oracle | trip | 0x40C1D0 | 0x40C3E4 | 0x40C3EE | 6 | 0x40C22C 0x40C3B7
+oracle | trip | 0x40CEDE | 0x40D092 | 0x40D09C | 8 | 0x40D07E 0x40D090
+oracle | trip | 0x40D196 | 0x40D37E | 0x40D388 | 7 | 0x40D360 0x40D37C
+oracle | trip | 0x40D564 | 0x40D5A0 | 0x40D5A6 | 9 | 0x40D59E
+oracle | trip | 0x40E0EA | 0x40E25D | 0x40E267 | 7 | 0x40E23D 0x40E257
+oracle | trip | 0x40E2D5 | 0x40E492 | 0x40E49C | 6 | 0x40E46A 0x40E48C
+oracle | trip | 0x40E737 | 0x40E951 | 0x40E95B | 6 | 0x40E925 0x40E94B
+#
+# The two accuracy warnings: the compare against eps_dok (a CMP row of the table) and the first
+# call of the formatted write that follows it when the test says so. A run shows both ways of a
+# warning when the compare executes and the call is hit in one run and is not in another.
+oracle | warning | 0x40C511 | 0x40C564 | line 817: EPSX3 against eps_dok
+oracle | warning | 0x40E571 | 0x40E5C7 | line 976: the pocket accuracy against eps_dok
+#
+# How the oracle draws a candidate case (`cycle_plane_oracle.py` reads these and draws from one
+# seeded generator; no name or number of the plane is in that file). `where` is where the drawn
+# value goes: `menu` (the menu's typed value), `setup` (an override of a setup key) or `flags` (the
+# pocket-forming flags, drawn with the given probability of a one, at least one forced) or
+# `cycles` (how many cycles the case runs at most). `presence` is the probability that the value
+# is drawn at all (the default stands otherwise). Laws: `uniform lo hi digits` (rounded),
+# `loguniform lo_exponent hi_exponent`, `choice a b c`, `flags p`.
+oracle | draw | menu   | dmin di   | 1.0 | uniform    | 6e-6 16e-6 7
+oracle | draw | menu   | dj        | 1.0 | uniform    | 6e-6 16e-6 7
+oracle | draw | menu   | eps_dok   | 1.0 | loguniform | -9 1
+oracle | draw | menu   | karmcoef  | 1.0 | uniform    | 4 14 2
+oracle | draw | menu   | mkmcoef   | 1.0 | uniform    | 4 14 2
+oracle | draw | menu   | eta       | 0.5 | uniform    | 0.05 0.8 3
+oracle | draw | menu   | gdokns    | 0.5 | uniform    | 0.05 0.3 3
+oracle | draw | setup  | kxx       | 1.0 | choice     | 1 2 3
+oracle | draw | flags  | sfr       | 0.5 | flags      | 0.5
+oracle | draw | cycles | max_cycles | 1.0 | choice    | 2 3
+#
+# What a case must be seen to reach besides the sites and the trip residues, by label: a menu
+# value that is nonzero in the case, an output that is nonzero in some cycle, or a drawn list
+# of the case (the pocket-forming flags) that holds a zero.
+oracle | feature | aggregated oxide fraction nonzero | menu-nonzero   | eta
+oracle | feature | a non-pocket-forming fraction        | case-has-zero  | flags
+#
+# The cases the search keeps besides the ones it draws (`keep_pins` of the oracle): a formulation, the
+# setup key whose value it decides, and why. A pin is drawn like any candidate from a generator of its
+# own, its formulation the row's, and is never isolated. The DOKM loop (Fortran 379-406) lies outside
+# the generated table's scope (`src/Statistics/BOOT.md`, "## Setup plane": its five-fold schedule is
+# typed in `Setup.AnalyticSizes` and the twin); the executable's pre-loop run on these formulations
+# is what holds it, because on each of them one store after the loop (rule L, the schedule of before
+# 2026-10-03) leaves DOKM a binary32 unit from the executable's (`selftest` shows it, the shipped
+# files measured 2026-10-03: of 43 with JZZ other than 2 these four alone, C166 included, part the two schedules).
+# The four rows after them (stage 5b) decide what PARAM and the JZZ = 2 loop leave: `zss` (ZS stored after
+# every addition against one store after the loop), `zx` (the pairwise denominator against the left-to-right
+# one) and `jzz2` (the listing's stores of l**5 and DOKSD against the loop without them).
+oracle | pin | BK10.dat   | dokm | six passes: one block of five and one remainder pass
+oracle | pin | KB397.dat  | dokm | nine passes: one block of five and four remainder passes
+oracle | pin | AK157a.dat | dokm | fourteen passes: two blocks of five and four remainder passes
+oracle | pin | HMX.dat    | zss  | ZS summed per addition is one unit above one store after the loop (a reference formulation)
+oracle | pin | P2a.dat   | zss  | the same, two units apart
+oracle | pin | HPEPA3.dat | zx   | ZX's denominator (l*l)*(u*u) against l*l*u*u: two ulp of double apart (a reference formulation)
+oracle | pin | CSPX04.dat | jzz2 | the JZZ = 2 loop: six passes (one block of four, two remainder passes), l**5 and DOKSD's stores matter

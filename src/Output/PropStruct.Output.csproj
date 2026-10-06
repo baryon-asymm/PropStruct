@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Output: writers of a result (BOOT.md, Purpose) - `results.m` in the original's layout
+    (Fortran lines 1184-1453, arrayprint/arrayprint2 lines 1517-1571) and JSON for programs. Host code:
+    allocation and exceptions are allowed (root BOOT.md, Constraints; this node computes no model quantity).
+    It is also the top of the library graph, so the package `PropStruct` is packed from here (root BOOT.md,
+    ## Delivery, Packages).
+  -->
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>PropStruct</PackageId>
+    <Description>Monte Carlo model of the local structure of composite solid propellants (pocket model): pockets between large oxidizer particles, interpocket bridges, and the size distributions and mass-medium size of metal agglomerates, on the CPU or, whole cycles at once, on an NVIDIA GPU in double precision. A port of the Fortran program PropStructV3.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\nuget\PropStruct.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Simulation\PropStruct.Simulation.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Input\PropStruct.Input.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- The package's only dependency (root BOOT.md, ## Delivery, Packages): the library assemblies are merged
+       into this package's own lib folder instead (below). -->
+  <ItemGroup>
+    <PackageReference Include="ILGPU" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Output.Tests" />
+  </ItemGroup>
+
+  <!-- The library projects are never released apart from this one, so their build output is merged into this
+       package's own lib and symbol folders instead of becoming package dependencies of their own:
+       `PrivateAssets="all"` above keeps them, and anything they in turn reference, out of the nuspec's
+       <dependencies>; the two targets below add their assemblies, their XML documentation and their portable
+       PDBs. Only assemblies produced by a project reference of this solution are picked up
+       (`ReferenceCopyLocalPaths`' `ReferenceSourceTarget` metadata excludes NuGet-sourced references such as
+       ILGPU, which stays a real dependency). -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);_PropStructMergeReferencedAssemblies</TargetsForTfmSpecificBuildOutput>
+    <TargetsForTfmSpecificDebugSymbolsInPackage>$(TargetsForTfmSpecificDebugSymbolsInPackage);_PropStructMergeReferencedSymbols</TargetsForTfmSpecificDebugSymbolsInPackage>
+  </PropertyGroup>
+
+  <!--
+    Neither the .xml doc file nor the .pdb beside each merged dll is read from ReferenceCopyLocalPaths: that
+    item carries no reliable .xml or .pdb companion when this target runs through `dotnet pack`'s own
+    sub-invocation; both are derived instead from the dll paths this target already resolves.
+  -->
+  <Target Name="_PropStructMergeReferencedAssemblies" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)"
+                             Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' and '%(ReferenceCopyLocalPaths.ReferenceSourceTarget)' == 'ProjectReference'" />
+      <_PropStructReferencedAssemblyXml Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')"
+                                         Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' and '%(ReferenceCopyLocalPaths.ReferenceSourceTarget)' == 'ProjectReference'
+                                                    and Exists('%(ReferenceCopyLocalPaths.RootDir)%(ReferenceCopyLocalPaths.Directory)%(ReferenceCopyLocalPaths.Filename).xml')" />
+      <BuildOutputInPackage Include="@(_PropStructReferencedAssemblyXml)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_PropStructMergeReferencedSymbols" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <_PropStructReferencedAssemblyPdb Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).pdb')"
+                                         Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' and '%(ReferenceCopyLocalPaths.ReferenceSourceTarget)' == 'ProjectReference'
+                                                    and Exists('%(ReferenceCopyLocalPaths.RootDir)%(ReferenceCopyLocalPaths.Directory)%(ReferenceCopyLocalPaths.Filename).pdb')" />
+      <TfmSpecificDebugSymbolsFile Include="@(_PropStructReferencedAssemblyPdb)">
+        <TargetFramework>$(TargetFramework)</TargetFramework>
+      </TfmSpecificDebugSymbolsFile>
+    </ItemGroup>
+  </Target>
+
+</Project>

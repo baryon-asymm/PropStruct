@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Execution: everything that knows accelerators exist (BOOT.md, Purpose). The ILGPU context,
+    the CPU accelerator and CUDA, the libdevice post-link, the kill switch, device discovery, the
+    run-scoped device buffers, and the kernel entry points that launch Particle's attempt, normalization
+    and fold over them.
+  -->
+
+  <PropertyGroup>
+    <!-- LibDevicePostLink.cs pins the wrapper/libdevice module buffers for the libnvvm call (taken from APThermo unchanged). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ILGPU" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Particle\PropStruct.Particle.csproj" />
+    <ProjectReference Include="..\Random\PropStruct.Random.csproj" />
+  </ItemGroup>
+
+  <!--
+    The engine is internal to the tree (API.md: "InternalsVisibleTo for Simulation and its tests").
+    ILGPURuntime needs the internal kernel entry points and the views they take (KernelCache.cs).
+    Cli and Cli.Tests were granted access here but never used it (architecture audit finding R4,
+    2026-09-24): removed after verifying the solution builds and the fast test suite passes without them.
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Execution.Tests" />
+    <InternalsVisibleTo Include="PropStruct.Simulation" />
+    <InternalsVisibleTo Include="PropStruct.Simulation.Tests" />
+    <InternalsVisibleTo Include="ILGPURuntime" />
+  </ItemGroup>
+
+</Project>

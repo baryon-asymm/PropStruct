@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Node tests/Execution.Tests: what "Execution is ready" means (BOOT.md). -->
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ILGPU" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Execution\PropStruct.Execution.csproj" />
+    <ProjectReference Include="..\..\src\Particle\PropStruct.Particle.csproj" />
+    <ProjectReference Include="..\..\src\Random\PropStruct.Random.csproj" />
+    <ProjectReference Include="..\..\src\Statistics\PropStruct.Statistics.csproj" />
+    <ProjectReference Include="..\..\src\Input\PropStruct.Input.csproj" />
+    <ProjectReference Include="..\Harness\PropStruct.Tests.Harness.csproj" />
+  </ItemGroup>
+
+  <!-- The internal kernel entry points of Kernels.cs are JIT-compiled into ILGPU's dynamic runtime assembly. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="ILGPURuntime" />
+  </ItemGroup>
+
+</Project>

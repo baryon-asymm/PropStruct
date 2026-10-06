@@ -1,0 +1,43 @@
+# Hand-written, one row per Fortran name RealFourAccumulators.generated.txt lists
+# (this node's BOOT.md, "Accumulators", "Design decision, 2026-09-24"). Checked both
+# ways by tests/Particle.Tests/RealFourAccumulatorMappingTests.cs: every generated row
+# must have a row here, and every row here must name a generated row.
+#
+# `ported: <identifier>` names the C# site that reproduces this Fortran name's REAL*4
+# rounding: an AccumulatorLayout field name (Attempt.cs writes it through
+# record[layout.<Field> ...] = AddReal4(...)) or an Attempt.Run local (a plain C#
+# local written with AddReal4(...)) -- either way, every one of the generated row's own
+# Fortran lines must be cited (in a trailing "(<line>)" comment, Attempt.cs's own
+# convention) on a C# line that calls AddReal4(, checked by the same test.
+#
+# `not ported: <pointer>` is a name the port does not carry at all, and
+# `not rounded: <pointer>` a name it carries but keeps `double` by a recorded decision
+# (a decision variable, or an attempt-plane local). Either names the BOOT.md paragraph
+# that says why; no C# site is checked for it.
+#
+# fortran name | disposition
+allvdok | ported: Allvdok
+allvdok_fr | not ported: BOOT.md "Accumulators", "Decisions where the port departs from a transcription" -- "Accumulators that nothing printed or carried into a next cycle ever reads are not ported" (ALLVDOK_FR, lines 466/521, its print at 1282 commented out)
+aus | not rounded: BOOT.md "Accumulators", "Decisions where the port departs from a transcription", the 2026-09-17 correction naming QKS1/FQKS/AUS/TU as REAL*4 decision variables that gate a branch, not accumulators
+dokp31 | ported: Dokp31
+dokp41 | ported: Dokp41
+fmkarm2 | ported: Fmkarm2
+fmkarm2_loc | ported: Fmkarm2Loc
+fmkarm_cor | ported: FmkarmCor
+jammed_total | ported: JammedTotal
+nn_total | ported: NnTotal
+svd | ported: Svd
+svd1 | ported: svd1
+tu | not rounded: BOOT.md "Accumulators", "Decisions where the port departs from a transcription", the 2026-09-17 correction naming QKS1/FQKS/AUS/TU as REAL*4 decision variables that gate a branch, not accumulators
+vdok_loc | ported: vdokLoc
+vdok_loc2 | ported: vdokLoc2
+vdok_total | ported: VdokTotal
+vdok_total2 | ported: VdokTotal2
+vdokstr | ported: Vdokstr
+vmkm | not rounded: BOOT.md "Accumulators", "Decisions where the port departs from a transcription", the 2026-09-24 paragraph on VMKM (subroutine VM, line 1627): a per-call bridge-volume local recomputed fresh on every draw, not summed across attempts, attempt-plane like Dr/Db (root BOOT.md, "Precision kind")
+vmkm_loc | ported: vmkmLoc
+vmkm_loc2 | ported: vmkmLoc2
+vmkm_total | ported: VmkmTotal
+vmkm_total2 | ported: VmkmTotal2
+vsmkm | ported: Vsmkm
+vsmkm1 | ported: vsmkm1

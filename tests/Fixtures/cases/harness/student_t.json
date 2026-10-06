@@ -1,0 +1,368 @@
+{
+  "command": "python -X utf8 -c \"import json, scipy, scipy.stats as st; dfs=[1,2,5,10,15,20,31,50,100]; alphas=[0.05,0.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]; cases=[{\"df\": df, \"twoSidedAlpha\": a, \"quantile\": float(st.t.ppf(1 - a/2, df))} for df in dfs for a in alphas]; print(json.dumps({\"generatedWith\": \"scipy \" + scipy.__version__, \"date\": \"2026-09-17\", \"definition\": \"quantile = scipy.stats.t.ppf(1 - twoSidedAlpha/2, df), the two-sided critical value t such that P(|T|>t)=twoSidedAlpha for a Student t distribution with df degrees of freedom\", \"cases\": cases}, indent=2))\" > tests/Fixtures/cases/harness/student_t.json",
+  "generatedWith": "scipy 1.18.1",
+  "date": "2026-09-17",
+  "definition": "quantile = scipy.stats.t.ppf(1 - twoSidedAlpha/2, df), the two-sided critical value t such that P(|T|>t)=twoSidedAlpha for a Student t distribution with df degrees of freedom",
+  "cases": [
+    {
+      "df": 1,
+      "twoSidedAlpha": 0.05,
+      "quantile": 12.706204736174694
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 0.01,
+      "quantile": 63.656741162871526
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 0.001,
+      "quantile": 636.6192487687897
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 6366.197671316637
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 63661.977231105084
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 636619.7724194303
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 6366197.719958748
+    },
+    {
+      "df": 1,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 63661977.62366194
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 0.05,
+      "quantile": 4.302652729749462
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 0.01,
+      "quantile": 9.924843200918287
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 0.001,
+      "quantile": 31.599054576445365
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 99.99249984375004
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 316.2253943026159
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 999.9992500409771
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 3162.2774220743745
+    },
+    {
+      "df": 2,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 9999.999955387355
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.5705818356363146
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 0.01,
+      "quantile": 4.032142983555228
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 0.001,
+      "quantile": 6.868826625881276
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 11.17771007027887
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 17.896866143386116
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 28.478473463455252
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 45.20702622132357
+    },
+    {
+      "df": 5,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 71.69350285703655
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.2281388519862744
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 0.01,
+      "quantile": 3.16927267261695
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 0.001,
+      "quantile": 4.586893858702708
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 6.211050891290746
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 8.15028655888974
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 10.516489957008545
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 13.43941175874567
+    },
+    {
+      "df": 10,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 17.07642896172879
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.1314495455597755
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 0.01,
+      "quantile": 2.946712883475238
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 0.001,
+      "quantile": 4.072765195903846
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 5.239088211754155
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 6.501746289705681
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 7.9032336273669035
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 9.48301315085749
+    },
+    {
+      "df": 15,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 11.28182958395281
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.085963447265864
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 0.01,
+      "quantile": 2.8453397097861077
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 0.001,
+      "quantile": 3.8495162749308744
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 4.8373011529097125
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 5.853667921768399
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 6.927031381462937
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 8.079593954060007
+    },
+    {
+      "df": 20,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 9.331245737079396
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.0395134463964086
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 0.01,
+      "quantile": 2.744041919294269
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 0.001,
+      "quantile": 3.633456349758372
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 4.4609891407839815
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 5.266565590391211
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 6.071975924747355
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 6.891400276078558
+    },
+    {
+      "df": 31,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 7.735311347001152
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 0.05,
+      "quantile": 2.0085591121007607
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 0.01,
+      "quantile": 2.677793270940844
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 0.001,
+      "quantile": 3.496012881811176
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 4.228309866845845
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 4.91390681559542
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 5.573217242144962
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 6.2185830431693425
+    },
+    {
+      "df": 50,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 6.858268581044384
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 0.05,
+      "quantile": 1.983971518523552
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 0.01,
+      "quantile": 2.6258905214380173
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 0.001,
+      "quantile": 3.390491311164263
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 0.0001,
+      "quantile": 4.053336701201548
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 1e-05,
+      "quantile": 4.654240062775706
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 1e-06,
+      "quantile": 5.2137275742494875
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 1e-07,
+      "quantile": 5.743973935798585
+    },
+    {
+      "df": 100,
+      "twoSidedAlpha": 1e-08,
+      "quantile": 6.252890433759668
+    }
+  ]
+}

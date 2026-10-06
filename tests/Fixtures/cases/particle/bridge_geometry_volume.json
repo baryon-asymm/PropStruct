@@ -1,0 +1,73 @@
+{
+  "script": "formulas_particle.py",
+  "fortranLines": "1588-1629",
+  "subroutine": "VM",
+  "convention": "arrays and fraction/cell indices are the Fortran 1-based convention of the transcribed subroutine, not the port's own 0-based one (this node's API.md, '## Particle formula cases').",
+  "cases": [
+    {
+      "name": "normal_no_swap_needed",
+      "r1": 5.0,
+      "r2": 3.0,
+      "rk": 2.0,
+      "a": 1.0,
+      "expected": {
+        "jj": 1,
+        "swapped": false,
+        "bb": 3.7387911774959326,
+        "vmkm": 39.079188688651534
+      }
+    },
+    {
+      "name": "normal_swap_needed_same_geometry_as_no_swap_case",
+      "r1": 3.0,
+      "r2": 5.0,
+      "rk": 2.0,
+      "a": 1.0,
+      "expected": {
+        "jj": 1,
+        "swapped": true,
+        "bb": 3.7387911774959326,
+        "vmkm": 39.079188688651534
+      }
+    },
+    {
+      "name": "jj_zero_a_equals_two_rk_boundary",
+      "r1": 5.0,
+      "r2": 3.0,
+      "rk": 2.0,
+      "a": 4.0,
+      "expected": {
+        "jj": 0,
+        "swapped": false,
+        "bb": null,
+        "vmkm": null
+      }
+    },
+    {
+      "name": "jj_zero_a_greater_than_two_rk",
+      "r1": 5.0,
+      "r2": 3.0,
+      "rk": 2.0,
+      "a": 10.0,
+      "expected": {
+        "jj": 0,
+        "swapped": false,
+        "bb": null,
+        "vmkm": null
+      }
+    },
+    {
+      "name": "jj_zero_from_negative_bb",
+      "r1": 5.0,
+      "r2": 0.1,
+      "rk": 3.0,
+      "a": 0.5,
+      "expected": {
+        "jj": 0,
+        "swapped": false,
+        "bb": -1.3602431367581396,
+        "vmkm": null
+      }
+    }
+  ]
+}

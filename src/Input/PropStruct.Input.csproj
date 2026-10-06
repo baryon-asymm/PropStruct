@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Node src/Input: the original's input vocabulary (BOOT.md) - the .dat formulation file and the fourteen
+    model parameters of the interactive menu, with the original defaults. Host code: allocation and
+    exceptions are allowed (BOOT.md, Constraints).
+  -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PropStruct.Input.Tests" />
+  </ItemGroup>
+
+</Project>
