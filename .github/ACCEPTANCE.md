@@ -66,3 +66,6 @@
       45 minutes, 3.7 times one measurement: it guards a hang, not a slow run.
 - [ ] The release 0.1.0 ran as the root's criterion describes: tag, `publish` after the
       owner's approval, `github-release` (date, run id, nuget.org versions).
+      Partly met 2026-10-06: tag `v0.1.0` on `b115a57`; release run 37520139925 passed
+      `check` (the tag message and the rehearsal run 37517894875), `hosted`, `gpu`
+      (10 minutes 57 seconds) and `pack`; `publish` waits for the owner's approval.
