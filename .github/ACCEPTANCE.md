@@ -2,13 +2,15 @@
 
 ## Acceptance criteria
 
-- [ ] `actionlint` is green locally on every workflow and action, with the label `gpu`
-      declared in `actionlint.yaml`; and red on a planted undefined `needs` (date, the
-      version of actionlint). Not met in S4, 2026-10-04: actionlint is not installed on
-      the reference machine and was not downloaded; the YAML of both workflows, the
-      three actions and `actionlint.yaml` parses, every `needs` and every local action
-      resolves, every `run` step of an action names its shell. The run is a step of
-      the owner's setup before the rehearsal.
+- [x] 2026-10-06 — `actionlint` 1.7.12 (the release's `windows_amd64` zip, SHA-256
+      `6e7241b5…22f6e9`, equal to the release's checksums file) is green on `.github`
+      at `b9c240f` with `actionlint.yaml` (exit 0); red on a planted undefined `needs`
+      (`job "pack" needs job "no-such-job"`, exit 1); red on the same tree with the
+      config emptied (`label "gpu" is unknown`, exit 1), so the declared label is
+      what keeps the real run green. Scope: the two workflow files; the three actions'
+      own files are not linted by this run (their S4 check, 2026-10-04, stands). The
+      first red attempt, in a copy without `.git`, exited 3 on "no project found": no
+      finding, so no evidence.
 - [x] 2026-10-06 — `ci.yml` ran once on GitHub on the commit that introduced it, green,
       with the fast set `Category!=Long&Category!=Legacy` on `windows-latest` and
       `PROPSTRUCT_LEGACY_DIR` unset, and the facts that the hosted CPU moved, if any,
