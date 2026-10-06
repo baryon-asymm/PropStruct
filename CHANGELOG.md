@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Nothing yet.
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-10-06
 
 The first release: the library `PropStruct` and the tool `PropStruct.Cli` (`propstruct`),
 released together under one version. Below 1.0.0 a minor version may break the surface.
@@ -46,3 +46,4 @@ released together under one version. Below 1.0.0 a minor version may break the s
   `docs/ORIGINAL-DEFECTS.md`.
 
 [Unreleased]: https://github.com/baryon-asymm/PropStruct/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/baryon-asymm/PropStruct/releases/tag/v0.1.0
