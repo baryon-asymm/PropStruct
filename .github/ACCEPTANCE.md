@@ -64,8 +64,10 @@
       the GPU job 12 minutes 6 seconds, its `Tests` step 690 seconds (11 projects, 3095
       facts passed, 0 failed, 0 skipped, `Category!=Legacy`). The job's timeout is
       45 minutes, 3.7 times one measurement: it guards a hang, not a slow run.
-- [ ] The release 0.1.0 ran as the root's criterion describes: tag, `publish` after the
-      owner's approval, `github-release` (date, run id, nuget.org versions).
-      Partly met 2026-10-06: tag `v0.1.0` on `b115a57`; release run 37520139925 passed
-      `check` (the tag message and the rehearsal run 37517894875), `hosted`, `gpu`
-      (10 minutes 57 seconds) and `pack`; `publish` waits for the owner's approval.
+- [x] 2026-10-07 — The release 0.1.0 ran as the root's criterion describes: tag,
+      `publish` after the owner's approval, `github-release` (date, run id, nuget.org
+      versions).
+      Tag `v0.1.0` on `b115a57`; release run 37520139925 passed `check` (the tag message
+      and the rehearsal run 37517894875), `hosted`, `gpu` (10 minutes 57 seconds) and
+      `pack` on 2026-10-06, `publish` after the owner's approval and `github-release` on
+      2026-10-07; nuget.org versions: `PropStruct` 0.1.0, `PropStruct.Cli` 0.1.0.

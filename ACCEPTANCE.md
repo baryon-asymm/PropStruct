@@ -310,15 +310,18 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       Not yet CI: the same checks ran locally on 2026-10-04 (`.github/scripts`,
       `check_packages.py all`: contents, every mutation red, the tool, the sample, both
       equal to the source builds); SourceLink needs the public commit and is stage S6's.
-- [ ] The release 0.1.0: a dispatch rehearsal green through packing on the tagged commit,
-      its GPU job on the self-hosted runner with CUDA bound and `PROPSTRUCT_REQUIRE_CUDA=1`;
-      the tag `v0.1.0` naming that run and the Legacy run; the release run publishing both
-      packages through Trusted Publishing after the owner's approval and creating the
-      GitHub release with the notes of `CHANGELOG.md` (run ids, nuget.org versions).
-      Partly met 2026-10-06: rehearsal 37517894875 and `Legacy` 19 of 19 on `b115a57`; the
-      annotated tag `v0.1.0` names both; release run 37520139925 is green through `pack`
-      and `publish` waits for the owner's approval. Open: the approval, nuget.org
-      versions, the GitHub release.
+- [x] 2026-10-07 — The release 0.1.0: a dispatch rehearsal green through packing on the
+      tagged commit, its GPU job on the self-hosted runner with CUDA bound and
+      `PROPSTRUCT_REQUIRE_CUDA=1`; the tag `v0.1.0` naming that run and the Legacy run;
+      the release run publishing both packages through Trusted Publishing after the
+      owner's approval and creating the GitHub release with the notes of `CHANGELOG.md`
+      (run ids, nuget.org versions).
+      Rehearsal 37517894875 and `Legacy` 19 of 19 (2026-10-06) on `b115a57`, both named
+      by the annotated tag `v0.1.0`; release run 37520139925 green in every job, `publish`
+      after the owner's approval on 2026-10-07; nuget.org lists `PropStruct` 0.1.0 and
+      `PropStruct.Cli` 0.1.0; the GitHub release `v0.1.0` carries the 34 lines of notes
+      and both packages with their symbols. The tool installed from nuget.org reports
+      `0.1.0+b115a57…` and runs `inpt.dat` on the CPU to a `results.m`.
 - [x] 2026-10-05 — The original's authors are credited before the first push (decided
       2026-10-04): V. A. Babuk and A. A. Nizyaev, Baltic State Technical University
       "VOENMEH", with the reference of their paper of 2014, in place of the placeholders
