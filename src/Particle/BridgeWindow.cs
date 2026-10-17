@@ -27,6 +27,20 @@ internal static class BridgeWindow
         double dr, double ak3, double ak4, double cellSize, int nkarm,
         ArrayView<double> qks1, ArrayView<double> fqks, ArrayView<double> dpoc,
         out int nnn1)
+        => Build(dr, ak3, ak4, cellSize, nkarm, false, qks1, fqks, dpoc, out nnn1);
+
+    /// <summary>
+    /// <see cref="Build(double, double, double, double, int, ArrayView{double}, ArrayView{double}, ArrayView{double}, out int)"/>
+    /// with the <see cref="CorrectionSet.WindowLowerEdge"/> flag as
+    /// <paramref name="windowLowerEdge"/>: under it the window's origin, line 595's
+    /// <c>DPOC(mindk)</c>, is the lower edge of the QKS1 cell whose mass the first interval
+    /// carries, <c>cellSize * (mindk - 1)</c> instead of <c>cellSize * mindk</c> (BOOT.md,
+    /// "## Corrected model").
+    /// </summary>
+    public static bool Build(
+        double dr, double ak3, double ak4, double cellSize, int nkarm, bool windowLowerEdge,
+        ArrayView<double> qks1, ArrayView<double> fqks, ArrayView<double> dpoc,
+        out int nnn1)
     {
         var rr1 = ak3 * dr;
         var rr2 = ak4 * dr;
@@ -53,7 +67,7 @@ internal static class BridgeWindow
             fqks[iks - 1] = 0.0;
         }
 
-        dpoc[mindk - 1] = cellSize * mindk;
+        dpoc[mindk - 1] = cellSize * (windowLowerEdge ? mindk - 1 : mindk);
 
         for (var iks = mindk; iks <= maxdk; iks++)
         {
@@ -87,7 +101,7 @@ internal static class BridgeWindow
 
     /// <summary>
     /// The pocket size at <paramref name="x"/> within the window built by
-    /// <see cref="Build"/> (Fortran subroutine <c>DM</c>, source lines 1573-1586):
+    /// <see cref="Build(double, double, double, double, int, bool, ArrayView{double}, ArrayView{double}, ArrayView{double}, out int)"/> (Fortran subroutine <c>DM</c>, source lines 1573-1586):
     /// linear interpolation within the cell <c>i</c> where
     /// <paramref name="fqks"/>[i] ≤ <paramref name="x"/> &lt; <paramref name="fqks"/>[i + 1].
     /// <see langword="false"/> is the port's guard, not a modeled branch (BOOT.md, "IndexOutOfRange"):

@@ -70,5 +70,13 @@ internal struct ModelSetup
     /// </summary>
     public PrecisionKind Kind;
 
+    /// <summary>
+    /// The explicit errors of the original this run fixes (root BOOT.md, "Model kind";
+    /// <see cref="CorrectionSet"/>). The default value of this field (unset, zero) is
+    /// <see cref="CorrectionSet.None"/>, the <c>Original</c> model, so a caller built before
+    /// this field existed gets exactly the bits it always got.
+    /// </summary>
+    public CorrectionSet Corrections;
+
     public AccumulatorLayout Layout;
 }
