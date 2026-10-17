@@ -184,11 +184,11 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
-| 1184–1453 | numeric | The print plane computes its own expressions in REAL*4 (print-time arithmetic such as `DOKSD**0.5`, `1 − DolM`, the products with `mp`) and prints REAL*4 values; the port computes them in `double` and rounds to the printed digits without a binary32 conversion ("## Design decisions (2026-09-19)", the first bullet; `src/Statistics/BOOT.md`, "## Report", the per-cycle plane's bullet). A last printed digit can differ under either precision kind. | not measured: the criterion's print-resolution floor covers one unit of the last digit, and the set criterion finds no such cell under `Original` (`tests/Harness.Tests/SetCriterionTests`, 2026-10-01). | declared, not reproduced | none |
-| 1238 | cosmetic | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | none |
-| 1370, 1373, 1377; `arrayprint`, 1517–1543 | cosmetic | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | none |
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
+| 1184–1453 | numeric | The print plane computes its own expressions in REAL*4 (print-time arithmetic such as `DOKSD**0.5`, `1 − DolM`, the products with `mp`) and prints REAL*4 values; the port computes them in `double` and rounds to the printed digits without a binary32 conversion ("## Design decisions (2026-09-19)", the first bullet; `src/Statistics/BOOT.md`, "## Report", the per-cycle plane's bullet). A last printed digit can differ under either precision kind. | not measured: the criterion's print-resolution floor covers one unit of the last digit, and the set criterion finds no such cell under `Original` (`tests/Harness.Tests/SetCriterionTests`, 2026-10-01). | declared, not reproduced | none | not reachable |
+| 1238 | cosmetic | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | none | unchanged |
+| 1370, 1373, 1377; `arrayprint`, 1517–1543 | cosmetic | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | none | unchanged |
 
 ## Taboos
 

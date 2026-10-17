@@ -119,10 +119,10 @@ without any node declaring them).
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
-| 136–143 | algorithm | `KXX < 1` becomes 1 (`## Invariants`, "Normalizations of the original"). | not measured | reproduced | none |
-| 93–133 | dead | `NNZ` is read and kept, never used (`## Invariants`, "Normalizations of the original"). | not measured | reproduced | none |
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
+| 136–143 | algorithm | `KXX < 1` becomes 1 (`## Invariants`, "Normalizations of the original"). | not measured | reproduced | none | unchanged |
+| 93–133 | dead | `NNZ` is read and kept, never used (`## Invariants`, "Normalizations of the original"). | not measured | reproduced | none | unchanged |
 
 ## Taboos
 

@@ -45,6 +45,8 @@ class Defect(NamedTuple):
     consequence: str
     port: str                        # reproduced | declared, not reproduced | open
     differing_cells: "list[DeclaredCell]"  # parsed 'Differing cells'; [] for 'none'
+    corrected: str                   # the 'Corrected' value as written
+    corrections: "tuple[str, ...]"   # the members of a 'fixed (...)' value, else ()
 
 class DefectFormatError(Exception):
     path: str
@@ -56,8 +58,9 @@ class DefectFormatError(Exception):
 Read by every node that transcribes Fortran lines, to write its own `## Defects of
 the original` section (root `BOOT.md`, "The defect report is assembled, never
 written"): the table's header is exactly **Fortran | Kind | What the original does |
-Consequence | The port | Differing cells**, one row per defect, and nothing else in
-that section.
+Consequence | The port | Differing cells | Corrected**, one row per defect, and
+nothing else in that section. A table with the old six-column header, ending at
+`Differing cells`, is a format error.
 
 - `Kind` is one of `algorithm` (the model's answer changes), `statistics` (the
   generator or the seeds bias the answer), `numeric` (REAL*4 or x87 rounding), `dead`
@@ -66,16 +69,27 @@ that section.
   words `not measured`; a guess is not a consequence;
 - `The port` is `reproduced`, `declared, not reproduced` or `open`; a defect silently
   fixed is forbidden by the root's own taboo, so that value never appears;
-- `Differing cells` names the printed cells in which reference mode under `Original`
-  differs from the original because of that row, as `CompareSets` (`tests/Harness`)
-  finds them. Its value is `none`, or one backtick span of entries separated by
-  `; `: `` `scope: quantity[first..last] where original < threshold` ``. `scope` is
+- `Differing cells` names the printed cells in which reference mode under the `Original`
+  model and `Original` precision kind differs from the original because of that row,
+  as `CompareSets` (`tests/Harness`) finds them. Its value is `none`, or one backtick
+  span of entries separated by `; `:
+  `` `scope: quantity[first..last] where original < threshold` ``. `scope` is
   `*` or a comma-separated list of formulation names; `quantity` is the Harness name,
   literal; the range is optional, 0-based and inclusive (`[i]` or `[i..j]`); the
   `where` clause is optional. Parsed in this order: the scope is the text before the
   first `": "`; a trailing `" where original < x"` is stripped; a trailing `[...]` is
   stripped; the remainder is the quantity. A `reproduced` row's column must be `none`
   — a defect the port reproduces differs from nothing;
+- `Corrected` says what the `Corrected` model kind does with the defect, and is one of:
+  `unchanged` (it computes as the `Original` model does here); `not reachable` (the
+  defect exists only under `PrecisionKind.Original`, REAL*4 or x87 rounding, which the
+  `Corrected` model refuses; allowed only when `Kind` is `numeric`); or
+  `fixed (<Member>[, <Member>]…)` (it computes the intended behaviour; each `<Member>`
+  is a C# identifier, none repeated, naming the internal `CorrectionSet` flag that
+  carries the fix). The tool checks the shape of the identifiers only; the members are
+  checked against the enum by a test of `src/Particle`, which reads the generated page.
+  Any other value is a format error. The column is shown on the page, counted in its
+  summary line, and absent from the JSON twin;
 - the row is an index into the node's own prose, never a retelling: the prose stays
   where it is and the row links to it.
 
@@ -118,6 +132,10 @@ least one row", never exactly one.
 ⚠ 2026-10-02: the example was `src/Simulation` and `src/Particle` both declaring
 `HPEPA3,HMX: ConditionBreaking(2)`, "for two different mechanisms": one defect in two
 rows; `src/Simulation`'s is removed (root `BOOT.md`, "one row per defect").
+
+⚠ 2026-10-18: `Differing cells` read "reference mode under `Original`", the precision
+kind alone; with a second model kind, `Corrected`, in the tree it now names both the
+model and the precision kind. The grammar and the JSON are unchanged.
 
 ## Side effects
 
