@@ -184,7 +184,8 @@ which is worse than an awkward name.
 
 Run options, which the original had no menu for, carry descriptive names only:
 `--mode reference|batched`, `--accelerator auto|cpu|cuda`, `--layout original|independent`,
-`--precision binary64|original`, `--batch <n>`, `--seed <n>`, `--output <path>`,
+`--precision binary64|original`, `--model original|corrected` (designed 2026-10-18,
+"## Corrected model"), `--batch <n>`, `--seed <n>`, `--output <path>`,
 `--json <path>`, `--quiet`, and the budgets `--attempts-per-launch`,
 `--max-attempts-per-particle`, `--neighbour-budget`, `--record-budget-bytes`, plus
 `--continued-streams` (accepted only with `--mode batched --batch 1`; otherwise an
@@ -250,9 +251,9 @@ the binary32 echoes `Statistics` derives from the value as written.
 
 `run` prints one line per finished cycle to **stderr** (`cycle k of K, particles n`) from
 the `IProgress<CycleProgress>` of `Simulation`, and one summary line at the end (mode,
-accelerator, batch size, layout, seed, total attempts, elapsed, and the full path of
-every file written). `--quiet` suppresses the progress and the summary, never an error.
-No carriage-return animation. Stdout carries nothing for `run`, so that a shell redirect
+accelerator, batch size, layout, under `Corrected` the model, seed, total attempts,
+elapsed, and the full path of every file written). `--quiet` suppresses the progress
+and the summary, never an error. No carriage-return animation. Stdout carries nothing for `run`, so that a shell redirect
 of stdout is empty on success; `devices`, `defaults` and the help and version texts
 print to stdout. Numbers on stderr are formatted with the invariant culture as well; no
 number of `results.m` is formatted here, that is `Output`'s.
@@ -292,6 +293,34 @@ so `tests/Cli.Tests` drives the whole tool in-process, injects writers and cance
 through the token. Exit code 130 is tested that way: sending a real Ctrl+C to a child
 process is unreliable in a test runner, and a flaky test is worse than a declared gap —
 there is no process-level Ctrl+C test, by decision.
+
+## Corrected model
+
+Designed 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+[Simulation](../Simulation/API.md), "## Model kind"); the fixes are the library's, and
+this node only names the option.
+
+- **The flag.** `--model original|corrected`, canonical name only, no alias: a
+  `FlagCatalog` entry with owner `SimulationOptions`, property
+  `nameof(SimulationOptions.Model)`, `FlagKind.Enum`, values `original` →
+  `ModelKind.Original` and `corrected` → `ModelKind.Corrected`; `RunOptionsBuilder`
+  sets it as it sets `Precision`. The default is `SimulationOptions`' own, `original`
+  ("Defaults are the original's"), so every existing command line runs as before.
+  `--model`, not `--kind` or `--variant`: `--ivar` is the original's calculation
+  variant, and the value says which model, not how faithfully it is computed.
+- **No flag for the seam.** `SimulationOptions.Corrections` is internal; the reflected
+  flag coverage reads public properties only, so it neither needs nor admits a flag,
+  and a subset of the fixes never reaches a file the tool writes.
+- **The refusal is the library's.** `--model corrected --precision original` is refused
+  by `Simulator.Create` as `InvalidSetup`; the existing branch echoes its message, which
+  names both halves, and exits 2 ("The tool validates form, never meaning").
+- **Usage.** The run options gain the line `--model original|corrected
+  (corrected: binary64 only)` and one sentence: `corrected` fixes the original's
+  explicit errors, each marked fixed in docs/ORIGINAL-DEFECTS.md; `original`, the
+  default, is the original's model.
+- **The summary.** Under `Corrected` the summary line gains ` model=Corrected` after
+  `layout=…`; under `Original` it is the line it was, byte for byte. Progress lines
+  are unchanged.
 
 ## Acceptance criteria
 

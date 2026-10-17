@@ -204,16 +204,13 @@
   ⚠ 2026-10-03: was "`reproduced` with C1 at 22 of 22 and C2's list empty", now C2's
   551 cells attributed by class, not empty →
   HISTORY.md#row-771-1175-closing-wording-2026-10-03
-- [x] 2026-10-02: stage 1 of the plan above (W0 documents, W1 the excerpt, W2 the map,
-  the reader and the generated table) is in the tree and drives no code: the excerpt is
-  the executable's bytes (`CyclePlaneListingTests`), the map holds against it and
-  `CyclePlane.listing.generated.txt` (193 sites) reproduces byte for byte
-  (`CyclePlaneListingMapTests`, `tests/Statistics.Tests/BOOT.md`, the same date). Read
-  against the arbiter's scratch inventory, every cited address lies in a row of the
-  Fortran lines it names and no rule of the inventory is contradicted; the table is
-  finer in labels (REAL*8 sums carry B`n` with `rounds = no` where it says W; a stored
-  named home is S where it says T) and adds sites (lines 979, 1071 and 1140-1142
-  eliminated, `gk0`/`gk1` unread, REAL*8 temporaries at 856).
+- [x] 2026-10-02: stage 1 of the plan (W0–W2: the documents, the excerpt, the map, the
+  reader and the generated table, 193 sites) was in the tree before any plane code
+  (`CyclePlaneListingTests`, `CyclePlaneListingMapTests`), read against the arbiter's
+  inventory with no rule of it contradicted.
+
+  ⚠ 2026-10-18: was the stage told with its inventory comparison in full, now the tick
+  and places → HISTORY.md#stage-1-narration-2026-10-18
 - [x] 2026-10-03: A1, C1 (`LegacyDaCoefReproductionTests`, `LegacyDaCoef.approved.txt`):
   22 of 22 formulations print the original's `da_coef`; the approved file moved from
   19 of 22 (HPEPA2, P777 and CSPX01 one print unit below) in the same commit as the
@@ -221,36 +218,26 @@
 - [x] 2026-10-03: A2, the listing oracle (`tests/Fixtures/cycle_plane_oracle.py`, an x87
   interpreter over the excerpt's bytes; `tests/Statistics.Tests/ListingOracleTests`):
   under `Original`, `Compute` equals it bit for bit on every case of
-  `cases/statistics/cycle_plane_oracle.json`, and `Setup.Prepare` equals its pre-loop
-  run (line 378's λ, `DOKM`, `DOKSD`): both ratchets are empty,
-  `ListingOracle.approved.txt` from 463 lines and `ListingOracleSetup.approved.txt` from
-  19, which is the proof r4 seen once, the oracle red on the port of 2026-10-02 at the
-  isolated sites. Every site of the table is covered by an isolating case or written
-  `unreached`, and each `unreached` one has a control or the table's own reason for
-  being exact (`formulas_statistics.py`, `_check_unreached_sites_are_controlled`). The
-  right proofs k1–k4 and the red proofs r1–r3 and r5 are `tests/Fixtures/BOOT.md`'s. Not
-  seen red: a product order swapped at a call site (five tried: 805, 806, MD4, DD4,
-  1089) moves no bit of any case, a 1e-16 difference being absorbed by the binary32
-  store that follows (mutations 2026-10-03, `tests/Statistics.Tests/BOOT.md`); the forms
-  themselves are held at `double` by `PlaneFormsTests`, each but `Square`, an equivalent
-  form (`pow(y, 2)` is `y·y` when pow is correctly rounded). The fixture holds 26
-  cases: 19 drawn, three pinned for `DOKM`'s schedule (`BK10`, `KB397`, `AK157a`) and
-  four for `ZS`, `ZX` and the `JZZ = 2` loop (A10, A12); 58 isolated sites, 18
-  `unreached`; the setup ratchet is empty → HISTORY.md#oracle-fixture-cases-2026-10-03
+  `cases/statistics/cycle_plane_oracle.json` and `Setup.Prepare` its pre-loop run (λ,
+  `DOKM`, `DOKSD`); `ListingOracle.approved.txt` and `ListingOracleSetup.approved.txt`
+  are empty, from 463 and 19 lines (r4, seen once). Every site is covered by an
+  isolating case or written `unreached` with a control or the table's reason
+  (`_check_unreached_sites_are_controlled`); k1–k4 and r1–r3, r5: `tests/Fixtures`. A
+  swapped product order moves no bit (held by A9 and `PlaneFormsTests` instead). 26
+  cases, 58 isolated sites, 18 `unreached` → HISTORY.md#oracle-fixture-cases-2026-10-03
+
+  ⚠ 2026-10-18: was the unseen reds and the fixture's composition told in full, now the
+  figures → HISTORY.md#a2-narration-2026-10-18
 - [x] 2026-10-03: A3, C2 (`PathIdenticalPairsReportTests`,
   `PathIdenticalPairs.approved.txt`, `CyclePlanePairsTieTests`): the port side of the
-  six pairs regenerated alone by `cycle_plane_pairs.py generate` on the stage 3 build,
-  every integer-printed cell still equal on all six (S4 did not fire). The original's
-  files and provenance entries are kept as committed: a second run of the executable
-  prints other values in its own `pdoksmall` cells below 1e-30 (HMX 0.196E-37 then
-  0.197E-37, all six pairs), the declared cells of the dead row, so the original's side
-  is not rewritten. The list of differing cells stays at 551, four of them moved
-  (→ HISTORY.md#c2-four-moved-cells-2026-10-03). Classes by the design's attribution of
-  2026-10-02, not a per-cell measurement: P, the print plane (`ConditionBreaking(k)`,
-  `MediumJammedParticleFraction`, `MediumNumberOfBridges`), 2, 3, 2, 5, 2 and 1 cells;
-  I, every other, fed by the attempt plane's REAL*4 inputs `Dr`, `Db`, `RK`, 58, 42, 31,
-  196, 144 and 65; D, declared, as above; the four moved cells are I, two of them now
-  zero. No cell was required to reach zero and none outside the set moved.
+  six pairs regenerated on the stage 3 build, every integer-printed cell still equal (S4
+  did not fire), the original's side kept as committed; the differing cells stay at 551,
+  four moved (→ HISTORY.md#c2-four-moved-cells-2026-10-03), by the design's attribution,
+  not a per-cell measurement, 15 of the print plane and 536 fed by the attempt plane's
+  REAL*4 inputs `Dr`, `Db`, `RK`; none outside the set moved.
+
+  ⚠ 2026-10-18: was the per-pair class counts and why the original's side stays told in
+  full, now the totals → HISTORY.md#a3-narration-2026-10-18
 - [x] 2026-10-03: A4, C3: 295 of 295, 2016 of 2016, 293 of 293, control (iv) and every
   `Binary64` snapshot, unchanged bit for bit (`PerCyclePlaneOutOfSampleControlsTests`,
   `CycleStatisticsFormulaTests` and every snapshot of the fast set; S3 and S7 did not
@@ -260,28 +247,23 @@
   regenerated): green, `da_coef` and every counter unmoved, so S5 did not fire and the
   rate runs stay as they were until stage 4.
 - [x] 2026-10-03: A6, the rate (`tests/Harness.Tests/RateCriterionTests`,
-  `SetCriterionTests`, 59 cases): the 160 `Original` runs, `rate-table.json` and the
-  seed-0 snapshot regenerated (`dotnet run -c Release --project tests/RateTableTool --
-  rate-table`, 16 m 41 s, then `seed-zero-snapshot`), `Binary64` untouched. 147 of the
-  160 `Original` runs differ in bytes from before, 13 do not, and the failing cells of
-  every one of the 160 are the same: 17 of 160 against the original's 15 of 197,
-  p = 0.102792, no excess at `α`; the positive control on `Binary64` rejects on HPEPA3
-  and HMX at p = 1.63e-36 each, the 160 `Binary64` runs and their ten snapshot hashes
-  byte-identical (S3, S6 did not fire). In the snapshot nine of ten `Original` hashes
-  moved (P33 `Original` did not). The seed-0 controls (A5) hold on the regenerated runs,
-  39 of 39 (S5 did not fire).
+  `SetCriterionTests`, 59 cases) on the 160 `Original` runs regenerated
+  (`tests/RateTableTool`), `Binary64` byte-identical: 17 of 160 against the original's
+  15 of 197, p = 0.102792, no excess at `α`, the failing cells of every run unchanged;
+  the positive control on `Binary64` rejects on HPEPA3 and HMX at p = 1.63e-36 each;
+  the seed-0 controls (A5) hold, 39 of 39.
+
+  ⚠ 2026-10-18: was the regeneration's commands, byte and hash counts told in full, now
+  the deciding figures → HISTORY.md#a6-narration-2026-10-18
 - [x] 2026-10-03: A7, one positive control per site kind the table leaves `unreached` in
-  the oracle (22 sites in the fixture of cdc6237, 18 in the one regenerated 2026-10-03):
-  16 cases `control_NN_*` of `cycle_statistics.json`, 35 controls in `CONTROLS` of
-  `formulas_statistics.py` (a store, a temporary, a sum stored every pass, B6 and C6 at
-  trip counts 5, 6 and 13, X, H at 817 and 976), each a seeded body whose store or
-  schedule, flipped in the twin, moves a bit of the Original report (`generate` refuses
-  a control that moves nothing); the 22 sites (and the 18) are each controlled (11 and
-  7) or exact by the table (11 and 11) (`order` of `0.0` or `real(i)`). Red on the C# of
-  cdc6237: all 16 control cases, `seeded_rounding_reaches_every_member`, the cycle
-  cases, both warning cases, two small-particles cases and the setup plane's five
-  formulations, 28 of 82 tests, with the new case files and the old code; `Binary64`
-  cases pass on both. Line 378's λ is `ListingOracleSetup.approved.txt`, empty.
+  the oracle: 16 cases `control_NN_*` of `cycle_statistics.json` and 35 controls in
+  `CONTROLS` of `formulas_statistics.py`, each moving a bit of the `Original` report
+  when its store or schedule is flipped in the twin; the 18 `unreached` sites each
+  controlled (7) or exact by the table (11). Red on the C# of cdc6237: 28 of 82 tests,
+  `Binary64` cases passing on both. Line 378's λ: `ListingOracleSetup.approved.txt`.
+
+  ⚠ 2026-10-18: was the control kinds and the red tests told in full, now the counts →
+  HISTORY.md#a7-narration-2026-10-18
 - [ ] A8 (the arbiter's F1 of 2026-10-03): the loops of Fortran 379–406 are generated
   from the listing, not typed: the map's scope covers 0x408ADC–0x408FA6 and
   `Setup.AnalyticSizes` and `formulas_statistics.py` follow rows of the table. It lifts
@@ -297,33 +279,26 @@
   `order` text at a cited line, a commutation one order. Green on the 23 calls; red at
   its own line on eleven edits, right on three commutations
   (`tests/Statistics.Tests/BOOT.md`, "## Mutations").
-- [x] 2026-10-03: A10 (F4), `PARAM` runs in the oracle: the excerpt holds its bytes
-  (0x4181A5–0x418577), the machine executes the call (SIZE, the next routine, is a stub
-  nothing reads) and `ZSS`, `ZX`, `Z11` are the executable's, compared in
-  `ListingOracleTests` and `PreloopSurveyTests` (both approved files empty). Over the 49
-  shipped files `ZSS` per addition equals the executable on 49 (one rounding after the
-  loop parts on 16, `C166` the sixteenth, since the twin's `.dat` reader was fixed: the
-  old one left them equal); `ZX` parted by 1–3 ulp of double on 33 and `Z11` on 16
-  because `FractionLaw.Build` formed `l·l·u·u` left to right where the executable forms
-  `(l·l)·(u·u)`; under `Original` it is the executable's on 49 of 49. Of the references
-  `HMX` and `HPEPA3` moved (1–2 ulp), `inpt`, `P33`, `PSAN02n` not; the 160 `Original`
-  rate runs, the seed-0 snapshot, C2 and the 39 controls did not move and `Binary64` is
-  bit-identical (64 of 64 runs of `HMX` and `HPEPA3` byte-equal on a scratch tree). Pins
-  `HMX`, `P2a` (`ZS`) and `HPEPA3` (`ZX`) tell the executable's rule from the other.
-- [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
-  `formulas_statistics.py` (`cycle_plane_oracle.py restamp`: the 22 cases byte for byte,
-  `verify` green; `ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until
-  restamped); (b) `.TheTwinThatSuppliesTheInjectedSetupReproducesItsCaseFiles` runs the
-  twin's `verify` in the fast set, 0.7 s, red on `DOKM_UNROLL = 6`; (c) `QKS1` is one
-  expression in the oracle's injection and in `Compute` only while `QKSS` is a binary32
-  integer, up to 2^24 (`Qks1NormalisationTests`: equal on every cycle of the fixture,
-  `QKSS` at most 4e5, red on the divisor `QKSS + 1`; equal at 2^24, one unit apart at
-  2^24 + 1, red on `Compute` dividing by `f32(QKSS)`). The bound is no excuse: 110 of
-  the 175 archived outputs print a larger `QKSS`, among the references HMX and HPEPA3.
-  `Compute` is unchanged; the finding is the `open` row `718, 963–996` and A14.
+- [x] 2026-10-03: A10 (F4), `PARAM` runs in the oracle (0x4181A5–0x418577) and `ZSS`,
+  `ZX`, `Z11` are the executable's (`ListingOracleTests`, `PreloopSurveyTests`, both
+  approved files empty): over the 49 shipped files `ZSS` per addition equals it on 49
+  (one rounding after the loop parts on 16); `ZX` parted by 1–3 ulp on 33 and `Z11` on
+  16 while `FractionLaw.Build` formed `l·l·u·u`, the executable `(l·l)·(u·u)`, now 49 of
+  49. The rate runs, the seed-0 snapshot, C2 and the 39 controls did not move;
+  `Binary64` is bit-identical. Pins `HMX`, `P2a` (`ZS`), `HPEPA3` (`ZX`).
 
-  ⚠ 2026-10-03: was "one expression only while `QKSS` is a binary32 integer", now at
-  every count (A14).
+  ⚠ 2026-10-18: was the call's stub, the reader fix and the moved references told in
+  full, now the deciding figures → HISTORY.md#a10-narration-2026-10-18
+- [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
+  `formulas_statistics.py` (`cycle_plane_oracle.py restamp`, `verify` green;
+  `ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until restamped); (b)
+  `.TheTwinThatSuppliesTheInjectedSetupReproducesItsCaseFiles` runs the twin's `verify`
+  in the fast set, red on `DOKM_UNROLL = 6`; (c) `QKS1`'s injection and `Compute` are
+  one expression at every count (A14; `Qks1NormalisationTests`, red on the divisor
+  `QKSS + 1` and on `f32(QKSS)`).
+
+  ⚠ 2026-10-03: was (c) "one expression only while `QKSS` is a binary32 integer", now
+  at every count (A14); the text moved 2026-10-18 → HISTORY.md#a11-narration-2026-10-18
 - [x] 2026-10-03: A14 (from A11), the divisor of line 718 is the exact count. The
   excerpt holds the loop's bytes (0x40B7FA–0x40B8AF, read, not run): `QKSS` is
   `INTEGER*8`, `fild qword` loads it exactly (0x40B823), each cell is `fild qword; fdiv;
@@ -331,20 +306,16 @@
   `f32(q / QKSS)` and equals `Compute` on every cycle (`Qks1NormalisationTests`, the 2^24
   and 2^24 + 1 pair kept against a divisor rounded to binary32). Nothing moves; the row
   `718, 963–996` is `reproduced`.
-- [x] 2026-10-03: A12, the `JZZ = 2` setup loop is the executable's. From
-  0x408CFE–0x408F8E: unrolled four-fold; `u − l` is a REAL*4 temporary (0x408D18,
-  0x408F10) in pass 1 of a block and in every remainder pass, a register in passes 2–4;
-  `l**5` is stored to a REAL*4 temporary every pass (0x408D29), `u**5` is `u·(u²·u²)`;
-  `DOK4`, `DOK3` stored every pass; `DOKSD` stored after passes 1–3 of a block
-  (0x408D7B), carried after the fourth and through the remainder. `Setup.AnalyticSizes`
-  (`UnrolledSchedule(n, 4)`) and the twin's `jzz2_sums` follow it; the survey's approved
-  file is empty (`CSPX04` agrees). Right: the six shipped `JZZ = 2` files and 120 drawn
-  loops of 1–16 fractions, zero differing bits, in C# by
-  `PreloopSurveyTests.AnalyticSizesReproducesTheExecutablesJzz2LoopOnDrawnLoops`
-  (`preloop_survey.json`'s `jzz2Controls`). Red: the earlier rule parts on 91 and 121 of
-  300 drawn loops; the width rounded every pass, never rounded, `l**5` unstored, `DOKSD`
-  unstored part on 8, 9, 27, 14 of 120, and the same edits of `Setup.AnalyticSizes` turn
-  that test red (the width never rounded is green on the 49 files alone).
+- [x] 2026-10-03: A12, the `JZZ = 2` setup loop is the executable's (0x408CFE–0x408F8E;
+  the schedule: `BOOT.md`, "## Setup plane"), followed by `Setup.AnalyticSizes` and the
+  twin's `jzz2_sums`; the survey's approved file is empty (`CSPX04` agrees). Right: the
+  six shipped `JZZ = 2` files and 120 drawn loops, zero differing bits
+  (`PreloopSurveyTests.AnalyticSizesReproducesTheExecutablesJzz2LoopOnDrawnLoops`). Red:
+  the earlier rule parts on 91 and 121 of 300 drawn loops, four edits of the stores on
+  8 to 27 of 120, the same edits turning that test red.
+
+  ⚠ 2026-10-18: was the schedule's addresses and each red edit's count told in full,
+  now the figures → HISTORY.md#a12-narration-2026-10-18
 - [x] 2026-10-03: A13 (the arbiter's suggestion), the pre-loop survey of the 49 shipped
   files is a ratchet (`PreloopSurveyTests`, `PreloopSurvey.approved.txt`; the oracle's
   pre-loop over every `.dat`, `tests/Fixtures/preloop_survey.py generate` into
@@ -395,31 +366,58 @@
 
   ⚠ 2026-09-26: was the fix's scope and mutation-proof narrative told in full, now the
   deciding figures alone → HISTORY.md#binary32-totality-criterion-narration-2026-09-26
-- [x] 2026-09-28: the arbiter's per-cycle-plane verdict of 2026-09-28 (amendment A3)
-  freezes four out-of-sample controls before any per-cycle
-  rounding code is written, each proven right at the arbiter's own count and red on the
+- [x] 2026-09-28: four out-of-sample controls of the per-cycle plane, frozen before its
+  code (the arbiter's amendment A3), each right at the arbiter's count and red on the
   named alternative (`tests/Statistics.Tests/PerCyclePlaneOutOfSampleControlsTests`):
-  (i) the Fortran 795-796 rule (nothing rounded before 796's own store) reproduces
-  `epsdokfr` on all 295 archived outputs of the five reference formulations, red on
-  "795's store rounded" (HMX 9 of 49, HPEPA3 14 of 98 consistent); (ii) R1 at 771-783
-  puts every printed `epsx` cell on the 2⁻²⁴ grid, 2016 of 2016 over 336 archived and
-  legacy outputs, red on today's unrounded port (0 of 960); (iii) rule L's once-rounded
-  `DOKM` reproduces `epsalldok` on all 293 archived outputs, red on today's
-  per-addition `DOKM` (PSAN02n 15 of 49) — the mechanism A2 below fixes.
+  (i) `epsdokfr` on 295 of 295 archived outputs; (ii) every printed `epsx` cell on the
+  2⁻²⁴ grid, 2016 of 2016; (iii) `epsalldok` on 293 of 293; (iv) since 2026-10-02,
+  `da_coef` of `rps01`/`rps02` exactly the archive's 0.7284034 and 0.6019315 (red
+  without the pocket-forming flags). Re-verified 2026-10-03 (A4).
 
-  ⚠ 2026-10-01: (ii)'s red side read the rate runs, which now carry R1 (960 of 960 on
-  the grid); it reads the frozen pre-change runs instead, 0 of 30
-  (`.Control2EpsxCellsAreOnTheGridInThePortsRunsAndOffItBeforeTheChange`).
+  ⚠ 2026-10-18: was each control's rule, red side and counts told in full, now the
+  tick, place and figures → HISTORY.md#out-of-sample-controls-narration-2026-10-18
 
-  Control (iv), `da_coef` of the two legacy runs `rps01`/`rps02`, gates since
-  2026-10-02: the plane, run on the shipped `psan01.dat` and `psan02.dat` (found by the
-  outputs' own `Input filename`, read with their pocket-forming flags) and the printed
-  `fmdok[0]` (empty) as the reachable cell, prints exactly the archive's 0.7284034 and
-  0.6019315 (`PerCyclePlaneOutOfSampleControlsTests`, `.Control4DaCoefOfTheLegacyPair`
-  `ReproducesTheArchivedPrint`). Red on the same run without the flags
-  (`.Control4IsRedWhenThePocketFormingFlagsAreNotRead`, both files), with 1016's store
-  unrounded (`rps02`) and with the folds of 1014–1016 off (both files), each reverted.
-  `eta` is the menu default 0, not printed by either.
+  ⚠ 2026-10-01: was (ii)'s red side on the rate runs, now on the frozen pre-change
+  runs, 0 of 30 → HISTORY.md#out-of-sample-controls-narration-2026-10-18
 
   ⚠ 2026-10-02: was "reported only, not gated", now gated (the old figures were
   artefacts of recovered inputs) → HISTORY.md#control-iv-reported-only-2026-10-02
+
+- [ ] Corrected, the seam (`BOOT.md`, "## Corrected model"): every new overload under
+  `CorrectionSet.None`, and under any set with `PrecisionKind.Original`, equals its old
+  member bit for bit on every case file of `tests/Fixtures/cases/statistics`, every
+  existing test unchanged and green; red on one flag applied under `None`. A structural
+  test finds no `CyclePlaneRounding`, `CyclePlaneOrder` or `UnrolledSchedule` call in a
+  block a `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests`
+  green.
+- [ ] Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is the `None`
+  value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base, each to
+  1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the π and ⅓ literals
+  of the four line-map ranges at exactly 1704, 1716, 1014, 1016, red on a removed site.
+- [ ] Corrected, `DoksdConsistent`: right: one `JZZ = 2` fraction gives the closed form
+  `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance, to
+  1e-12; P33 prints `Dok43sd` 112.66 µm, P2 8.07 µm; red: `None`'s 75.45 µm and `NaN`;
+  `JZZ ≠ 2` bit-identical to `None`.
+- [ ] Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0` fraction across
+  `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by `GGG·GDOK·φ(b)`
+  and the flag equals it, under both laws; `b` at or below the bound: bit-identical; on
+  one PSAN02 `--sfr`, `Dmin = 20 µm` total set, `None` minus the flag is 0.0119 (three
+  digits).
+- [ ] Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`: on a constructed
+  `vdokstr` with mass in cell 1 and `gdokleft > 0`, `zdoksmall` is `GGG·z` under `None`,
+  `(GGG − gdokleft)·z` under the first flag, and `pdoksmall[0]` 0 under `None`, the 1061
+  formula under the second; `gdokleft = 0`, cell 1 empty: bit-identical. P312 at its
+  defaults and at `Dmin = 5 µm` moves `pdoksmall` (reported).
+- [ ] Corrected, `VdokTotalOnCopy`: over two cycles of constructed totals `None` divides
+  them in place twice, while under the flag they are byte-identical after both calls and
+  `DolM2`, `DolM3` equal their closed form over the undivided totals; cycle 1
+  bit-identical to `None`; P312 with `KXX = 3` moves them from cycle 2 (reported).
+- [ ] Corrected, the categories: `CategoriesOnCopy` leaves the totals byte-identical and
+  a second call equal to the first, its report that of `None` on a fresh copy, where
+  `None`'s second call differs; `CategoriesLastRowRecomputed` on rows whose last merge
+  leaves an insufficient row recomputes until none is (merged `DOKP43` =
+  `ΣDokp41/ΣDokp31`), `None` keeping the stale row; `CategoriesEmptyRowsMerged` merges
+  an empty middle row `None` keeps, a `QDOKSS = 1` row under neither. The five
+  references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
+- [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
+  with its flag's code and these criteria's evidence, never before.

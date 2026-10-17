@@ -12,10 +12,17 @@ so that the library never depends on formatting.
 - `results.m` holds the original's variable names, comment lines, order and formats:
   Fortran edit descriptors (`E9.3`, `E12.6`, `F7.2`, `F6.4`, `I3`…) and list-directed
   output emulated as Digital Visual Fortran prints them, six values per line with the
-  original's continuation.
+  original's continuation. Under the `Corrected` model the names, order and formats
+  stay; the comment lines `## Corrected model` names differ and its footer line is
+  added.
+
+  ⚠ 2026-10-18: was the original's comment lines under every model, now under `Original`, `Corrected` correcting two and adding one → HISTORY.md#comment-lines-under-original-2026-10-18
 - The line of Fortran 1238 is reproduced as printed (`epsx(5)` shows EPS6, `epsx(6)`
   shows EPS7); the JSON carries all seven accuracies under true names.
-- `pdoksmall(1)` prints as zero.
+- `pdoksmall(1)` prints as zero under the `Original` model; under `Corrected` it prints
+  the value `Statistics` assigns it (`PdoksmallFirstCell`), with no code here.
+
+  ⚠ 2026-10-18: was zero under every model, now under `Original` → HISTORY.md#pdoksmall-first-cell-2026-10-18
 - Formatting never depends on the current culture.
 - JSON written and read back gives an equal result.
 - `RunDiagnostics.Precision` (`src/Simulation/API.md`) is recorded in `results.m` as
@@ -107,6 +114,61 @@ Checks: `tests/Output.Tests`; grammars: `API.md`, "## Print-expression map".
 ## Taboos
 
 - No computation of model quantities here.
+
+## Corrected model
+
+Designed 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+[Simulation](../Simulation/API.md), "## Model kind"). Every branch below reads
+`result.Diagnostics.Model == ModelKind.Corrected` and nothing else: no `CorrectionSet`
+reaches this node, so a seam run, labelled `Corrected`, gets all of them. Under
+`Original` every byte of `results.m` and of the JSON is what it was before the option
+(`tests/Simulation.Tests`' seed-zero guard). Each is print-time text or print-time
+arithmetic, as its `Original` line is, so the taboo above holds.
+
+- **The footer line** (no Fortran line). Written after the execution-mode line by
+  `ResultsMWriter.ModelCommentLine`, the one place the text is written, under
+  `Corrected` only, verbatim: ` % Model kind: corrected; the explicit errors of the
+  original marked fixed in the Corrected column of docs/ORIGINAL-DEFECTS.md
+  (github.com/baryon-asymm/PropStruct) are fixed.` No `=` and no digit, like the footer
+  lines above it, and excluded from the structural comparison of
+  `tests/Output.Tests` the same way (`% Model kind:`). `Original` writes no line.
+- **`fqmkm1`'s step, Fortran 1368–1369.** The comment says `(step = 0.01)`; the
+  original bins `qmkm1` at 0.001 (Fortran 628, read back at 1110, outside this node's
+  range; audit of 2026-10-16, checked 2026-10-18). `Corrected` writes `(step = 0.001)`
+  in that comment; `fqmkm2`'s and `coef`'s comments stay. Branch: the literal at its
+  `Line` call in `WriteFunctions`.
+- **The condition labels, Fortran 1250–1252.** The original prints `0.5`, `2.0` and
+  `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and names `Dbase` in condition
+  5, which tests the distance against `max(Dbase,Dok)` (Fortran 547, 552, 566, outside
+  the range; same audit). `Corrected` prints `Dbase < {AK1}Dok`, `Dbase > {AK2}Dok` and
+  `l > {AK4}max(Dbase,Dok)`, each ratio `StoredSetup.Ak1`/`Ak2`/`Ak4` (never
+  `Formulation`: "print the stored setup" below) as `ToString("0.0##",
+  CultureInfo.InvariantCulture)`. The shape ` %    K) <label>:` stays, the label padded
+  with blanks to 16 characters when shorter, as the original pads `Nkarm/Nmkm < min`;
+  `tests/Harness` keys these lines by `K`. At the default ratios conditions 3 and 4
+  print as under `Original`. Branch: the label of each `Line` call in `WriteResults`,
+  the `Original` literal kept verbatim on its line, its citation and fragment unchanged.
+  A `Corrected` result with a null ratio is refused, `ArgumentException` naming it.
+- **`fineoxy_fr`, Fortran 1286.** `gdokns + gdokleft/GGG` adds a share of the
+  pocket-forming oxidizer `GGG` to a share of the whole oxidizer `GGG0`.
+  `Corrected` prints `gdokns + (1 − gdokns)·gdokleft/GGG`, the share of `GGG0`
+  (`GGG = GGG0·(1 − gdokns)`, Fortran 376, as the arbiter checked it), in C#
+  `gdokns + (1.0 - gdokns) * local.Gdokleft / header.Ggg` with `gdokns` =
+  `StoredSetup.HomogenizedOxidizerFraction`. The `Original` statement keeps its line,
+  fragment and `// Fortran 1286`; the `Corrected` value is its own statement, which
+  carries no `// Fortran` citation (no generated row holds it), and the printed
+  `R(...)` is the same call. Equal to `Original` when `gdokns = 0` or `gdokleft = 0`;
+  each reference formulation's archived `results.m` prints `fineoxy_fr` as 0.
+- **JSON.** `ResultsJson`'s options take a `DefaultJsonTypeInfoResolver` with one
+  modifier: `ShouldSerialize` omits `RunDiagnostics.Model` when `Original` and
+  `StoredSetup.Ak1`/`Ak2`/`Ak4` when `null`; `Simulation` carries no serialisation
+  attribute. A missing `Model` reads back `Original` and a missing ratio `null`, so the
+  round trip stays exact under both models and an `Original` JSON keeps its bytes.
+
+Evidence: writer tests on constructed results (a label at `AK1 = 0.45`, `fineoxy_fr`
+at `gdokns = 0.1` with `gdokleft > 0`, the footer, the step); a run of P312 under
+`Corrected` with `gdokns = 0.1`, where `gdokleft ≈ 0.122` at defaults moves
+`fineoxy_fr` by about 0.023 (the arbiter's estimate, not a measurement).
 
 ## Design decision (2026-09-24): print the stored setup
 

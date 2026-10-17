@@ -65,6 +65,23 @@ accumulators alone.
 also reproduces the per-cycle plane (`src/Statistics/BOOT.md`, "## Report"); the usage
 text says so.
 
+## Model flag ⏳
+
+Designed 2026-10-18 (`BOOT.md`, "## Corrected model"); not implemented yet. One more run
+option, beside `--precision`:
+
+```console
+  --model original|corrected        (corrected: binary64 only)
+```
+
+`--model corrected` runs the `Corrected` model kind (`src/Simulation/API.md`, "## Model
+kind"): the original's explicit errors fixed, each marked fixed in
+`docs/ORIGINAL-DEFECTS.md`, and a footer line in `results.m` saying so. `--model
+original`, the default, changes nothing for any existing command line. `--model
+corrected --precision original` is refused by `Simulation` as `InvalidSetup`, exit 2
+("Errors" below). Under `Corrected` the stderr summary line names the model
+(` model=Corrected` after `layout=…`); under `Original` it is unchanged.
+
 ## Output ✅
 
 | Verb | stdout | stderr | files |
@@ -81,7 +98,7 @@ text says so.
 | unknown flag or verb, no verb, a flag given twice, missing or unparsable value, `--switch=value` | message naming the flag or verb on stderr, usage where a verb is missing, exit 2 |
 | missing, unreadable or malformed input file, `GSV ≠ 2` | message with the line number on stderr, exit 2 |
 | failed run status (other than the two below) | the status name and the flag that raises its budget, exit 1 |
-| `InvalidSetup` | message on stderr, exit 2 |
+| `InvalidSetup` (including ⏳ `--model corrected` with `--precision original`) | message on stderr, exit 2 |
 | `AcceleratorUnavailable`, an I/O error writing an output, a missing output directory (found before the run) | message with the full path on stderr, exit 3 |
 | any other unhandled exception (a defect of the tool), except the two below | type and message on stderr, exit 4 |
 | Ctrl+C | "interrupted" on stderr, no output file, exit 130 |

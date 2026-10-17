@@ -107,10 +107,14 @@ node: the previous version of `FractionLaw.MaxBaseSize` did both, undeclared, to
 plane"; root BOOT.md, "Precision kind"): `Prepare`, `FractionLaw.Build` and
 `Setup.AnalyticSizes` each take the run's `PrecisionKind`. Under `Original` they return
 the setup plane's values as the Fortran stores them (`tables.Zss` among them, "## Setup"
-above); under `Binary64` every result is bit-identical to what this node always
-computed, except `SetupEchoes.Ddokmax`, whose stored value moved at the eighth
-significant digit when the 2026-09-24 review corrected which store it reads (BOOT.md,
-"## Invariants", "The setup follows the precision kind").
+above); under `Binary64` and the `Original` model every result is bit-identical to what
+this node always computed, except `SetupEchoes.Ddokmax`, whose stored value moved at the
+eighth significant digit when the 2026-09-24 review corrected which store it reads
+(BOOT.md, "## Invariants", "The setup follows the precision kind").
+
+⚠ 2026-10-18: was "under `Binary64`" for every model, now the `Original` model's (the
+`Corrected` model: "## Corrected model" below) →
+HISTORY.md#corrected-api-setup-binary64-2026-10-18
 
 ⚠ 2026-09-27: was "under `Binary64` every result is bit-identical", without the
 `Ddokmax` exception BOOT.md's own invariant has carried since the 2026-09-24 review.
@@ -125,8 +129,8 @@ internal static class CycleStatistics
     public static CycleReport Compute(
         in ModelSetup setup, SetupTables tables, SetupEchoes echoes, SetupInputs inputs,
         int cycleIndex,                         // 0 for the warm-up
-        Span<long> integerTotals,               // rewritten in place: Qdoks
-        Span<double> realTotals,                // rewritten in place: Dokp41, Dokp31, VdokTotal, VdokTotal2
+        Span<long> integerTotals,               // rewritten in place (Original model): Qdoks
+        Span<double> realTotals,                // rewritten in place (Original model): Dokp41, Dokp31, VdokTotal, VdokTotal2
         double[] nextPdoksmall,                 // Ndok, written
         out double nextDmaxxx,
         out CategoriesStatus categoriesStatus); // Categories.MergeAndDescribe's own status, passed through
@@ -159,7 +163,8 @@ internal sealed record CycleReport
 ```
 
 Semantics: `Compute` is deterministic in its inputs; it writes only the totals named
-in the comments and `nextPdoksmall`. The driver builds the `FractionTable` and
+in the comments, none under the `Corrected` model ("## Corrected model"), and
+`nextPdoksmall`. The driver builds the `FractionTable` and
 `CycleInputs` views of `Particle` from `SetupTables`, `nextPdoksmall`, `nextDmaxxx` and
 the normalized `Qks`.
 
@@ -170,9 +175,12 @@ temporaries, sum schedules and register or home reads from
 `CyclePlane.listing.generated.txt` ("## Cycle listing map and table"), so every report
 field whose Fortran variable is REAL*4 is what the executable's home holds, and
 `nextPdoksmall`, `nextDmaxxx` and the rewritten `Dokp41`, `Dokp31`, `VdokTotal`,
-`VdokTotal2` are written as it stores them; under `Binary64` every result is
-bit-identical to before. The kind is explicit on `MergeAndDescribe`, `Probability` and
-`MaxSize`, never optional.
+`VdokTotal2` are written as it stores them; under `Binary64` and the `Original` model
+every result is bit-identical to before. The kind is explicit on `MergeAndDescribe`,
+`Probability` and `MaxSize`, never optional.
+
+⚠ 2026-10-18: was "under `Binary64`" for every model, now the `Original` model's →
+HISTORY.md#corrected-api-cycle-binary64-2026-10-18
 
 The forms of its products are `CyclePlaneOrder`'s, each held bit for bit by
 `PlaneFormsTests` against the table's `order` text. Which form a call site uses, and in
@@ -196,6 +204,64 @@ listing").
 ⚠ 2026-10-03: was "what the original's home holds (`CyclePlane.generated.txt`)", the
 source-read table, now the listing's →
 HISTORY.md#per-cycle-plane-source-read-rules-2026-10-03
+
+## Corrected model ⏳
+
+Planned 2026-10-18 (BOOT.md, "## Corrected model"); nothing below exists yet.
+`CorrectionSet` and `ModelSetup.Corrections` are `Particle`'s (`../Particle/API.md`).
+Each new overload is the member above plus `CorrectionSet corrections` after its
+`PrecisionKind`; the old overloads stay and forward `CorrectionSet.None`, and under
+`PrecisionKind.Original` every new one replaces `corrections` by `None` on entry.
+
+```csharp
+internal static class Setup
+{
+    public static void AnalyticSizes(
+        int sizeLaw, int fractionCount, double[] massShare, double[] share, double[] bounds,
+        PrecisionKind precision, CorrectionSet corrections,
+        out double dokm, out double doksd);
+
+    // Stores the effective set in setup.Corrections and hands it to FractionLaw.Build and AnalyticSizes.
+    public static SetupStatus Prepare(
+        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections,
+        int neighbourBudget, int pocketRedrawBudget,
+        out ModelSetup setup, out SetupTables tables, out TailDraw draw, out PendingEchoes pending,
+        out SetupInputs inputs);
+}
+
+internal static class FractionLaw
+{
+    public static void Build(
+        int sizeLaw, int fractionCount, double[] massShare, double[] bounds, PrecisionKind precision,
+        CorrectionSet corrections,
+        out double[] share, out double[] cumulative, out double sum);
+}
+
+internal static class Categories
+{
+    public static CategoriesStatus MergeAndDescribe(
+        int ndok, int ncat, double cellSize, double categoryStep, double epsDok, double dpMax,
+        AccumulatorLayout layout, Span<long> integerTotals, Span<double> realTotals, PrecisionKind precision,
+        CorrectionSet corrections,
+        out int dpRow, out double[] dpockets, out double[] dokp43, out double[] qdokkarm, out double[][] qdokso);
+}
+
+internal static class SmallParticles
+{
+    public static double[] Probability(
+        int ndok, double cellSize, double ak2, double ggg, double gdokleft, double karmcoef,
+        double oxidizerDensity, double propellantDensity, double[] vdokstr, PrecisionKind precision,
+        CorrectionSet corrections);
+}
+```
+
+`CycleStatistics.Compute` keeps its signature ("## Cycle"): it reads
+`setup.Corrections`, passes it to `MergeAndDescribe` and `Probability`, and applies
+`ExactConstants`, `GdokleftOnce` and `VdokTotalOnCopy` in its own private members. It
+writes `Qdoks`, `Dokp41` and `Dokp31` only without `CategoriesOnCopy`, and `VdokTotal`
+and `VdokTotal2` only without `VdokTotalOnCopy`: under the `Corrected` model, no total.
+`Sizes`, `CompleteEchoes`, `TryTailDraw` and `MaxSize` take no set, no fix touching
+them. No public type changes, so the surface snapshot does not move for this node.
 
 ## Cycle listing map and table ✅
 
@@ -281,7 +347,8 @@ compiles; now twelve, the generator's `Site` no longer carries the text.
 
 ## Side effects
 
-Writes into the caller's totals as listed; nothing else.
+Writes into the caller's totals as listed, none under the `Corrected` model; nothing
+else.
 
 ## Out of scope
 

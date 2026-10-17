@@ -44,7 +44,7 @@ internal struct CycleInputs
 `ModelSetup` is produced by `Statistics.Setup.Prepare`. The driver builds the views of
 `FractionTable` and `CycleInputs` from the host arrays that `Statistics` returns
 (`SetupTables`, the next `pdoksmall` and `Dmaxxx`) and from `PocketHistogram.Normalize`
-(Qks1).
+(Qks1). `ModelSetup` gains one planned field, `Corrections` (`## Corrected model ⏳`).
 
 ## Accumulator layout ✅
 
@@ -157,6 +157,54 @@ node that owns run configuration (batch size, thread count) is the one that can 
 whether a call is sequential and is the one root BOOT.md asks to refuse it with a
 status.
 
+## Corrected model ⏳
+
+```csharp
+[Flags]
+internal enum CorrectionSet : uint
+{
+    None = 0,                            // the Original model; an unset ModelSetup.Corrections is this
+    ExactConstants = 1,                  // a literal approximating π or 1/3 is that constant (this node, Statistics)
+    BridgeFrustum = 2,                   // Fortran 1616–1627: the bridge volume as frustum less caps
+    Fmkarm2OnAcceptance = 4,             // Fortran 720: fmkarm2 added on acceptance only
+    WindowLowerEdge = 8,                 // Fortran 595: the window's origin at the cell's lower edge
+    VdokTotalOnCopy = 16,                // Statistics, Fortran 1145, 1150
+    ZdoksmallCoarseShare = 32,           // Statistics, Fortran 1047
+    GdokleftOnce = 64,                   // Statistics, Fortran 1001–1006
+    DoksdConsistent = 128,               // Statistics, Fortran 399–400, 405
+    CategoriesOnCopy = 256,              // Statistics, Fortran 911–959
+    CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
+    CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
+    PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
+    All = 4095,                          // the Corrected model: every member above
+}
+
+internal struct ModelSetup
+{
+    // every field of "Setup and cycle inputs" above, unchanged, and:
+    public CorrectionSet Corrections;    // root BOOT.md, "Model kind"; unset = None
+}
+```
+
+The values are explicit powers of two and are never renumbered; `All` is their sum. The
+`Corrected` model (root `BOOT.md`, "Model kind") is `All`, and the node that maps the
+public model kind to this set (`Simulation`) passes nothing else outside a measurement.
+`Statistics.Setup.Prepare` stores the set it is given into `ModelSetup.Corrections`,
+`None` under `PrecisionKind.Original` (`Statistics`' API; Simulation refuses that pair).
+`Attempt.Run` reads the field once per call, as it reads `Kind`, and acts on
+`ExactConstants`, `BridgeFrustum`, `Fmkarm2OnAcceptance` and `WindowLowerEdge` only
+(`BOOT.md`, "## Corrected model"); the other members carry fixes of `Statistics` and
+mean nothing here. Under `None`, every member of this node returns the bits it
+returned before the field existed.
+
+Under `Fmkarm2OnAcceptance` the record's `Fmkarm2` is a committed field, written only
+on `Accepted` in cycles ≥ 1, instead of a sum at loop end; every other field keeps its
+row of "Accumulator layout", and no layout, length or offset changes under any member.
+
+The member names are the values of the `Corrected` column of the defect report
+(`fixed (<Member>)`, `tools/defect-report/API.md`); a test of this node checks the two
+against each other. The type is internal and adds nothing to the public surface.
+
 ## Size law ✅
 
 ```csharp
@@ -217,8 +265,12 @@ internal static class Fold
 Semantics:
 
 - `Run` advances `streams` by exactly the draws the attempt made; the record and the
-  totals receive the attempt's side effects whatever the outcome; on a failure outcome
-  the state of totals and record is that of the moment of failure.
+  totals receive the attempt's side effects whatever the outcome, except that under
+  `Fmkarm2OnAcceptance` `Fmkarm2` receives the staged `fmkarm2_loc` on `Accepted` only
+  (`## Corrected model ⏳`); on a failure outcome the state of totals and record is that
+  of the moment of failure.
+
+  ⚠ 2026-10-18: was every side effect whatever the outcome under every model, now `Fmkarm2` on acceptance only under `Fmkarm2OnAcceptance` → HISTORY.md#api-run-semantics-corrected-2026-10-18
 - The driver refreshes QKS1 with `Normalize` after `Accepted` and `RestartedAfterLoop`
   in reference mode.
 - `Add` is order-fixed: particle 0 first; sums add, `DpMax` and `DpMaxCor` take the
@@ -258,3 +310,7 @@ only to `qks1`; `Add` only to `realTotals`.
   and reports the refusal (root BOOT.md, "Precision kind"; this node's own API.md,
   "## Precision kind" above).
 - Recording the run's kind in the result or in `results.m`: `Simulation`/`Output`.
+- Mapping the public model kind to a `CorrectionSet`, refusing a set other than `None`
+  under `PrecisionKind.Original`, and labelling a `Corrected` run: `Simulation` and
+  `Output` (root `BOOT.md`, "Model kind"); `Attempt.Run` computes whatever set it is
+  given and inspects no combination.

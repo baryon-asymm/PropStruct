@@ -125,6 +125,46 @@ node's public surface.
 the per-cycle plane (`src/Statistics/BOOT.md`, "## Report", "The per-cycle plane under
 `Original`"); `Simulator` passes nothing new.
 
+## Model kind ⏳
+
+Designed 2026-10-18 (BOOT.md, "## Corrected model"; root BOOT.md, "Model kind is an
+option of every run"); nothing below exists yet. The members are added to the records
+of "## Simulator" and "## Result" as body init properties, so every 0.1.0 constructor
+stays.
+
+```csharp
+/// <summary>The original's model, bit for bit (the default), or the model with the
+/// original's explicit errors fixed, each a row marked fixed in
+/// docs/ORIGINAL-DEFECTS.md.</summary>
+public enum ModelKind { Original = 0, Corrected = 1 }
+
+public sealed record SimulationOptions
+{
+    public ModelKind Model { get; init; } = ModelKind.Original;
+    internal CorrectionSet? Corrections { get; init; }   // the seam; null: the model's set
+}
+
+public sealed record RunDiagnostics
+{
+    public ModelKind Model { get; init; }                // SimulationOptions.Model
+}
+
+public sealed record StoredSetup
+{
+    public double? Ak1 { get; init; }                    // Corrected only, else null
+    public double? Ak2 { get; init; }
+    public double? Ak4 { get; init; }
+}
+```
+
+`CorrectionSet` is `Particle`'s internal flag set (`../Particle/API.md`); `Corrections`
+is internal and on no public surface. The run uses `CorrectionSet.None` under
+`Original` and `Corrections ?? CorrectionSet.All` under `Corrected`; a non-null
+`Corrections` under `Original` is refused ("## Errors"). `Ak1`, `Ak2` and `Ak4` are the
+size ratios `Output` prints in the `Corrected` condition labels; `null` under `Original`
+keeps that model's JSON unchanged, since `Output` omits a null one and an `Original`
+`Model`.
+
 ## Setup hand-off ✅
 
 `Statistics.Setup.Prepare` computes everything of the setup that is pure `double`; the one
@@ -272,6 +312,8 @@ upper bound in turn (decided 2026-10-02 at the root, with "## Result").
 | `Precision == PrecisionKind.Original` with `Mode == ExecutionMode.Batched`, by any route to batched execution (a plain batch or the degenerate `BatchSize == 1`/`ContinuedStreams` configuration) | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup`, before any setup or accelerator work exists (`SimulationOptionsValidator`, architecture audit finding R1, 2026-09-24), reused rather than a new status value (decided with the root, 2026-09-21: the message names both halves of the conflict, and a consumer that already reports `InvalidSetup` by echoing the message needs no new case); `SetupFailure` is `null` — this is not a setup precondition |
 | `Streams == StreamLayout.Original` with `Mode == ExecutionMode.Batched`, by any route to batched execution (a plain batch or the degenerate `BatchSize == 1`/`ContinuedStreams` configuration) | as above, `Simulator.Create` throws the same way and for the same reason (decided with the root, 2026-09-21, root BOOT.md "Two stream layouts": the message names both halves of the conflict); `SetupFailure` is `null` |
 | invalid options (non-positive budgets, batch size, the `ContinuedStreams` combination) | `ArgumentException` before any work, from `Simulator.Create`'s own `SimulationOptionsValidator` |
+| ⏳ `Model == ModelKind.Corrected` with `Precision == PrecisionKind.Original`, in either mode | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup` before any setup or accelerator work, checked after the two batched refusals above, which keep their messages; the message names the requested model and the requested precision kind; `SetupFailure` is `null` (designed 2026-10-18, "## Model kind") |
+| ⏳ the internal `Corrections` set while `Model == ModelKind.Original`, or holding a bit outside `CorrectionSet.All` | `ArgumentException` before any work, from the same validator |
 
 ## Side effects
 

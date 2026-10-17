@@ -89,3 +89,35 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
 expressions": 1176–1183 is cycle bookkeeping and the file header, and the console
 summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line map",
 "The screen summary"). Found by reading the row against that section.
+
+### Corrected model (designed 2026-10-18, `BOOT.md`, "## Corrected model")
+
+- [ ] `Original` unchanged: for a result whose `Diagnostics.Model` is `Original`, both
+      writers produce the bytes they produced before the option
+      (`tests/Simulation.Tests`' seed-zero guard, `results.m` and JSON);
+      `StructuralTests` stays green unedited but for the `% Model kind:` exclusion.
+      Red once: writing the footer line under `Original` turns the guard red.
+- [ ] The footer line: under `Corrected` the line of `BOOT.md`, "## Corrected model",
+      is written verbatim after the execution-mode line and holds no `=` and no digit;
+      two results identical but for `Diagnostics.Model`, at the default ratios and
+      `gdokleft = 0`, differ in exactly three lines: this one, the `fqmkm1` step comment
+      and condition 5's label. Asserted by content; red once with the line's text
+      altered.
+- [ ] The `fqmkm1` step: `(step = 0.001)` under `Corrected`, `(step = 0.01)` under
+      `Original`, and `fqmkm2`'s and `coef`'s comments unchanged under both; red once
+      with the branch removed.
+- [ ] The condition labels: a constructed result with `Ak1 = 0.45` prints
+      `Dbase < 0.45Dok` under `Corrected` and `Dbase < 0.5Dok` under `Original`;
+      condition 5 prints `l > 4.7max(Dbase,Dok)` at the default ratio; every label keeps
+      the ` %    K) ` prefix and the 16-character padding; `tests/Harness`' parser reads
+      the counts of a `Corrected` file as of an `Original` one. Red once with the ratios
+      read as the `Original` literals.
+- [ ] `fineoxy_fr`: at `gdokns = 0.1` and `gdokleft > 0` the `Corrected` value equals
+      `gdokns + (1 − gdokns)·gdokleft/GGG` computed independently in the test and
+      differs from the `Original` value by `gdokns·gdokleft/GGG`; at `gdokleft = 0`
+      the two print the same; `PrintExpressionMapTests` stays green with the 1286 row
+      unedited. Right once on P312 under `Corrected` with `gdokns = 0.1`.
+- [ ] JSON: a `Corrected` result round-trips equal and byte-stable with `Model` and the
+      three ratios present; an `Original` result's JSON holds none of the four
+      properties; a JSON written before the option reads back with `Model = Original`
+      and null ratios. Red once with the modifier removed (the `Original` bytes move).

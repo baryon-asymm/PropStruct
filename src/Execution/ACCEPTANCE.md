@@ -112,3 +112,17 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       formulations, time line aside, hashes equal between the commit and its parent
       (and the parent again); a control, HMX at seed 1, differs. Evidence and the
       SHA-256 of the logs: `tests/Benchmarks/HISTORY.md#ship-window-2026-10-03`.
+
+### Corrected model (designed 2026-10-18, `BOOT.md`, its tiers under `Corrected`)
+
+- [ ] CUDA against the CPU host-thread path under `CorrectionSet.All`, per reference
+      formulation, measured and recorded as its own table in `BOOT.md` with tiers
+      derived by the `Original` table's rule, and within them; the `Original` table and
+      `TierTableTests`' `Original` rows unedited and green. Red once: a tier set below
+      the observed figure fails.
+- [ ] The same `Corrected` batch on the CPU is bit-identical with 1, 4 and 16 threads
+      and between two runs (`DeterminismTests` with a `Corrected` case).
+- [ ] The host-thread path equals the ILGPU-kernel oracle bit for bit under
+      `CorrectionSet.All` (`HostThreadOracleTests` with a `Corrected` case), and
+      reference mode equals a continued batch with `attemptsPerLaunch = 1` under it
+      (`ReferenceModeEqualsContinuedBatchTests` with a `Corrected` case).

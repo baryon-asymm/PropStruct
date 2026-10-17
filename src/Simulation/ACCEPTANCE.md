@@ -73,3 +73,44 @@
       precondition failed without `Statistics.SetupStatus`, which stays internal
       (`SetupFailureReason.cs`; `tests/Simulation.Tests/SimulatorOptionsTests`;
       `PublicSurface.approved.txt` moved the same commit).
+
+### Corrected model (designed 2026-10-18, `BOOT.md`, "## Corrected model")
+
+The statistical and link-3 rows above are the `Original` model's; the `Corrected` model
+has no external reference (root `BOOT.md`, "Model kind is an option of every run").
+
+- [ ] Surface: `ModelKind` has the explicit values `Original = 0` and `Corrected = 1`,
+      `SimulationOptions.Model` defaults to `Original`, `RunDiagnostics.Model` and
+      `StoredSetup.Ak1`/`Ak2`/`Ak4` are body init properties and the 0.1.0 positional
+      constructors are unchanged; `PublicSurface.approved.txt` moves in the same commit.
+- [ ] `Original` unchanged: the seed-zero guard of `tests/Simulation.Tests` (`results.m`
+      and full-precision JSON, every case) is green and unedited after every commit that
+      adds `Corrected` code; an `Original` `results.m` holds no `% Model kind` line and
+      its JSON no `Model`, `Ak1`, `Ak2` or `Ak4`. Red once: mapping `Original` to
+      `CorrectionSet.All` in `Simulator.Run` turns the guard red.
+- [ ] The mapping, right once on a known answer: `Corrected` on P33 prints `Dok43sd`
+      112.66 µm where `Original` prints 75.45 µm (`DoksdConsistent`,
+      `src/Statistics`); red once: mapping `Corrected` to `CorrectionSet.None` gives
+      75.45 µm.
+- [ ] The refusal: `Model = Corrected` with `Precision = PrecisionKind.Original`, in
+      either mode, throws `SimulationFailedException` with `RunStatus.InvalidSetup` from
+      `Simulator.Create`, `SetupFailure` `null`, before any setup or accelerator work,
+      the message naming both halves; the two batched refusals keep their messages word
+      for word; removing the check turns the assertion red. `Corrected` with
+      `Binary64` runs a small formulation to completion in both modes and both layouts.
+- [ ] The seam: `Corrections` set with `Model = Original`, or holding a bit outside
+      `All`, throws `ArgumentException` before any work; `Corrections = None` with
+      `Corrected` gives the `Original` run's `SimulationResult`, `Diagnostics.Model`
+      normalised, bit for bit (negative control); a single-flag seam run differs from
+      `Original` on a case where that flag is visible (positive control, the flag's
+      evidence case in its owning node).
+- [ ] The degenerate batched configuration equals reference mode bit for bit under
+      `Corrected` too (`DegenerateConfigurationTests`' constructed case with
+      `Model = Corrected`); a `Corrected` run repeated gives the same result, elapsed
+      time aside.
+- [ ] Labelling: a `Corrected` run's `RunDiagnostics.Model` is `Corrected`, its
+      `StoredSetup.Ak1`/`Ak2`/`Ak4` equal its `ModelSetup`'s, and its `results.m` ends
+      its footer with the model line of `BOOT.md`, "## Corrected model", verbatim.
+- [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
+      under `Corrected` on the five reference formulations, its maxima recorded there,
+      and no default below 100 times a `Corrected` maximum.

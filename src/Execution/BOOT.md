@@ -109,6 +109,12 @@ built and tested with no NVIDIA software.
   count, and a batch of one gives the bits of reference mode.
 - Integer side effects reach the totals by atomic add inside `Attempt.Run`; nothing in
   this node writes a `double` from more than one thread.
+- **The model kind rides in `ModelSetup`** (designed 2026-10-18; root BOOT.md, "Model
+  kind is an option of every run"). `ModelSetup.Corrections` (`../Particle/API.md`)
+  reaches every attempt with the loaded setup, as `Kind` does; this node reads no flag,
+  branches on none and adds no status, refusal or buffer of its own for it, and every
+  path above runs either model. Its `Corrected` evidence is "## GPU/CPU tiers under
+  `Corrected`" below.
 
 ## Dependencies
 
@@ -236,6 +242,17 @@ HISTORY.md#tier-table-derivation-narrative
 
 moved 2026-09-20: the grep-complete audit of which tests fork a cycle-1 state →
 HISTORY.md#grep-complete-fork-audit
+
+## GPU/CPU tiers under `Corrected` (designed 2026-10-18)
+
+The table above is the `Original` model's; its figures and tiers are not touched. The
+`Corrected` model is measured separately, by the same `TierTableTests` method on a
+setup carrying `CorrectionSet.All` (the fork, the 2000-particle diverged-share sample,
+Release, budget 8192), and gets its own table here, its tiers derived by the same rule
+(a margin of roughly 21× over the worst observed relative difference, the rule of three
+for the diverged share) and never loosened afterwards. The math probe needs no new
+entry by hand: `MathProbeCoverageTests` reads the `Math` calls of `Particle` and
+`Random` as built, the `Corrected` statements included.
 
 ## Host-thread path (decided 2026-09-19)
 

@@ -83,3 +83,70 @@
       port 0). Closed by that measurement committed with its place; the row's
       `Differing cells` widens only where `CompareSets` finds the cell, an owner's
       decision, since `SetCriterionTests` gates every declared entry.
+
+The `Corrected` model (`BOOT.md`, "## Corrected model"; designed 2026-10-18, none
+implemented yet). Each fix is proven twice (root `BOOT.md`, Taboos): red on the
+defect, right on an answer known beforehand.
+
+- [ ] `None` reproduces the original bit for bit beyond cycle 0: a snapshot of the
+      first 10⁴ cycle-1 attempts of each reference formulation (outcome, streams,
+      totals, record; reference mode, under both precision kinds), recorded on the
+      commit before the first `Corrected` statement and matched with `Corrections`
+      unset after every later change (`tests/Particle.Tests`, beside `SnapshotTests`,
+      or `tests/Execution.Tests`, whichever holds the cycle-1 driver;
+      `HISTORY.md#window-cycle1-measurement-2026-10-02` shows the apparatus). Red:
+      each of the four flags' branches forced on under `None` (scratch, reverted)
+      turns it red. The run-level guard is the root's seed-zero snapshot
+      (`tests/Simulation.Tests`).
+- [ ] One flag changes what its entry names and nothing else: on the same cycle-1
+      sequence, `BridgeFrustum` alone leaves outcomes, streams, integer totals and
+      every record field but `Vsmkm`, `VmkmTotal` and `VmkmTotal2` bit-identical and
+      moves those three; `Fmkarm2OnAcceptance` alone leaves everything but `Fmkarm2`
+      bit-identical and moves it. Red: a scratch mutation of `bb` under
+      `BridgeFrustum` turns the first red.
+- [ ] `BridgeFrustum`'s volume (`tests/Particle.Tests`, `BridgeGeometryTests`), at
+      `R2/R1` of 0.6, 0.998 and 1 with `R1`, `RK`, `A` stated in the test. Right: the
+      volume under the flag matches an independent numerical quadrature of the same
+      solid, the frustum between the chord circles less the two caps, within 1e−9
+      relative at all three. Red: the `Original` volume is negative at 1 and more than
+      ten times short at 0.998 against the same quadrature. `JJ` and `bb` are
+      bit-equal under both on every case, the `JJ = 0` returns included.
+- [ ] `ExactConstants` at this node's sites. Right: on a constructed attempt each
+      sphere-volume term the record receives (`Allvdok`, `Vks`, `Svd`) equals the
+      `None` term times π/3.14159 within 2 ulp. Red: under `None` the ratio is 1. The
+      site list is generated (`Category=Legacy`): a test scans the four line-map
+      ranges of the Fortran for literals approximating π or 1/3 and checks them both
+      ways against a committed mapping file (Fortran line → C# site, `not ported`,
+      `unchanged: <reason>` or `BridgeFrustum`), red on a literal added to a scratch
+      copy of the source and on a mapping line removed, right on the real files. The
+      constants row turns `fixed (ExactConstants)` only once `Statistics`' sites are
+      done too.
+- [ ] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
+      fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
+      staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,
+      and an `Accepted` attempt adds the same bits under both.
+- [ ] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
+      built from a constructed QKS1 with `mindk ≥ 2`. Right: under the flag
+      `dpoc[0] = Di·(mindk − 1)` and the draws per QKS1 cell match the cell masses
+      (χ² at `α = 10⁻³`). Red: under `None` the same test rejects, each draw one cell
+      high. Positive control at program level: the flag alone on the 2026-09-24
+      audit's apparatus (reference mode, `Independent`, `Binary64`, seeds `k·2¹⁷`,
+      `k = 0..7`, the five references) reproduces `Dqmkm2` −2.8 % to −7.0 % and
+      `Zkarm` +4.9 % to +13.5 % within their standard errors (`tests/Simulation.Tests`,
+      hand-run category).
+- [ ] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
+      task: the largest count and the mean per bridge, against `None`, one seed-0 run
+      per reference formulation, recorded with the place. Closed below a tenth of
+      `PocketRedrawBudget`, or by the proposal to `Simulation` `BOOT.md` asks for.
+- [ ] An attempt on the host thread and on the ILGPU CPU accelerator stays
+      bit-identical with `Corrections = All` (`HostEqualsCpuAcceleratorTests`, its
+      cases with the field set).
+- [ ] The members agree with the defect report: a test of `tests/Particle.Tests` reads
+      `docs/ORIGINAL-DEFECTS.md`, collects the members named in `fixed (…)` values of
+      the `Corrected` column and asserts that set equals `CorrectionSet`'s members other
+      than `None` and `All`, that each member has the value `API.md` lists and that
+      `All` is their sum. Red on a scratch page naming an unknown member and on one
+      member's rows set back to `unchanged`; right on the real page. Committed with the
+      fix that flips the last row: until then the two sets cannot be equal, and a check
+      that cannot be green is not committed (AGENTS.md §13). `CorrectionSet` is
+      internal: `PublicSurface.approved.txt` does not move for it.

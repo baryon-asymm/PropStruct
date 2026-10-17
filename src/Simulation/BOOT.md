@@ -20,10 +20,7 @@ Line numbers refer to the original source `PropStructv3.for` (`## Line map` belo
 - `Batched` with batch size 1, attempts per launch 1 and continued streams produces
   the same result as `Reference`, bit for bit, under `Binary64` accumulation.
 
-  ⚠ 2026-09-21: was this claim unconditional, now bounded to `Binary64` accumulation and
-  `Independent` stream layout together (both `Original` combinations refused for batched
-  execution), which is why `DegenerateConfigurationTests` runs under `Independent` →
-  HISTORY.md#degenerate-configuration-narrowing
+  ⚠ 2026-09-21: was unconditional, now under `Binary64` and the `Independent` layout (both `Original` combinations refused for batched execution) → HISTORY.md#degenerate-configuration-narrowing
 - `SimulationOptions.Precision` reaches `Particle.Attempt.Run` through `ModelSetup.Kind`
   unchanged, and is recorded in the result beside the stream layout
   (`RunDiagnostics.Precision`, the same shape as `Streams`, for the same reason).
@@ -44,7 +41,7 @@ Line numbers refer to the original source `PropStructv3.for` (`## Line map` belo
   refusal above in structure (decided with the root, 2026-09-21; root BOOT.md, "Two
   stream layouts"). `SimulationOptions.Streams`' own default is `Independent`, not
   `Original` (below, "Constraints", "Default stream layout").
-- **Both refusals are `Simulator.Create`'s own, enforced by `SimulationOptionsValidator`
+- **The refusals are `Simulator.Create`'s own, enforced by `SimulationOptionsValidator`
   before an engine, a formulation or any setup work exists** (architecture audit finding
   R1, 2026-09-24: they used to surface only from deep inside
   `Execution.Engine.RunBatch`/`RunContinuedBatch`, after `Statistics.Setup.Prepare`, the
@@ -55,13 +52,20 @@ Line numbers refer to the original source `PropStructv3.for` (`## Line map` belo
   execution"). The stream-layout refusal has no such mechanism reason and is withdrawn
   from `Execution` entirely: `Engine` derives and runs either layout's streams correctly
   (`src/Execution/BOOT.md`'s own 2026-09-26 note), so this node's own validator is the
-  only place it is enforced. `Cli` calls the same validator's
+  only place it is enforced; so is the model kind's refusal under `Original` precision
+  (`## Corrected model`), which `Execution` never sees. `Cli` calls the same validator's
   `IsContinuedStreamsCombinationInvalid` for its one parse-time rule
   (`SimulationOptionsValidator.cs`, `InternalsVisibleTo`), so that rule is typed once.
+
+  ⚠ 2026-10-18: was "Both refusals", the two batched ones, now also the model kind's → HISTORY.md#refusals-model-kind-2026-10-18
+- `SimulationOptions.Model` reaches `ModelSetup.Corrections` through
+  `Statistics.Setup.Prepare` as `CorrectionSet.None` under `Original` and `All` under
+  `Corrected` (a subset only through the internal seam), and is recorded in
+  `RunDiagnostics.Model` (`## Corrected model`).
 - The result holds every quantity printed by the original, under true names (all seven
   generator accuracies), and run diagnostics (mode, batch size, attempts per launch —
   the *effective* budget, 1 in reference mode — accelerator, streams, precision kind,
-  seed, continued streams, attempts, relaunches, elapsed time).
+  model kind, seed, continued streams, attempts, relaunches, elapsed time).
 - Elapsed time is the only field that depends on wall time.
 - `Execution`'s `ParticleNotRun` (a launch skipped a particle) is a defect of the
   engine, not a run status: `Simulator.Run` throws `InvalidOperationException` for it,
@@ -108,9 +112,7 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   own (`src/Cli/API.md`, "Run options"), so no change was needed in `Cli` itself for a
   bare invocation to pick up the new default; this is noted here as a fact about that
   neighbour's behaviour, not a change to its contract.
-- `PrecisionKind.Double` was a declared CA1720 exception, lifted 2026-09-24 (renamed
-  tree-wide to `PrecisionKind.Binary64`) →
-  HISTORY.md#precisionkind-double-ca1720-exception-lifted
+- `PrecisionKind.Double` was a declared CA1720 exception, lifted 2026-09-24 (now `Binary64`) → HISTORY.md#precisionkind-double-ca1720-exception-lifted
 
 ## Line map
 
@@ -154,6 +156,67 @@ assigned anywhere else in the file. (2026-09-24, this verification.)
 
 - No model arithmetic here: it belongs to `Particle` or `Statistics`.
 - No formatting of results.
+- No `CorrectionSet` but `None` or `All` from a public option or a flag: a subset comes
+  only through the internal seam, and only the measurement tests use it.
+
+## Corrected model
+
+Decided 2026-10-18 (owner; root BOOT.md, "Model kind is an option of every run"). This
+node owns the option, its mapping onto the flags, its refusal and its labelling; the
+fixes are `Particle`'s and `Statistics`' (`CorrectionSet`, `../Particle/API.md`) and
+`Output`'s print-time ones (`../Output/API.md`).
+
+- **The option.** `public enum ModelKind { Original = 0, Corrected = 1 }`, explicit
+  values, in `ModelKind.cs`; `SimulationOptions.Model { get; init; } =
+  ModelKind.Original`. "Kind", parallel to `PrecisionKind`; "variant" already names the
+  menu parameter `ivar` (`ModelParameters.Variant`, `% Calculation variant =`).
+- **The mapping.** The effective set is `Model == Original ? CorrectionSet.None :
+  Corrections ?? CorrectionSet.All`. `Simulator.Run` passes it to the `CorrectionSet`
+  overload of `Statistics.Setup.Prepare` (`../Statistics/API.md`) at its one call site,
+  under both models; `Prepare` stores it in `ModelSetup.Corrections` as it stores
+  `Kind`, and nothing patches it after the call. `Particle`'s attempt and
+  `CycleStatistics.Compute` read it there, `Execution` carries it unread inside
+  `ModelSetup`; this node passes it nowhere else.
+  `None` is what an unset field holds, so `Original` keeps its bits.
+- **The seam.** `internal CorrectionSet? Corrections { get; init; }` on
+  `SimulationOptions`, for `tests/Simulation.Tests` (`InternalsVisibleTo`, granted):
+  `null` is the model's own set. A non-null value with `Model == Original`, or with a
+  bit outside `All`, is an `ArgumentException` from the validator before any work. A
+  seam run is labelled `Corrected` like any other (`RunDiagnostics.Model` records the
+  option, not the set), so a subset's numbers stay inside those tests: no public
+  option, no flag, no file. `Corrections = None` under `Corrected` is the negative
+  control: its `SimulationResult` equals the `Original` run's with `Diagnostics.Model`
+  normalised.
+- **The refusal.** `Model == Corrected` with `Precision == PrecisionKind.Original`:
+  `SimulationFailedException(RunStatus.InvalidSetup, …)` from the validator in
+  `Simulator.Create`, `SetupFailure` `null`, checked after the two batched refusals,
+  whose messages stay word for word. The message names both halves, the requested
+  model and the requested precision kind, and says to use `Binary64`. Allowed: both
+  modes, both layouts, every accelerator.
+- **Labelling.** `RunDiagnostics.Model` is a body init property, so the 0.1.0
+  positional constructor stays and a JSON written before reads back as `Original`; it
+  carries the option unchanged. `results.m` names the model under `Corrected` only, in
+  one footer comment `Output` writes (no `=`, no digit): ` % Model kind: corrected; the
+  explicit errors of the original marked fixed in the Corrected column of
+  docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct) are fixed.` `Output`'s
+  JSON omits `Model` when it is `Original`.
+- **Stored size ratios.** `StoredSetup` gains `double? Ak1, Ak2, Ak4` (body init),
+  copied by `Simulator.Run` from `ModelSetup` under `Corrected` only and `null` under
+  `Original`: `Output`'s condition labels print them and may not read `Formulation`
+  (`../Output/API.md`); `null`, which `Output`'s JSON omits, keeps `Original`'s JSON.
+- **Original unchanged.** An `Original` result's `results.m` and JSON are byte for byte
+  those before the option, time line, elapsed time and accelerator identity aside
+  (`tests/Simulation.Tests`, the seed-zero guard over `results.m` and the JSON).
+- **No external reference.** The statistical criterion and link 3 are the `Original`
+  model's. `Corrected` is held to the owning nodes' per-fix evidence, to the degenerate
+  configuration and to determinism under `Corrected`, and to its own GPU/CPU tiers
+  (`src/Execution`).
+- **Budgets.** "## Budget measurement" measured `Original`. Before a release carrying
+  `Corrected` the same method runs under `Corrected` on the five reference formulations,
+  and a default below 100 times a `Corrected` maximum rises, for both models: a run
+  that never reaches a budget does not depend on it, so `Original`'s completed runs
+  keep their bits. `PocketRedrawBudget`, which has no flag, is the one at risk
+  (`WindowLowerEdge` moves the pocket window).
 
 ## Design decisions (2026-09-18)
 
@@ -167,7 +230,9 @@ Settled in the design session that opened wave 7, closing the open questions:
   `min(BatchSize ?? N, Engine.MaxBatchSize)` in batched mode, or one
   `RunReferenceParticle` per particle in reference mode; `ReadTotals`;
   `CycleStatistics.Compute` with its in-place rewrites; `WriteTotals`. Any status other
-  than `Ok` from any of these ends the run with `SimulationFailedException`.
+  than `Ok` from any of these ends the run with `SimulationFailedException`. Under
+  `Corrected` the sequence is the same; `Compute` rewrites in place only what
+  `../Statistics/API.md` says it does under that model.
 - **Streams and ordinals.** Reference mode: one `StreamSet`, the layout's initial
   states (for `Seed = 0` the layout's own seeds), continued over the whole run. Batched
   mode: particle ordinal `cycle · N + index` over the whole run, streams derived per
@@ -230,9 +295,10 @@ put in, so a reader can find a field without grepping:
 | `Convergence` (nullable, `KXX > 1` only) | `ConvergenceEpsy`, `ConvergenceEpsmd3`, `ConvergenceEpsmd4`, `ConvergenceAlldok43`, `ConvergenceAlldoksd`, `ConvergenceDolM2`, each broadened from `CycleReport`'s own scalar to a per-cycle series (`ImmutableArray<double>`, one entry per completed post-warm-up cycle) — the one field-by-field departure from a one-to-one type mirror, matched by name only in the reflection test |
 
 `RunDiagnostics` carries only run bookkeeping with no `CycleReport` counterpart (mode,
-batch size, attempts per launch, accelerator, streams, seed, `ContinuedStreams`, total
-attempts, total launches, elapsed time). `StoredSetup` (API.md, "## Stored setup",
-added 2026-09-24) is the same shape of addition, built once from `Setup.Prepare`'s own
+batch size, attempts per launch, accelerator, streams, precision and model kind, seed,
+`ContinuedStreams`, total attempts, total launches, elapsed time). `StoredSetup`
+(API.md, "## Stored setup", added 2026-09-24) is the same shape of addition, built once
+from `Setup.Prepare`'s own
 `Statistics.SetupInputs`/`ModelSetup`/`SetupTables.MassShare` out-parameters, not from
 `CycleReport`. `Setup.Prepare` now sets its own `ModelSetup.Kind`; `Simulator.Run` no
 longer patches it after the call (`src/Statistics/BOOT.md`, "## Setup plane", "Design
@@ -257,9 +323,7 @@ silent surface change:
   `SimulationDefaults.PocketRedrawBudget`, measured like the other three ("## Budget
   measurement").
 
-  ⚠ 2026-09-19: was "`SimulationOptions` has no such field, the internal constant 10,000
-  never observed to bind, needing no measurement", now 12,800, measured, and an internal
-  option → HISTORY.md#pocket-redraw-budget-measurement-correction
+  ⚠ 2026-09-19: was "no such field", an internal 10,000 never measured, now 12,800, measured, an internal option → HISTORY.md#pocket-redraw-budget-measurement-correction
 
 ## Counter check (2026-09-19)
 
@@ -322,17 +386,11 @@ precision kind (root BOOT.md, "Precision kind is an option of every run"), so th
 draws none: 0 in all 192 stored rate runs of HPEPA3, HMX and P33. It stays inside the
 bound here.
 
-⚠ 2026-10-02: was "rounding of the `1/D²` law at that bound (x87 and REAL*4 …)", a
-hypothesis, with a row of this node's own `## Defects of the original`; the 2026-09-23
-measurement names the REAL*4 store alone, and the row was a second row of `Particle`'s
-defect (root BOOT.md, "one row per defect"), now removed (arbitration, D5).
+⚠ 2026-10-02: was "rounding of the `1/D²` law at that bound", a hypothesis with a row of this node's own, now the REAL*4 store alone, the row removed → HISTORY.md#condition-two-hypothesis-2026-10-02
 
-⚠ 2026-09-19: was conditions 6–9 divided by `Nbase` (`FI + N`) with an absolute floor of
-1.0 that no defect could exceed, now the original's own denominators and the count bound
-above → HISTORY.md#counter-check-nbase-denominator-correction
+⚠ 2026-09-19: was conditions 6–9 per `Nbase` with a floor of 1.0, now the original's own denominators and the count bound → HISTORY.md#counter-check-nbase-denominator-correction
 
-⚠ 2026-09-24: cited test names renamed for CA1707, meaning unchanged, no criterion
-re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
+⚠ 2026-09-24: cited test names renamed for CA1707, meaning unchanged, no criterion re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
 
 ## Budget measurement (2026-09-19)
 
@@ -362,8 +420,7 @@ equal to the original's; HMX 6,516,126 against the original's 6,507,516).
 
 Attempts per launch is 8192 since 2026-10-01, chosen by "## Budget selection rule
 (2026-09-28)" on the ladder of `tests/Simulation.Tests/BOOT.md`, "## Budget ladder".
-⚠ 2026-10-01: was 32 by HPEPA3's 99 % rule (99.457 % within 32 attempts), now 8192 by
-the 2026-09-28 rule → HISTORY.md#attempts-per-launch-99-percent-rule
+⚠ 2026-10-01: was 32 by HPEPA3's 99 % rule, now 8192 by the 2026-09-28 rule → HISTORY.md#attempts-per-launch-99-percent-rule
 
 | Default | Value | Basis |
 |---|---|---|
@@ -372,13 +429,9 @@ the 2026-09-28 rule → HISTORY.md#attempts-per-launch-99-percent-rule
 | `NeighbourBudget` | 20,000,000 | ≥ 100 × 198,656 (HPEPA3) |
 | `PocketRedrawBudget` (internal) | 12,800 | 100 × 128 (HPEPA3) |
 
-An early, single HPEPA3 host-thread timing taken along the way here is superseded by
-`tests/Benchmarks/BOOT.md`'s own measured "## Figures" →
-HISTORY.md#budget-measurement-early-throughput-note.
+An early HPEPA3 timing is superseded by `tests/Benchmarks/BOOT.md`, "## Figures" → HISTORY.md#budget-measurement-early-throughput-note.
 
-⚠ 2026-09-19: was defaults 128/500,000/30,000,000 from an unrecorded previous session,
-now every default re-measured above (the attempt cap unchanged, the other three moved)
-→ HISTORY.md#budget-defaults-previous-session-values
+⚠ 2026-09-19: was defaults 128/500,000/30,000,000 from an unrecorded session, now re-measured above → HISTORY.md#budget-defaults-previous-session-values
 
 ## Budget selection rule (2026-09-28)
 

@@ -27,6 +27,22 @@ are the *input* to a run, not part of its result). The two extra parameters are 
 `Formulation` and `ModelParameters` (this node's `## Dependencies`); the caller already holds both, since it
 had to read the formulation before it could run the simulator at all.
 
+## Corrected model ⏳
+
+Designed 2026-10-18 (`BOOT.md`, "## Corrected model"); not implemented yet. The
+writers' signatures do not change. What they write depends on
+`SimulationResult.Diagnostics.Model` ([Simulation](../Simulation/API.md), "## Model
+kind"):
+
+| | `ModelKind.Original` | `ModelKind.Corrected` |
+|---|---|---|
+| `results.m` | byte for byte as before the option | the `fqmkm1` step comment reads `(step = 0.001)`; the condition labels 3–5 carry the run's `StoredSetup.Ak1`/`Ak2`/`Ak4` and condition 5 reads `max(Dbase,Dok)`; `fineoxy_fr` is the share of the whole oxidizer; one footer comment ` % Model kind: corrected; …` after the execution-mode line, no `=` and no digit |
+| JSON | byte for byte as before the option: `RunDiagnostics.Model` omitted, and `StoredSetup.Ak1`/`Ak2`/`Ak4`, `null`, omitted | every property written; read back equal |
+
+A program parsing `results.m` finds no new variable under either model; a parser keyed
+on the condition labels' text rather than on their number `K` sees the `Corrected`
+labels change.
+
 ## Print-expression map ✅
 
 The print-time expressions of Fortran 1184–1453 and where `ResultsMWriter` carries
@@ -75,6 +91,7 @@ unrecognised statement, 2 on a usage error.
 |---|---|
 | unwritable path | the I/O exception of the runtime |
 | malformed JSON | `JsonException` |
+| ⏳ a result with `Diagnostics.Model == Corrected` and a null `StoredSetup.Ak1`, `Ak2` or `Ak4` | `ArgumentException` from `ResultsMWriter.Write`, naming the member |
 
 ## Side effects
 

@@ -8,6 +8,161 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="api-run-semantics-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from `API.md`, "## Attempt" — the semantics of `Run` under the `Corrected` model
+
+Replaced when the `Corrected` model was designed (root `BOOT.md`, "Model kind"): under
+`Fmkarm2OnAcceptance` an attempt ended `RestartedAfterLoop` no longer adds its staged
+`fmkarm2_loc` to the record. The text before:
+
+- `Run` advances `streams` by exactly the draws the attempt made; the record and the
+  totals receive the attempt's side effects whatever the outcome; on a failure outcome
+  the state of totals and record is that of the moment of failure.
+
+<a id="taboo-fix-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Taboos" — no fix beyond the declared list, under every model
+
+Narrowed to the `Original` model when the `Corrected` model was designed: under
+`Corrected` the flags of `## Corrected model` fix the explicit errors of this node's
+lines, each row marked `fixed (<Member>)`. The text before:
+
+- No "fix" of a defect of the original beyond the declared list.
+
+<a id="totals-between-cycles-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Accumulators", "Totals between cycles" — the in-place rewrites under every model
+
+Narrowed to the `Original` model when the `Corrected` model was designed: under
+`CategoriesOnCopy` and `VdokTotalOnCopy` `Statistics` works on copies and writes no
+total; the absence of a reset is kept under both models. The text before, both
+paragraphs:
+
+**Totals between cycles.** The totals are owned by the driver and persist over the
+whole run. Between cycles `Statistics` rewrites some of them in place as the original
+does, and later cycles add to the rewritten values: the category merge and shift of
+lines 911–958 on `Qdoks`, `Dokp41`, `Dokp31` (the old last row is not cleared after
+any merge), and the division of `VdokTotal` and `VdokTotal2` by `1 − gdokleft/GGG`
+(lines 1145, 1150). The attempt neither knows nor cares.
+
+No accumulator is reset at a cycle boundary beyond the two in-place rewrites just
+named; this is itself a defect of the original the port reproduces, declared for
+`## Defects of the original` (2026-09-20): a per-cycle quantity printed for cycle
+`k ≥ 1` already carries every accepted particle of cycles `1..k`, not only cycle `k`'s
+own, so the per-cycle convergence series `Simulation` prints
+(`src/Simulation/BOOT.md`, "Result field mapping", `Convergence`) is a series of
+increasingly-precise cumulative estimates, not of independent per-cycle ones.
+
+<a id="fmkarm2-commit-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Accumulators" — `Fmkarm2` written before the tests, under every model
+
+Narrowed to the `Original` model when the `Corrected` model was designed: under
+`Fmkarm2OnAcceptance` `Fmkarm2` is added on `Accepted` only, at one write site after
+the tests of 723–738. The text before, the table row and the paragraph's end:
+
+| `Fmkarm2` | 720 |
+
+only if it counted a Var#2 bridge (line 752). Every other update happens where the
+original makes it.
+
+<a id="window-origin-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Line map", "Bridge window once per attempt" — the literal window under every model
+
+Narrowed to the `Original` model when the `Corrected` model was designed: under
+`WindowLowerEdge` the origin `DPOC(mindk)` is the cell's lower edge. The text before:
+
+The window reproduces the original literally: `DPOC(mindk) = Di·mindk` (the upper
+bound of the cell, as written), the truncation at `1 − FQKS < 1e-5` (lines 600–606),
+the shift to index 1 (lines 607–610).
+
+<a id="literal-constants-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Constraints" — every literal as written, under every model
+
+Narrowed to the `Original` model when the `Corrected` model was designed: under
+`ExactConstants` `3.14159` is π, and under `BridgeFrustum` lines 1616–1627, `3.14`
+included, are replaced whole. The text before:
+
+- Literal constants as written, each a named constant with its line: `3.14159` in
+  `π/6·D³` (lines 466, 469, 484, 521, 524, 542, 643, 648, 665, 677, 685, 702, 710,
+  747, 750, 754) and in `rrL` (line 501), `12.56636` (lines 430, 716) and `/200` (line 716), `3.14` in `VM`
+  (lines 1616, 1624–1626), `1e-5` (line 601), `1/3.` (line 501) taken as the `double`
+  `1.0 / 3.0`.
+
+<a id="side-effects-invariant-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — every side effect in place, nothing undone, under every model
+
+Narrowed when the `Corrected` model was designed: under `Fmkarm2OnAcceptance` the
+write of line 720 moves after the tests of 723–738, so a rejected attempt keeps every
+contribution but its staged `fmkarm2_loc` sum. The text before:
+
+- **Every side effect of the original, in the same place.** Each accumulator update of
+  lines 425–756 happens in the same branch and in the same order relative to the draws
+  as in the original, including the updates of attempts that are later rejected, with
+  the exceptions listed under "Decisions where the port departs from a transcription".
+  This is itself a defect of the original, declared for `## Defects of the original`
+  (2026-09-20): an attempt later ended as `RestartedAfterLoop` by the acceptance tests
+  of lines 723–738 keeps every histogram, bridge and pocket contribution it made
+  before those tests fired — nothing is undone on rejection.
+
+<a id="measurements-condensed-2026-10-18"></a>
+
+## 2026-10-18 — from "## Attempt structure" and "## Decisions where the port departs from a transcription" — four measurement paragraphs condensed
+
+Moved to make room for `## Corrected model` (AGENTS.md §15): `BOOT.md` keeps each
+measurement's verdict and the figure that decided it; the paragraphs below are the
+full text as it stood, each with the pointer to its own earlier entry.
+
+From "## Attempt structure", after "Read again, together with 580–610":
+
+Measured 2026-09-25: zero of 15,036 compared cells differ over eight seeds `k·2¹⁷` and
+all five reference formulations (largest `|t|` 1.08), on every quantity a bridge's
+window content can plausibly reach, while a same-seed diff proves the variant live at
+2,127 of 117,054 cells — the effect is real per seed but is Monte Carlo noise at the
+population level. Full method, controls, and a note on a neighbour's file this
+measurement touched: `HISTORY.md#qks1-refresh-cadence-measurement-2026-09-25`.
+
+From "## Decisions where the port departs from a transcription", the end of the paragraph "Design decision, 2026-09-24":
+
+  ways, proven red on a synthetic fixture and, once, on the real files. Measured the
+  same day (`ScratchMovementProbe`, discarded, never committed): `Binary64` output is
+  bit-identical on all five reference formulations; `Original` output moves only
+  `Zkarm_cor`, by 1.3e-7 to 8.6e-7 relative, on three of the five.
+  `tests/Simulation.Tests --filter FullyQualifiedName~StatisticalCriterionTests` stays
+  green afterwards. Full narrative, the withdrawn intermediate readings and the
+  benchmark figures: `HISTORY.md#generated-real4-membership-decision-2026-09-24`.
+
+From the same section, after the REAL*4 decision variables:
+
+  Measured causally 2026-09-21 (a throwaway build emulating exactly `QKS1`/`FQKS`/`AUS`/
+  `TU` at their own three lines, HPEPA3, `--precision double`, the 27-point `N` sweep
+  `tests/Harness/HISTORY.md`'s "smooth-vs-step check" used, discarded and never
+  committed): the emulating build reproduces only 3 % of the original's own drop in
+  `pdoksmall[2]` and 3.6 % in `fmdok[1]`, all of it below `N = 10000`, and is flat from
+  `N = 14500` to the shipped `N = 100000` exactly like the unmodified port — this
+  mechanism does not produce the original's drift. Full method, controls and
+  pre-registered thresholds: `HISTORY.md#decision-variable-gate-bias-refuted-2026-09-21`.
+
+From the same section, after the `Dr`/`Db` implicit-typing paragraph:
+
+  Measured 2026-09-23 (`tests/Particle.Tests/DminBoundaryProbe.cs`,
+  `DminBoundaryProbeTests.cs`): a real reference-mode replay observes the mechanism
+  directly at seed 0 — 3 of 2,000,000 attempts on HMX (rate 3.72e-4), 4 of 1,200,000 on
+  HPEPA3 (2.21e-5), 0 of 500,000 on P33, where the port's own `double` comparison never
+  fires. Against the original's own replicas (mean rate 1.19e-3 HMX, 5.47e-5 HPEPA3),
+  the exact Poisson 95 % intervals (7.7e-5–1.09e-3 HMX, 6.0e-6–5.7e-5 HPEPA3) contain
+  HPEPA3's rate and fall just short of HMX's, so this mechanism may fully account for
+  HPEPA3's count and is a partial, unestablished explanation for HMX's. It lies in the
+  attempt plane, which stays `double` by this document's own decision, so it is
+  declared, not reproduced. Full method, controls, red proofs and the remaining-factor
+  hypothesis: `HISTORY.md#dmin-boundary-probe-2026-09-23`.
+
+---
+
 <a id="window-cycle1-measurement-2026-10-02"></a>
 
 ## 2026-10-02 — from "## Acceptance criteria" — the window-once equality over HPEPA3's cycle 1

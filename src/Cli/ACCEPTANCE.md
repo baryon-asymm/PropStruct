@@ -73,3 +73,21 @@
 
 ⚠ 2026-09-24: cited test names renamed for CA1707, meaning unchanged, no criterion
 re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
+
+### Corrected model (designed 2026-10-18, `BOOT.md`, "## Corrected model")
+
+- [ ] `--model` reaches `SimulationOptions.Model` and no other property, and every
+      public property still has its flag (`ReflectedFlagCoverageTests`,
+      `FlagRoundTripTests`, generic over `FlagCatalog`); `--model original` and no
+      `--model` give the same `SimulationOptions`; `ResultsMByteIdenticalTests` stays
+      green unedited. Red once: the catalog entry removed turns the coverage test red.
+- [ ] `--model corrected --precision original` exits 2 with the library's message
+      naming both halves, through the existing `InvalidSetup` branch; `--model
+      corrected` alone runs a small formulation to exit 0 and its `results.m` carries
+      the model footer line; an unknown value (`--model fixed`) exits 2 naming the
+      flag.
+- [ ] The summary line under `Original` is byte for byte the line before the option
+      (asserted against a fixed expected text built from the same diagnostics), and
+      under `Corrected` it differs only by ` model=Corrected` after `layout=…`.
+- [ ] The usage text names `--model original|corrected` and its one sentence;
+      `--help` after `run` prints it.

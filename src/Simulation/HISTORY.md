@@ -8,6 +8,45 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="condition-two-hypothesis-2026-10-02"></a>
+
+## 2026-10-18 — from "## Counter check (2026-09-19)" — the condition-2 hypothesis correction of 2026-10-02, moved to make room for "## Corrected model"
+
+Moved under the §15 limit when "## Corrected model" was added; the pointer left in its
+place names both wordings. The note as it stood:
+
+> ⚠ 2026-10-02: was "rounding of the `1/D²` law at that bound (x87 and REAL*4 …)", a
+> hypothesis, with a row of this node's own `## Defects of the original`; the 2026-09-23
+> measurement names the REAL*4 store alone, and the row was a second row of `Particle`'s
+> defect (root BOOT.md, "one row per defect"), now removed (arbitration, D5).
+
+---
+
+<a id="refusals-model-kind-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "Both refusals", before the model kind's
+
+Changed when the `Corrected` model kind's refusal under `PrecisionKind.Original` joined
+the validator (`## Corrected model`): "Both" counted the two batched refusals and became
+false with a third. The bullet as it stood:
+
+> - **Both refusals are `Simulator.Create`'s own, enforced by `SimulationOptionsValidator`
+>   before an engine, a formulation or any setup work exists** (architecture audit finding
+>   R1, 2026-09-24: they used to surface only from deep inside
+>   `Execution.Engine.RunBatch`/`RunContinuedBatch`, after `Statistics.Setup.Prepare`, the
+>   tail draw and `Engine.Load` had already run). `Execution` keeps only the precision
+>   refusal, as a mechanism backstop for a caller that reaches `Engine` directly — its own
+>   batch-fold path genuinely cannot reproduce binary32 accumulation, at any particle
+>   count (`src/Execution/BOOT.md`, "`Original` accumulation is refused for batched
+>   execution"). The stream-layout refusal has no such mechanism reason and is withdrawn
+>   from `Execution` entirely: `Engine` derives and runs either layout's streams correctly
+>   (`src/Execution/BOOT.md`'s own 2026-09-26 note), so this node's own validator is the
+>   only place it is enforced. `Cli` calls the same validator's
+>   `IsContinuedStreamsCombinationInvalid` for its one parse-time rule
+>   (`SimulationOptionsValidator.cs`, `InternalsVisibleTo`), so that rule is typed once.
+
+---
+
 <a id="attempts-per-launch-99-percent-rule"></a>
 
 ## 2026-10-01 — from "## Budget measurement (2026-09-19)" — the 99 % rule for attempts per launch
