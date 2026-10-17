@@ -63,7 +63,7 @@ nothing else in that section. A table with the old six-column header, ending at
 `Differing cells`, is a format error.
 
 - `Kind` is one of `algorithm` (the model's answer changes), `statistics` (the
-  generator or the seeds bias the answer), `numeric` (REAL*4 or x87 rounding), `dead`
+  generator or the seeds bias the answer), `numeric` (REAL*4 or x87 rounding, or a truncated literal such as `3.14` for π), `dead`
   (unreachable, unassigned or unused), `cosmetic` (printing only);
 - `Consequence` is the measured effect with the place the measurement lives, or the
   words `not measured`; a guess is not a consequence;
@@ -86,8 +86,10 @@ nothing else in that section. A table with the old six-column header, ending at
   `Corrected` model refuses; allowed only when `Kind` is `numeric`); or
   `fixed (<Member>[, <Member>]…)` (it computes the intended behaviour; each `<Member>`
   is a C# identifier, none repeated, naming the internal `CorrectionSet` flag that
-  carries the fix). The tool checks the shape of the identifiers only; the members are
-  checked against the enum by a test of `src/Particle`, which reads the generated page.
+  carries the fix, or the reserved name `Model` for a fix keyed on the model kind itself,
+  which no flag carries: the printing fixes of `src/Output`). The tool checks the shape
+  of the identifiers only; the members other than `Model` are checked against the enum by
+  a test of `src/Particle`, which reads the generated page.
   Any other value is a format error. The column is shown on the page, counted in its
   summary line, and absent from the JSON twin;
 - the row is an index into the node's own prose, never a retelling: the prose stays
