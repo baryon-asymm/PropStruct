@@ -9,11 +9,13 @@ assembled, never written"); this script only collects, orders and formats those 
 It authors no claim of its own and never reads the Fortran source.
 
 The table's sixth column, 'Differing cells', names the printed cells in which
-reference mode under the `Original` precision kind differs from the original because
-of that row, as `CompareSets` (tests/Harness) finds them. This script parses that
-column's grammar and assembles it into a second, machine-readable page,
-docs/declared-differences.json, so that `CompareSets`'s own tests can read it without
-parsing Markdown.
+reference mode under the `Original` model and `Original` precision kind differs from
+the original because of that row, as `CompareSets` (tests/Harness) finds them. This
+script parses that column's grammar and assembles it into a second, machine-readable
+page, docs/declared-differences.json, so that `CompareSets`'s own tests can read it
+without parsing Markdown. The seventh column, 'Corrected', says what the `Corrected`
+model kind does with the defect; it is shown on the page and counted in its summary
+line, and it adds nothing to the JSON twin.
 
 Python 3.8+, standard library only, no configuration file:
 
@@ -49,7 +51,7 @@ EXCLUDED_DIRS = {
 HEADING = re.compile(r"^ {0,3}(#{1,6})\s+(.*?)\s*#*\s*$")
 HEADER_CELLS = (
     "Fortran", "Kind", "What the original does", "Consequence", "The port",
-    "Differing cells",
+    "Differing cells", "Corrected",
 )
 SEPARATOR_CELL = re.compile(r"^:?-{2,}:?$")
 
@@ -57,6 +59,23 @@ SEPARATOR_CELL = re.compile(r"^:?-{2,}:?$")
 KINDS: Tuple[str, ...] = ("algorithm", "statistics", "numeric", "dead", "cosmetic")
 KIND_RANK = {kind: rank for rank, kind in enumerate(KINDS)}
 PORTS: Tuple[str, ...] = ("reproduced", "declared, not reproduced", "open")
+
+# The 'Corrected' column: what the Corrected model kind does with the defect.
+# 'fixed (<Member>[, <Member>]...)' names the internal CorrectionSet flags that carry
+# the fix; this tool checks only the identifier shape, a Particle test checks the
+# members against the enum by reading the generated page.
+CORRECTED_UNCHANGED = "unchanged"
+CORRECTED_NOT_REACHABLE = "not reachable"
+CORRECTED_FIXED = "fixed"
+CORRECTED_KINDS: Tuple[str, ...] = (
+    CORRECTED_UNCHANGED, CORRECTED_NOT_REACHABLE, CORRECTED_FIXED,
+)
+IDENTIFIER = r"[A-Za-z_][A-Za-z0-9_]*"
+FIXED_VALUE = re.compile(
+    r"^fixed \((?P<members>{0}(?:, {0})*)\)$".format(IDENTIFIER))
+# 'not reachable' is the one value tied to a Kind: a defect that exists only under
+# PrecisionKind.Original, which the Corrected model refuses, is a numeric one.
+NOT_REACHABLE_KIND = "numeric"
 
 NOT_MEASURED = "not measured"
 # A "measurement with its place": at least one backtick-quoted test, fixture, file or
@@ -100,6 +119,8 @@ class Defect(NamedTuple):
     consequence: str
     port: str            # reproduced | declared, not reproduced | open
     differing_cells: List[DeclaredCell]   # parsed 'Differing cells'; [] for 'none'
+    corrected: str       # the 'Corrected' value as written
+    corrections: Tuple[str, ...]   # the members of a 'fixed (...)' value, else ()
 
 
 class DefectFormatError(Exception):
@@ -343,6 +364,41 @@ def parse_declared_cells(path_label: str, source_line: int, raw: str) -> List[De
     return cells
 
 
+def parse_corrected(path_label: str, source_line: int, kind: str,
+                    raw: str) -> Tuple[str, ...]:
+    """The CorrectionSet members of one 'Corrected' cell, () unless it is 'fixed (...)'.
+
+    The value is 'unchanged', 'not reachable' (a numeric row only) or
+    'fixed (<Member>[, <Member>]...)', each member a C# identifier, none repeated;
+    anything else is a format error.
+    """
+    if raw == CORRECTED_UNCHANGED:
+        return ()
+    if raw == CORRECTED_NOT_REACHABLE:
+        if kind != NOT_REACHABLE_KIND:
+            raise DefectFormatError(
+                path_label, source_line + 1,
+                "'Corrected' {!r} is allowed only on a {!r} row, this row is {!r}".format(
+                    raw, NOT_REACHABLE_KIND, kind),
+            )
+        return ()
+    fixed = FIXED_VALUE.match(raw)
+    if fixed is None:
+        raise DefectFormatError(
+            path_label, source_line + 1,
+            "unknown 'Corrected' value {!r}; expected {!r}, {!r} or "
+            "'fixed (<Member>[, <Member>]...)' with C# identifiers".format(
+                raw, CORRECTED_UNCHANGED, CORRECTED_NOT_REACHABLE),
+        )
+    members = tuple(fixed.group("members").split(", "))
+    if len(set(members)) != len(members):
+        raise DefectFormatError(
+            path_label, source_line + 1,
+            "'Corrected' {!r} names a member twice".format(raw),
+        )
+    return members
+
+
 def build_defect(node: str, path_label: str, source_line: int, cells: Sequence[str]) -> Defect:
     if len(cells) != len(HEADER_CELLS):
         raise DefectFormatError(
@@ -351,7 +407,8 @@ def build_defect(node: str, path_label: str, source_line: int, cells: Sequence[s
                 SECTION_TITLE, len(cells), len(HEADER_CELLS), ", ".join(HEADER_CELLS)),
         )
 
-    fortran, kind, what, consequence, port, differing = (cell.strip() for cell in cells)
+    fortran, kind, what, consequence, port, differing, corrected = (
+        cell.strip() for cell in cells)
 
     if not fortran:
         raise DefectFormatError(path_label, source_line + 1, "Fortran is empty")
@@ -381,7 +438,9 @@ def build_defect(node: str, path_label: str, source_line: int, cells: Sequence[s
         )
 
     differing_cells = parse_declared_cells(path_label, source_line, differing)
-    return Defect(node, source_line + 1, fortran, kind, what, consequence, port, differing_cells)
+    corrections = parse_corrected(path_label, source_line, kind, corrected)
+    return Defect(node, source_line + 1, fortran, kind, what, consequence, port,
+                  differing_cells, corrected, corrections)
 
 
 # ------------------------------------------------------------------------- collect
@@ -415,7 +474,11 @@ PREAMBLE = (
     "those are the defects that change the model's answer, then `statistics`, "
     "`numeric`, `dead` and `cosmetic`. `The port` says whether the port reproduces the "
     "defect, declares it without reproducing it, or leaves the question open; a "
-    "defect silently fixed does not exist (root `BOOT.md`, Taboos)."
+    "defect silently fixed does not exist (root `BOOT.md`, Taboos). `Corrected` says "
+    "what the `Corrected` model kind, which fixes only the explicit errors of the "
+    "original, does with the defect: `unchanged`, `not reachable` (a numeric defect "
+    "that exists only under the `Original` precision kind, which that model refuses) "
+    "or `fixed`, naming the `CorrectionSet` members that carry the fix."
 )
 
 
@@ -427,6 +490,16 @@ def _first_fortran_line(fortran: str) -> float:
 def _page_order(defect: Defect) -> Tuple[int, float, str, str]:
     """The one ordering both generated pages share: kind, then Fortran line, then node."""
     return (KIND_RANK[defect.kind], _first_fortran_line(defect.fortran), defect.node, defect.fortran)
+
+
+def _corrected_summary(defects: List[Defect]) -> str:
+    """One line counting the rows by their 'Corrected' value; a 'fixed (...)' row
+    counts under 'fixed', whatever its members."""
+    counts = {value: 0 for value in CORRECTED_KINDS}
+    for defect in defects:
+        counts[defect.corrected.split(" (", 1)[0]] += 1
+    return "By `Corrected`: {}.".format(
+        ", ".join("{} {}".format(counts[value], value) for value in CORRECTED_KINDS))
 
 
 def render(defects: List[Defect], generated_on: "datetime.date") -> str:
@@ -446,6 +519,8 @@ def render(defects: List[Defect], generated_on: "datetime.date") -> str:
         "",
         "{} defects from {} nodes.".format(len(defects), len(nodes)),
         "",
+        _corrected_summary(defects),
+        "",
     ]
 
     by_kind: dict = {}
@@ -458,11 +533,13 @@ def render(defects: List[Defect], generated_on: "datetime.date") -> str:
             continue
         lines.append("## {}".format(kind))
         lines.append("")
-        lines.append("| Node | Fortran | What the original does | Consequence | The port |")
-        lines.append("|---|---|---|---|---|")
+        lines.append(
+            "| Node | Fortran | What the original does | Consequence | The port | Corrected |")
+        lines.append("|---|---|---|---|---|---|")
         for defect in rows:
-            lines.append("| `{}` | {} | {} | {} | {} |".format(
+            lines.append("| `{}` | {} | {} | {} | {} | {} |".format(
                 defect.node, defect.fortran, defect.what, defect.consequence, defect.port,
+                defect.corrected,
             ))
         lines.append("")
 
