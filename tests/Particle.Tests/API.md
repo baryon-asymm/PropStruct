@@ -6,6 +6,7 @@ A test project; it exposes nothing but its tests and its approved snapshots.
 
 ```text
 tests/Particle.Tests/Snapshots/<formulation>.attempts.approved.txt   hashes of the first 1000 attempts
+tests/Particle.Tests/Snapshots/<formulation>.cycle1.approved.txt     hashes of the first 10000 cycle-1 attempts, both kinds
 ```
 
 ## Categories after the delivery ✅

@@ -1,0 +1,3 @@
+# platform: Microsoft Windows 10.0.26300; .NET 10.0.13; X64; ucrtbase 10.0.26100.9711 (WinBuild.160101.0800); fma3 True
+cycle1_first_10000_attempts_Binary64 e2367f0c959251723b5ebeb8c6c3a50e7c9deec824d093c76ab867b5a7a7b401
+cycle1_first_10000_attempts_Original 9a54e6039f053b65b662f5e3ba8cc76c558f2cba87926298d691f4eaf39370df

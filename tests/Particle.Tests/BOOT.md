@@ -18,6 +18,7 @@ each is checked against, what is covered and what is not.
 | L1 | `PrecisionKind.Original`'s own rounding, by behaviour | the generated `RealFourAccumulators.generated.txt` (running the same attempt sequence under both kinds and diffing the records); the generator itself checked by regeneration | ✅ |
 | L2 | reference-mode driver over this node on HPEPA3 | counters and histograms of the reference `results.m`, statistical criterion | withdrawn 2026-10-02: counters by `tests/Simulation.Tests/Hpepa3CounterTests`, every printed cell by the root's rate criterion (`src/Particle/BOOT.md`) |
 | Snapshot | first 1000 attempts of cycle 0 per reference formulation | approved bit snapshots, one case per formulation carrying all 1000 attempts | ✅ |
+| Snapshot | first 10⁴ attempts of cycle 1 per reference formulation, `Corrections` unset, under both precision kinds (the `None` guard of the `Corrected` work, `CycleOneSnapshotTests`) | approved bit snapshots, one case per formulation and kind, each attempt contributing the SHA-256 of its trace row; the cycle 0 before it is 5000 particles (`CycleOneRun`), enough to reach the window, Var#1 pockets and the tests of lines 723–738, asserted before the hash | ✅ |
 
 The snapshot hashes raw `double` bits that depend on `Math.Log` and `Math.Pow`, which
 CoreCLR takes from the C runtime; they hold on Windows 11 x64, UCRT with FMA3, .NET 10,
