@@ -349,6 +349,36 @@ now every `*.cs` file minus a declared exclusion list → HISTORY.md#the-tie-wid
 crash the test host) is lifted: the generator moved to `tests/RateTableTool`, a
 console project run by hand → HISTORY.md#criterion-file-analyzer-exemption-lifted
 
+## Known bias of the original's seeds
+
+Moved here from the root `BOOT.md`, "## Constraints", on 2026-10-18 for §15 (the root
+keeps a summary and this pointer); the text is unchanged but for its references.
+
+**Known bias of the original's seeds** (measured 2026-09-17, HPEPA3; the per-quantity
+table for every reference formulation is produced by `tests/Harness`). Mechanism:
+within one attempt, the position inside its fraction of neighbour n+1 is the fraction
+draw of neighbour n, so consecutive neighbour sizes are dependent, and the distance
+draw of neighbour n is, to a correlation of 0.999994, the fraction draw of neighbour
+n+1 (stream 3's transposed seed limb, root `BOOT.md`, "Execution model", ⚠ 2026-09-19), so a
+neighbour's size depends on the previous neighbour's distance. Which of the two
+carries how much of the bias is not measured: the experiment that removed the whole
+shift made streams 4 and 5 independent, which cut both ties at once. The pocket and
+bridge quantities are biased, by an amount and even a sign that depend on the
+formulation: lagged against independent replicas, `Dkarm43(1)` differs by −10.9 % on
+PSAN02n and +6.1 % on P33 (difference of means; five quantities in the root's `ACCEPTANCE.md`).
+
+The oxidizer **size moments** are unaffected: every one of them agrees between the
+layouts on every reference formulation, at the magnitudes `Dok43all` shows (0.05 % at
+most). The oxidizer size **distribution** is not: see the correction below. Results of
+the original, archived or new, carry this bias; the `Independent` layout does not. The
+per-quantity test is this node's.
+
+⚠ 2026-09-20: was "only the oxidizer size distribution … is unaffected", now the moments unaffected and the distribution not (`epsdokfr` item withdrawn 2026-09-23) → HISTORY.md#known-bias-oxidizer-distribution
+
+⚠ 2026-09-27: was that withdrawal read as "an artefact of the independent replica set", drifting with the replica number; the drift is not significant at `α` (Spearman ρ = 0.546, p ≈ 0.03), so it rests on the port's own seeds alone → `tests/Harness/HISTORY.md#set-comparison-epsdokfr-evidence-2026-09-27`
+
+⚠ 2026-09-17: was the mass-type quantities (`Dkarm43`, `Zkarm`, the oxidizer size) read as agreeing within about one run's spread, now withdrawn → HISTORY.md#known-bias-mass-type-quantities-withdrawn
+
 ## Taboos
 
 - No test of a source node lives here.

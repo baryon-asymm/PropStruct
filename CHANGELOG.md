@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- The model kind of a run: `Original`, the default, the original's model exactly as
+  before, and `Corrected`, which fixes the explicit errors of the original program and
+  nothing else; each fix is a row marked `fixed` in `docs/ORIGINAL-DEFECTS.md`.
+  `Corrected` runs under the `Binary64` precision kind only, in both modes and layouts.
+  The command line takes `--model original|corrected`.
+- The defect report's seventh column, `Corrected`: `fixed`, `unchanged` or
+  `not reachable`.
 
 ## [0.1.0] - 2026-10-06
 
