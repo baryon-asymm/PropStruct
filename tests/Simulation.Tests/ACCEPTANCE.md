@@ -1,0 +1,66 @@
+# ACCEPTANCE.md — Simulation.Tests
+
+## Acceptance criteria
+
+- [x] Every row of the levels table is green, with a date and the names of the tests.
+      (2026-09-24: the statistical-criterion row realigned again — the seed-0 ratchet
+      retired for an exact snapshot, link 1's own reproduction claim moved to
+      `tests/Harness.Tests/RateCriterionTests` as a rate over sixteen seeds,
+      "## Statistical criterion measurement (2026-09-24)" above. "Green" here means
+      "the seed-0 output has not moved since approval, and link 3 still agrees", not
+      "the underlying science has no open question" — link 2's own still-missing HMX
+      multi-seed measurement (root BOOT.md) is unaffected by this task and remains
+      exactly as root records it.)
+- [x] Every check is proven non-degenerate by a recorded mutation (AGENTS.md §13).
+      (2026-09-19, "## Mutations" below; 2026-09-23 adds link 3's CPU positive control;
+      later the same day, link 3's CUDA row adds its own positive control and its own
+      mutation of the row itself, same section; 2026-09-24 adds the line-map coverage
+      row's own mutation and the seed-0 snapshot's own one-character-edit proof, same
+      section — the ratchet's own former proof moved to `HISTORY.md` with the rest of
+      the retired link-1 text; 2026-09-28 adds `AttemptsPerLaunchDiagnosticsTests`' two
+      echo mutations, its own positive control, and the JSON round trip's own
+      `[JsonIgnore]` mutation in `tests/Output.Tests`, same section.)
+- [x] 2026-10-03: the per-cycle plane under `Original` passes its controls, frozen
+      before its code (`src/Statistics/BOOT.md`, "## Report"), on the seed-0 rate runs
+      against the original's archived `results.m` and the frozen pre-change runs
+      `Snapshots/CyclePlaneBaseline` (rate runs of 514a157, byte copies)
+      (`CyclePlaneSeedZeroControlsTests`, 39 cases): P1 `da_coef` on all five, P2 HMX
+      `epsx(1..4)`, P3 P33 `epsx(1..6)`, P4 HMX `epsalldok` and `epsdok(2)` and P33
+      `epsalldok`, P5 inpt `epsdok43_n[0..4]` print the original's value; N1 HMX
+      `epsdokfr` still does; N2 no cell the baseline printed exactly is lost; N4 no
+      counter or printed length moves except onto the original's, and HMX's and P33's
+      generator counters equal the original's. Red: the port read from the baseline
+      fails the 19 positive controls it missed; read from the `Binary64` run, N2 fails on
+      all five, N4 on HMX, HPEPA3 and PSAN02n, the counters on HMX. Reverted, green.
+
+      ⚠ 2026-10-01: `Snapshots/SeedZeroResultsM.approved.txt` re-approved: the ten
+      `Original` hashes moved, the ten `Binary64` ones are unchanged (the rate table's
+      keyed diff: 160 `Binary64` runs byte-identical, no counter moved in any run).
+
+      ⚠ 2026-10-03: re-approved again, the plane following the executable's listing
+      (x87 A, stage 4): nine of the ten `Original` hashes moved, the ten `Binary64` ones
+      are unchanged, and the 39 cases above hold on the regenerated seed-0 runs.
+
+      ⚠ 2026-10-03: was dated 2026-10-01; the 39 cases were re-run on the regenerated
+      seed-0 runs and hold (`src/Statistics/ACCEPTANCE.md`, A5, A6), so that is the date
+      of this evidence, one date for one piece of evidence (AGENTS.md §6).
+- [x] 2026-10-02: the stored port output of each cycle-plane pair is what the port
+      prints now (`CyclePlanePairsTieTests`, six pairs, `Category=Long`: reference mode,
+      `Original` layout, seed 1, `Original` precision, every parameter read from
+      `tests/Fixtures/cycle-plane-pairs/provenance.json`), so the ratchet of
+      `tests/Statistics.Tests/PathIdenticalPairsReportTests` cannot go stale. Red on
+      `epsx1`'s rounding at 814 removed (five of six), reverted, green.
+
+- [x] `LineMapCoverageTests` reads `tests/Fixtures/cases/source/executable_lines.json`
+      and is red once on a line the map no longer covers (stage S2, 2026-10-04: the row
+      `297–342` of `src/Simulation/BOOT.md`'s line map cut to `297–341`: red, naming
+      line 342 by number; reverted, green; 133 cases of the fast set with the original
+      absent).
+
+  ⚠ 2026-10-04: was "red once on a line removed from the list", which no mutation can
+  meet: a shorter list asks the map for less. Reformulated as above.
+- [x] 2026-10-04: Every fact that returns when no CUDA accelerator is available calls
+      `Harness`'s `CudaRequirement.FailIfRequired`, found by a text check and not typed
+      here (`CudaRequirementWiringTests`), and fails under `PROPSTRUCT_REQUIRE_CUDA=1` on a
+      machine where CUDA is refused: 6 facts of this node, 1 of them in the fast set, red
+      with `PROPSTRUCT_NO_CUDA=1` and the variable set, green without it (stage S4).

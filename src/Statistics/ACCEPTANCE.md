@@ -186,7 +186,7 @@
   HISTORY.md#row-771-1175-reproduced-then-open-2026-10-02
 - [x] 2026-10-02: the controls of the register-lifetime row are frozen before any plane
   code, each a ratchet that goes red when its list changes in either direction
-  (`tests/Statistics.Tests/BOOT.md`, "## Acceptance criteria", the same date). C1,
+  (`tests/Statistics.Tests/ACCEPTANCE.md`, the same date). C1,
   `da_coef` against every archived output of every formulation whose input the archive
   ships: 22 formulations, 19 match, HPEPA2, P777 and CSPX01 one print unit below the
   original's seventh digit (`LegacyDaCoefReproductionTests`). C2, every differing cell
