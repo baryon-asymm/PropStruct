@@ -142,8 +142,7 @@
   reference formulations and p350 (`SetupPlaneTests.SetupPlaneMatchesTheFormulaScript`,
   `tests/Fixtures/cases/statistics/setup_plane.json`).
 
-  ⚠ 2026-09-27: was "`Ddokmax` is excluded", now computed and asserted →
-  HISTORY.md#ddokmax-excluded-2026-09-27
+  ⚠ 2026-09-27: was "`Ddokmax` is excluded", now computed and asserted → HISTORY.md#ddokmax-excluded-2026-09-27
 
   ⚠ 2026-09-26: was the script's own `Dmax` provenance told in full, now the tick,
   place and figure alone → HISTORY.md#z11-zx-zss-criterion-narration-2026-09-26
@@ -178,8 +177,7 @@
   register-lifetime residuals a row of their own, `open`
   (`tests/Harness.Tests/SetCriterionTests.OriginalDiffersOnlyInDeclaredCells`).
 
-  ⚠ 2026-10-02: was "so row 771–1175 is `reproduced`", now `open` →
-  HISTORY.md#row-771-1175-reproduced-then-open-2026-10-02
+  ⚠ 2026-10-02: was "so row 771–1175 is `reproduced`", now `open` → HISTORY.md#row-771-1175-reproduced-then-open-2026-10-02
 - [x] 2026-10-02: the controls of the register-lifetime row are frozen before any plane
   code, each a ratchet that goes red when its list changes in either direction
   (`tests/Statistics.Tests/ACCEPTANCE.md`, the same date). C1,
@@ -256,8 +254,7 @@
   controlled (7) or exact by the table (11). Red on the C# of cdc6237: 28 of 82 tests,
   `Binary64` cases passing on both. Line 378's λ: `ListingOracleSetup.approved.txt`.
 
-  ⚠ 2026-10-18: was the control kinds and the red tests told in full, now the counts →
-  HISTORY.md#a7-narration-2026-10-18
+  ⚠ 2026-10-18: was the control kinds and the red tests told in full, now the counts → HISTORY.md#a7-narration-2026-10-18
 - [ ] A8 (the arbiter's F1 of 2026-10-03): the loops of Fortran 379–406 are generated
   from the listing, not typed: the map's scope covers 0x408ADC–0x408FA6 and
   `Setup.AnalyticSizes` and `formulas_statistics.py` follow rows of the table. It lifts
@@ -311,8 +308,7 @@
   and `GGG` differed on `CSPX04` alone until A12; the approved file is empty now. Red:
   the five-fold schedule set to rule L gives `AK157a`, `BK10`, `KB397` and `C166`.
 
-  ⚠ 2026-10-03: the first run gave `C166` besides `CSPX04`, the twin's reader at fault →
-  HISTORY.md#survey-c166-reader-2026-10-03
+  ⚠ 2026-10-03: the first run gave `C166` besides `CSPX04`, the twin's reader at fault → HISTORY.md#survey-c166-reader-2026-10-03
 - [x] 2026-09-23: HMX's `Dok43all` under `Original` minus the original, same seed, seeds
   302–305 and 172–175 (`run_original.py` against `propstruct --precision original`):
   +0.0004 % and 0.0000 % against the ±0.002 % bound (was −0.0102 %); 15 of 16 cells
@@ -416,8 +412,10 @@
   totals with `VmkmTotal = Vsmkm`, `VdokTotal = Svd` (P312, three cycles) `DolM2 = DolM3 =
   DolM1` in every cycle under the flag, to 1e-12 (one product in other orders over `Ndok`
   terms), under `None` in cycle 1 only; red with the store back in place (3 of 7). Program
-  (`P312-Cycles3`, 8 seeds, `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`):
-  `Zkarm_cor` −2.944 ± 0.153 % against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
+  (`P312-Cycles3`, eight distinct seeds `k·2¹⁶`, the page
+  `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` at 8b29342): `Zkarm_cor`
+  −2.960 ± 0.168 % of the `Original` mean against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
+  ⚠ 2026-10-18: was −2.944 ± 0.153 % on the first run's apparatus, now −2.960 ± 0.168 % → HISTORY.md#corrections-page-rerun-2026-10-18
 - [x] 2026-10-18: Corrected, `CategoriesOnCopy`: the totals are byte-identical after a call
   and a second call equals the first, its report that of `None` on fresh totals, where
   `None`'s second call differs; through `Compute`, cycle 0 twice writes no total (the four
@@ -433,6 +431,8 @@
   where `None` keeps it, all rows empty end at one, a `QDOKSS = 1` row is left alone
   (`CategoriesEmptyRowsMergedTests`, red on the read removed, 4 of 7, and on `QDOKSS <= 1`, 1).
   Reported (`CategoryFlagsOnOracleTotalsTests`): 13 of 61 draws move; HPEPA3 yes, PSAN02n, HMX no.
+  Program runs, the page at 8b29342: `DPRow` −15.0 ± 0.4 % (inpt), −10.2 ± 0.2 % (PSAN02n)
+  inside the `Corrected` model, the oracle chain blind to it (`BOOT.md`, row 869–871).
 - [x] 2026-10-18: Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` landed
   with its flag's code and these criteria's evidence; a reference's seed-zero effect is
   `Simulation`'s (`HISTORY.md#corrected-category-flags-every-formulation-2026-10-18`).

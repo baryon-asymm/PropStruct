@@ -4,6 +4,94 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="u4-line-limit-moves-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" and "## Setup plane" — two passages shortened for the line limit
+
+Moved 2026-10-18 (AGENTS.md §15), to make room for the re-run page's figures; each
+keeps its rule in `BOOT.md`. The passages as they stood.
+
+"## Invariants", "The setup follows the precision kind", the end of the sentence:
+
+```text
+  to what it computed before, except `SetupEchoes.Ddokmax` ("## Setup plane",
+  "review"): its stored value moved at the eighth significant digit when the
+  2026-09-24 review corrected it to read the same store every other fraction bound
+  goes through, with the five reference formulations still bit-identical at seed 0 on
+  every other cell of `results.m`.
+```
+
+"## Setup plane", "Why whole, not in pieces":
+
+```text
+**Why whole, not in pieces.** Two throwaway builds (2026-09-23, branch
+`claude/fraction-table-experiment`, not adopted) rounded first `ZSS` alone, then also
+the mass shares and bounds at `FractionLaw`'s boundary; each was a third program — its
+table was the original's while its λ, `Dmax` and size draws were not. The last rung, the
+literal fold, is what closes `inpt`'s `epsdokfr[0]` to the original's 2.70e-8.
+```
+
+<a id="categories-capacity-check-narrative-2026-10-18"></a>
+
+## 2026-10-18 — from "## Categories" — the paragraph on the `DPRow > Ncat` check, in full
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15); the rule stays in `BOOT.md`, with
+the status the check returns and the place of its proof. The paragraph's second half as
+it stood:
+
+```text
+`Categories.MergeAndDescribe` checks this rather than trusting it
+silently (root BOOT.md, "Failures are values"; `CategoriesStatus`, `API.md`): if
+`DPRow > Ncat` it returns `CategoriesStatus.CategoryCountExceedsCapacity` with every
+`out` parameter empty and no total read or written, instead of the Fortran's own
+unclamped loop over the rows `1..DPRow` (line 827, which has no clamp at all) or a
+defensive truncation that would silently change the model's output (root BOOT.md, Taboos: "No silent fix of
+a defect of the original"). `CategoriesTests.MergeAndDescribeReportsStatusWhenDpRow
+ExceedsNcat` constructs a `DPRow > Ncat` input directly (bypassing the invariant above
+on purpose, since the argument is about the model's own particles, not about what this
+method's parameters allow a caller to pass) and proves the status fires instead of the
+`IndexOutOfRangeException` the old silent clamp's own downstream `Recompute` loop threw
+once `row` was allowed past `ncat` (found restoring the old clamp as this check's own
+mutation proof, `tests/Statistics.Tests/BOOT.md`, "## Mutations").
+```
+
+<a id="corrections-page-rerun-2026-10-18"></a>
+
+## 2026-10-18 — from "## Defects of the original" and "## Corrected model" — the program-run claims of four rows and of the `CategoriesEmptyRowsMerged` entry, before the re-run of the correction-effects page (U4)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+8b29342: the first run took its "sixteen seeds" as `k << 17`, which are eight distinct
+phases, and understated its standard errors; the re-run uses `k · 2¹⁶`, adds the three
+`AllBut<Flag>` arms for the category flags, and shows the main effect of
+`CategoriesEmptyRowsMerged`, which the single-flag arm alone does not (the audit's F1:
+the rows understated it). The fragments stood as follows.
+
+Row 911–958, `CategoriesOnCopy`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; sixteen seeds) the fix alone moves `DPRow` +22 % (HPEPA3), +83 % (P33), +2.9 % (PSAN02n), not inpt or HMX
+
+Row 947–959, `CategoriesLastRowRecomputed`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no headline shift: 22 differing cells on P33, `DPRow` −2.1 ± 1.4 %
+
+Row 869–871, 915, 947, `CategoriesEmptyRowsMerged`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no differing cell on the five references, 28 on PSAN02 read with its pocket-forming flags
+
+Row 1145, 1150, `VdokTotalOnCopy`, program-run clause:
+
+> in program runs, P312 over three cycles (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, case P312-Cycles3, 8 seeds), `VdokTotalOnCopy` alone moves `Zkarm_cor` by −2.944 ± 0.153 %
+
+`ACCEPTANCE.md`, the `VdokTotalOnCopy` criterion, its last sentence:
+
+>   (`P312-Cycles3`, 8 seeds, `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`):
+>   `Zkarm_cor` −2.944 ± 0.153 % against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
+
+"## Corrected model", the entry of `CategoriesEmptyRowsMerged`, its last sentence:
+
+>   move the category rows (`DPRow`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `fqdokkarm`)
+>   where a merge or an empty row occurs, measured on drawn totals only (`ACCEPTANCE.md`).
+
 <a id="literals-note-2026-10-01"></a>
 
 ## 2026-10-18 — from "## Invariants" — "Double precision, literals as written", the note of 2026-10-01
