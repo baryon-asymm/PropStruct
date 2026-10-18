@@ -27,10 +27,10 @@ are the *input* to a run, not part of its result). The two extra parameters are 
 `Formulation` and `ModelParameters` (this node's `## Dependencies`); the caller already holds both, since it
 had to read the formulation before it could run the simulator at all.
 
-## Corrected model ⏳
+## Corrected model ✅
 
-Designed 2026-10-18 (`BOOT.md`, "## Corrected model"); the JSON row is implemented
-the same day (`ResultsJson`'s contract modifier), the `results.m` row is not yet. The
+Designed and implemented 2026-10-18 (`BOOT.md`, "## Corrected model"): the JSON row by
+`ResultsJson`'s contract modifier, the `results.m` row by `ResultsMWriter`. The
 writers' signatures do not change. What they write depends on
 `SimulationResult.Diagnostics.Model` ([Simulation](../Simulation/API.md), "## Model
 kind"):
@@ -92,7 +92,7 @@ unrecognised statement, 2 on a usage error.
 |---|---|
 | unwritable path | the I/O exception of the runtime |
 | malformed JSON | `JsonException` |
-| ⏳ a result with `Diagnostics.Model == Corrected` and a null `StoredSetup.Ak1`, `Ak2` or `Ak4` | `ArgumentException` from `ResultsMWriter.Write`, naming the member |
+| a result with `Diagnostics.Model == Corrected` and a null `StoredSetup.Ak1`, `Ak2` or `Ak4` (2026-10-18) | `ArgumentException` from either `ResultsMWriter.Write` overload before anything is written (the path overload creates no file), naming the member |
 
 ## Side effects
 

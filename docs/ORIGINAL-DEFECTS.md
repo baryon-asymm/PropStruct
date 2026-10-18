@@ -9,7 +9,7 @@ This page lists what is wrong with the legacy Fortran program `PropStructV3` and
 
 44 defects from 5 nodes.
 
-By `Corrected`: 17 unchanged, 14 not reachable, 13 fixed.
+By `Corrected`: 14 unchanged, 14 not reachable, 16 fixed.
 
 ## algorithm
 
@@ -74,8 +74,8 @@ By `Corrected`: 17 unchanged, 14 not reachable, 13 fixed.
 | Node | Fortran | What the original does | Consequence | The port | Corrected |
 |---|---|---|---|---|---|
 | `src/Output` | 1238 | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | unchanged |
-| `src/Output` | 1250–1252 | The condition labels print `0.5`, `2.0` and `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and condition 5 names `Dbase` where its test reads `max(Dbase,Dok)` (`## Corrected model`, "The condition labels"). | not measured | reproduced | unchanged |
-| `src/Output` | 1286 | `fineoxy_fr` adds `gdokleft/GGG`, a share of the non-homogenized oxidizer `GGG`, to `gdokns`, a share of the whole oxidizer `GGG0` (`## Corrected model`, "`fineoxy_fr`"). | not measured | reproduced | unchanged |
-| `src/Output` | 1368–1369 | The `fqmkm1` comment says `(step = 0.01)` while `qmkm1` is binned at 0.001 (`## Corrected model`, "`fqmkm1`'s step"). | not measured | reproduced | unchanged |
+| `src/Output` | 1250–1252 | The condition labels print `0.5`, `2.0` and `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and condition 5 names `Dbase` where its test reads `max(Dbase,Dok)` (`## Corrected model`, "The condition labels"). | not measured | reproduced | fixed (Model) |
+| `src/Output` | 1286 | `fineoxy_fr` adds `gdokleft/GGG`, a share of the non-homogenized oxidizer `GGG`, to `gdokns`, a share of the whole oxidizer `GGG0` (`## Corrected model`, "`fineoxy_fr`"). | not measured | reproduced | fixed (Model) |
+| `src/Output` | 1368–1369 | The `fqmkm1` comment says `(step = 0.01)` while `qmkm1` is binned at 0.001 (`## Corrected model`, "`fqmkm1`'s step"). | not measured | reproduced | fixed (Model) |
 | `src/Output` | 1370, 1373, 1377; `arrayprint`, 1517–1543 | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | unchanged |
 | `src/Statistics` | 1386 | `call arrayprint('pdoksmall',pdoksmall,Ndok-1)` prints one element short of `pdoksmall`'s own `Ndok` dimension, unlike every other `Ndok`-sized array this node reports, which prints the full `Ndok` ("## Report", "Decisions where the port departs from a transcription"). | measured: the printed `pdoksmall` is `Ndok − 1` long on every one of the five reference formulations (32/33, 35/36, 32/33, 32/33, 70/71 against `fmdok`'s own `Ndok`-length print), confirmed against each archive's own `results.m` (`tests/Statistics.Tests/PdoksmallReportLengthTests`). | reproduced | unchanged |
