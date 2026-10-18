@@ -90,6 +90,27 @@ public class ModelFlagTests
         Assert.Equal(expected, ResultsJson.Read(jsonPath).Diagnostics.Model);
     }
 
+    [Theory]
+    [InlineData("corrected", 1)]
+    [InlineData("original", 0)]
+    public void ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal(string value, int expectedCount)
+    {
+        using var directory = new TemporaryDirectory();
+        var outputPath = Path.Combine(directory.Path, "results.m");
+
+        using var stdout = new StringWriter();
+        using var stderr = new StringWriter();
+        var exitCode = Program.Run(
+            new[] { "run", BaselineFormulation.DatPath, "--accelerator", "cpu", "--mode", "reference", "--model", value, "--output", outputPath },
+            stdout, stderr, CancellationToken.None);
+
+        Assert.Equal(ExitCode.Success, exitCode);
+        var footer = DocumentedFooterLine.Read();
+        var lines = File.ReadAllLines(outputPath);
+        Assert.Equal(expectedCount, lines.Count(line => string.Equals(line, footer, StringComparison.Ordinal)));
+        Assert.Equal(expectedCount, lines.Count(line => line.Contains(DocumentedFooterLine.Marker, StringComparison.Ordinal)));
+    }
+
     [Fact]
     public void AnUnknownModelValueExitsTwoNamingTheFlag()
     {
