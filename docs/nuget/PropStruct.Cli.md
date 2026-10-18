@@ -38,7 +38,10 @@ propstruct run inpt.dat --mode reference --layout original --precision original 
 ```
 
 The defaults, `--precision binary64` and `--layout independent`, are the more accurate
-answer and differ from the original's own. Other options: `--accelerator auto|cpu|cuda`,
+answer and differ from the original's own. `--model corrected` runs the model with the
+original program's explicit errors fixed (each a row marked `fixed` in
+`docs/ORIGINAL-DEFECTS.md` at github.com/baryon-asymm/PropStruct), under `binary64` only;
+`--model original`, the default, is unchanged. Other options: `--accelerator auto|cpu|cuda`,
 `--seed <n>`, `--json <path>`, `--quiet`. `propstruct --help` lists every command and
 flag, `propstruct --version` prints the tool's version, and `propstruct devices` lists
 the accelerators found.

@@ -63,6 +63,12 @@ three switches `Mode = ExecutionMode.Reference`, `Streams = StreamLayout.Origina
 did. The same example runs as `samples/Quickstart` in the source repository, built
 against this package in CI.
 
+`Model = ModelKind.Corrected` runs the model with the original program's explicit errors
+fixed and nothing else changed (each fix is a row marked `fixed` in the `Corrected`
+column of `docs/ORIGINAL-DEFECTS.md` at github.com/baryon-asymm/PropStruct); it runs
+under `PrecisionKind.Binary64` only and labels its result (`RunDiagnostics.Model`, a
+footer line in `results.m`). `ModelKind.Original`, the default, is unchanged.
+
 ## CUDA
 
 The CPU accelerator (`AcceleratorKind.Cpu`) needs nothing beyond this package and
