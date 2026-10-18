@@ -100,10 +100,17 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       unknown value (`--model fixed`) exits 2 naming the flag
       (`ModelFlagTests.AnUnknownModelValueExitsTwoNamingTheFlag`; red once with `fixed`
       added to the catalog's values).
-- [ ] `--model corrected` alone writes a `results.m` that carries the model footer line.
-      Not verifiable at this base: `src/Output`'s `results.m` row is still ⏳
-      (`src/Output/API.md`, "## Corrected model"), a run under `Corrected` writes no
-      footer. To be added as a case of `ModelFlagTests` once `Output`'s row is merged.
+- [x] 2026-10-18: `--model corrected --mode reference` writes a `results.m` that carries
+      the model footer line exactly once, and `--model original` writes none: the expected
+      text is read from the code block of `src/Output/BOOT.md`, "## Corrected model", not
+      typed (`ModelFlagTests.ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal`,
+      `DocumentedFooterLine`), 158 of 158 cases of `tests/Cli.Tests`. Red once: with
+      `RunOptionsBuilder`'s `--model` assignment forced to `Original` the `corrected` case
+      fails; right once: both cases green with the assignment restored.
+
+      ⚠ 2026-10-18: this item first waited on `Output`'s `results.m` row, which was ⏳ at
+      the base; it is ✅ now (`src/Output/API.md`, "## Corrected model") and the criterion
+      is met.
 - [x] 2026-10-18: the summary line under `Original` is byte for byte the line before the
       option, with and without `--model original`, asserted against a fixed expected text
       built from the JSON result's own diagnostics
