@@ -35,7 +35,7 @@ across replicas rather than one archived run.
 - Expected strings come from `tests/Fixtures`, never typed into a test. The one exception
   is a `Corrected` text no fixture can hold, the condition labels of a constructed ratio:
   typed from `src/Output/BOOT.md`, "The condition labels"; the footer line is read out of
-  that file, and every `Original` text of `CorrectedResultsMTests` from the archive.
+  `src/Output/API.md`, "## Corrected model" (moved there from `BOOT.md` 2026-10-18), and every `Original` text of `CorrectedResultsMTests` from the archive.
 - The structural comparison excludes the time line and, added 2026-09-21, the
   precision-kind, stream-layout and execution-mode footer lines, and, added 2026-10-18,
   the `Corrected` model's — the five port-specific comment lines with no counterpart in

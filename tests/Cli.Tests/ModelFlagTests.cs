@@ -164,7 +164,21 @@ public class ModelFlagTests
         Assert.Contains("--model original|corrected", usage, StringComparison.Ordinal);
         Assert.Contains("(corrected: binary64 only)", usage, StringComparison.Ordinal);
         Assert.Contains("fixes the original's explicit errors, each marked fixed in", usage, StringComparison.Ordinal);
-        Assert.Contains("docs/ORIGINAL-DEFECTS.md", usage, StringComparison.Ordinal);
+        Assert.Contains(DefectsPageWithRepository(), usage, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The page name followed by the repository it lives in, as the documented footer line cites
+    /// them (<c>docs/ORIGINAL-DEFECTS.md (github.com/...)</c>), so the usage and the footer cannot
+    /// name the page differently and no URL is typed here.
+    /// </summary>
+    private static string DefectsPageWithRepository()
+    {
+        var footer = DocumentedFooterLine.Read();
+        var start = footer.IndexOf("docs/ORIGINAL-DEFECTS.md", StringComparison.Ordinal);
+        var end = footer.IndexOf(')', start);
+        Assert.True(start >= 0 && end > start, "The footer line no longer cites the defects page with its repository.");
+        return footer[start..(end + 1)];
     }
 
     /// <summary>

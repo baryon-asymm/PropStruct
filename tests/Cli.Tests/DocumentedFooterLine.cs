@@ -5,8 +5,8 @@ namespace PropStruct.Cli.Tests;
 
 /// <summary>
 /// The text of the <c>results.m</c> footer line under the <c>Corrected</c> model, read where the Output
-/// node documents it (src/Output/BOOT.md, "## Corrected model", the code block under "The footer
-/// line") instead of being typed into a test (the root BOOT.md's taboo on expected values typed where a
+/// node's contract documents it (src/Output/API.md, "## Corrected model", the code block under "The
+/// footer line"; a neighbour's API.md only, AGENTS.md section 3) instead of being typed into a test (the root BOOT.md's taboo on expected values typed where a
 /// file holds them).
 /// </summary>
 internal static class DocumentedFooterLine
@@ -23,9 +23,9 @@ internal static class DocumentedFooterLine
     /// </summary>
     public static string Read()
     {
-        var lines = File.ReadAllLines(RepositoryPaths.Resolve("src", "Output", "BOOT.md"));
+        var lines = File.ReadAllLines(RepositoryPaths.Resolve("src", "Output", "API.md"));
         var anchor = Array.FindIndex(lines, line => line.Contains(AnchorText, StringComparison.Ordinal));
-        Assert.True(anchor >= 0, "src/Output/BOOT.md no longer carries the footer line's anchor.");
+        Assert.True(anchor >= 0, "src/Output/API.md no longer carries the footer line's anchor.");
         var fence = Array.FindIndex(lines, anchor, line => line.TrimStart().StartsWith(FenceText, StringComparison.Ordinal));
         Assert.True(fence >= 0, "The footer line's code block is missing.");
         var indent = lines[fence].Length - lines[fence].TrimStart().Length;

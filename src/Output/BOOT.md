@@ -130,11 +130,9 @@ arithmetic, as its `Original` line is, so the taboo above holds.
 
 - **The footer line** (no Fortran line). Written after the execution-mode line by
   `ResultsMWriter.ModelCommentLine`, the one place the text is written, under
-  `Corrected` only, verbatim, on one line, its leading blank included:
-
-  ```text
-   % Model kind: corrected; the explicit errors of the original marked fixed in the Corrected column of docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct) are fixed.
-  ```
+  `Corrected` only, verbatim, on one line, its leading blank included: the text is the
+  code block of [API.md](API.md), "## Corrected model", the one place it is held
+  (moved there 2026-10-18: a neighbour reads only `API.md`, AGENTS.md §3).
 
   No `=` and no digit, like the footer lines above it, and excluded from the structural
   comparison of `tests/Output.Tests` the same way (`% Model kind:`). `Original` writes
