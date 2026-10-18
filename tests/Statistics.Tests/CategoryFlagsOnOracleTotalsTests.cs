@@ -71,7 +71,7 @@ public class CategoryFlagsOnOracleTotalsTests(ITestOutputHelper output)
             var reportNone = Compute(none, chainNone, c.Cycles[1]).Report;
             var reportCopy = Compute(copy, chainCopy, c.Cycles[1]).Report;
             var merged = !initial.Integers.AsSpan().SequenceEqual(rewritten.Integers);
-            output.WriteLine(Describe(c, "CategoriesOnCopy", reportNone, reportCopy, merged));
+            output.WriteLine(Describe(c, "CategoriesOnCopy", $"cycle-0 merge {(merged ? "yes" : "no")}", reportNone, reportCopy));
 
             if (!merged)
             {
@@ -86,9 +86,45 @@ public class CategoryFlagsOnOracleTotalsTests(ITestOutputHelper output)
         Assert.True(moved > 0, "the flag moved no case: the measure is vacuous");
     }
 
-    private static string Describe(OracleCase c, string flag, CycleReport none, CycleReport flagged, bool merged) =>
+    /// <summary>
+    /// Reported, per case and cycle: the rows of <c>Compute</c> under <c>None</c> and under <c>CategoriesLastRowRecomputed</c>
+    /// on the same drawn totals (each cycle's draw is fresh, so the flag, which acts inside one call, is measured on all of
+    /// them). Asserted: the flag moves at least one draw, and wherever the two row counts are equal and the last row's
+    /// <c>Dokp43</c> is, the whole report is.
+    /// </summary>
+    [Fact]
+    public void CategoriesLastRowRecomputedMovesTheRowsOfTheDraws() =>
+        ReportSingleCycleFlag(CorrectionSet.CategoriesLastRowRecomputed);
+
+    private void ReportSingleCycleFlag(CorrectionSet flag)
+    {
+        var moved = 0;
+        var draws = 0;
+        foreach (var c in Cases)
+        {
+            var none = Prepared(c, CorrectionSet.None);
+            var flagged = Prepared(c, flag);
+            foreach (var cycle in c.Cycles)
+            {
+                var reportNone = Compute(none, Buffers(none, cycle), cycle).Report;
+                var reportFlag = Compute(flagged, Buffers(flagged, cycle), cycle).Report;
+                draws++;
+                var differs = BitwiseComparison.Differences(reportNone, reportFlag, c.Id).Count > 0;
+                moved += differs ? 1 : 0;
+                if (differs)
+                {
+                    output.WriteLine(Describe(c, flag.ToString(), $"cycle {cycle.Cycle}", reportNone, reportFlag));
+                }
+            }
+        }
+
+        output.WriteLine($"{flag}: {moved} of {draws} draws move the report");
+        Assert.True(moved > 0, "the flag moved no draw: the measure is vacuous");
+    }
+
+    private static string Describe(OracleCase c, string flag, string note, CycleReport none, CycleReport flagged) =>
         string.Create(CultureInfo.InvariantCulture,
-            $"{c.Id} {c.Formulation} {flag}: cycle-0 merge {(merged ? "yes" : "no")}, DPRow {none.DpRow} -> {flagged.DpRow}, "
+            $"{c.Id} {c.Formulation} {flag}: {note}, DPRow {none.DpRow} -> {flagged.DpRow}, "
             + $"last Dpockets {none.Dpockets[^1]:G4} -> {flagged.Dpockets[^1]:G4}, Dokp43[0] {none.Dokp43[0]:G4} -> {flagged.Dokp43[0]:G4}, "
             + $"Qdokkarm[0] {none.Qdokkarm[0]:G4} -> {flagged.Qdokkarm[0]:G4}");
 

@@ -189,43 +189,49 @@ internal static class Categories
             }
         }
 
+        var lastRowReturns = corrections.HasFlag(CorrectionSet.CategoriesLastRowRecomputed);
         while (true)
         {
             Recompute(qdoks, dokp41Rows, dokp31Rows);
-            if (row <= 1)
+            if (row > 1)
             {
-                break;
-            }
-
-            var shiftFlag = false;
-            for (var r = 0; r < row - 1; r++)
-            {
-                if (!shiftFlag)
+                var shiftFlag = false;
+                for (var r = 0; r < row - 1; r++)
                 {
-                    if (epsydok[r] > epsDok)
+                    if (!shiftFlag)
                     {
-                        MergeRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
-                        shiftFlag = true;
+                        if (epsydok[r] > epsDok)
+                        {
+                            MergeRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
+                            shiftFlag = true;
+                        }
+                    }
+                    else
+                    {
+                        ShiftRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
                     }
                 }
-                else
+
+                if (shiftFlag)
                 {
-                    ShiftRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
+                    row -= 1;
+                    continue;
                 }
             }
 
-            if (!shiftFlag)
+            if (row > 1 && epsydok[row - 1] > epsDok)
             {
-                break;
+                MergeRow(row - 2, row - 1, qdoks, dokp41Rows, dokp31Rows);
+                row -= 1;
+
+                // CategoriesLastRowRecomputed: back to the top of the loop, as label 600, until no last-row check merges.
+                if (lastRowReturns)
+                {
+                    continue;
+                }
             }
 
-            row -= 1;
-        }
-
-        if (row > 1 && epsydok[row - 1] > epsDok)
-        {
-            MergeRow(row - 2, row - 1, qdoks, dokp41Rows, dokp31Rows);
-            row -= 1;
+            break;
         }
 
         dpRow = row;

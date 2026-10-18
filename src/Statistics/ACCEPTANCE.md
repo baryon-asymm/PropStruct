@@ -216,14 +216,12 @@
   under `Original`, `Compute` equals it bit for bit on every case of
   `cases/statistics/cycle_plane_oracle.json` and `Setup.Prepare` its pre-loop run (λ,
   `DOKM`, `DOKSD`); `ListingOracle.approved.txt` and `ListingOracleSetup.approved.txt`
-  are empty, from 463 and 19 lines (r4, seen once). Every site is covered by an
-  isolating case or written `unreached` with a control or the table's reason
-  (`_check_unreached_sites_are_controlled`); k1–k4 and r1–r3, r5: `tests/Fixtures`. A
-  swapped product order moves no bit (held by A9 and `PlaneFormsTests` instead). 26
-  cases, 58 isolated sites, 18 `unreached` → HISTORY.md#oracle-fixture-cases-2026-10-03
+  are empty, from 463 and 19 lines (r4, seen once); 26 cases, 58 isolated sites, 18
+  `unreached` → HISTORY.md#oracle-fixture-cases-2026-10-03
 
   ⚠ 2026-10-18: was the unseen reds and the fixture's composition told in full, now the
-  figures → HISTORY.md#a2-narration-2026-10-18
+  figures → HISTORY.md#a2-narration-2026-10-18, the coverage sentences →
+  HISTORY.md#a2-coverage-sentences-2026-10-18
 - [x] 2026-10-03: A3, C2 (`PathIdenticalPairsReportTests`,
   `PathIdenticalPairs.approved.txt`, `CyclePlanePairsTieTests`): the port side of the
   six pairs regenerated on the stage 3 build, every integer-printed cell still equal (S4
@@ -265,9 +263,8 @@
   `Setup.AnalyticSizes` and `formulas_statistics.py` follow rows of the table. It lifts
   the declared deviation of `BOOT.md`, "## Setup plane"; until then the unroll factors
   and stores are typed and held by the pins, the survey and the drawn loops (A12).
-  Costed 2026-10-03: the walker is no obstacle (scope extended: 130 problems, 128
-  float events in no row, none from the walk); about forty rows, the temporaries'
-  cells, two new site kinds, both consumers following the table, pins for residues 0, 3.
+  Costed 2026-10-03: about forty rows, two new site kinds, pins for residues 0, 3
+  → HISTORY.md#a8-costing-2026-10-03
 - [x] 2026-10-03: A9 (F3), the call-site order of the plane's products is held
   structurally (`tests/Statistics.Tests/CyclePlaneOrderSiteTests`; `API.md`, "##
   Cycle"): each `order.` call cites its Fortran lines, and its factors' association,
@@ -425,11 +422,13 @@
   Reported (`CategoryFlagsOnOracleTotalsTests`, a synthetic two-cycle chain on the oracle's
   drawn totals): `DPRow` of cycle 1 moves in 4 of 22 cases; HPEPA3 unmoved, HMX −0.06 %,
   PSAN02n +5.6 % on `Qdokkarm`'s first row (`BOOT.md`, the row 911–958).
-- [ ] Corrected, the categories still open: `CategoriesLastRowRecomputed` on rows whose last
-  merge leaves an insufficient row recomputes until none is (merged `DOKP43` =
-  `ΣDokp41/ΣDokp31`), `None` keeping the stale row; `CategoriesEmptyRowsMerged` merges
-  an empty middle row `None` keeps, a `QDOKSS = 1` row under neither. The five
-  references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
+- [x] 2026-10-18: Corrected, `CategoriesLastRowRecomputed`: each reported row's `DOKP43` is
+  the quotient of the sums over its merged rows and a second call from the final rows merges
+  nothing, on the case file's cascade and a four-row one; `None` keeps the stale quotient
+  (`CategoriesLastRowRecomputedTests`, red with the return removed: 5 of 8). Reported
+  (`CategoryFlagsOnOracleTotalsTests`): 10 of 61 drawn cycles move, no reference.
+- [ ] Corrected, `CategoriesEmptyRowsMerged` merges an empty middle row `None` keeps, a
+  `QDOKSS = 1` row under neither; the five references move by mutation (`tests/Simulation.Tests`).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
   with its flag's code and these criteria's evidence, never before. Landed 2026-10-18:
-  every flag but the two of the categories still open.
+  every flag but `CategoriesEmptyRowsMerged`.

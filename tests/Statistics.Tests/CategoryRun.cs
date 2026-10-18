@@ -72,6 +72,13 @@ internal sealed class CategoryRun
     public CategoryRun Copy() =>
         new(ndok, ncat, cellSize, categoryStep, epsDok, dpMax, Layout, (long[])IntegerTotals.Clone(), (double[])RealTotals.Clone());
 
+    /// <summary>The same totals as they are now under another <c>DPmax</c>, which sets how many rows a call starts from.</summary>
+    public CategoryRun WithDpMax(double newDpMax) =>
+        new(ndok, ncat, cellSize, categoryStep, epsDok, newDpMax, Layout, (long[])IntegerTotals.Clone(), (double[])RealTotals.Clone());
+
+    /// <summary>The <c>DPmax</c> at which a call starts from <paramref name="rows"/> rows: the middle of the last row's step.</summary>
+    public double DpMaxForRows(int rows) => (rows - 0.5) * categoryStep;
+
     /// <summary>One <c>MergeAndDescribe</c> on this run's totals, which must report <see cref="CategoriesStatus.Ok"/>.</summary>
     public CategoryOutcome Merge(PrecisionKind precision, CorrectionSet corrections)
     {

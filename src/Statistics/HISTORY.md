@@ -4,6 +4,27 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="a8-costing-2026-10-03"></a>
+
+## 2026-10-03 — from "## Acceptance criteria" — A8, the costing
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Costed 2026-10-03: the walker is no obstacle (scope extended: 130 problems, 128
+> float events in no row, none from the walk); about forty rows, the temporaries'
+> cells, two new site kinds, both consumers following the table, pins for residues 0, 3.
+
+<a id="a2-coverage-sentences-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A2, the coverage and the product-order sentences
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Every site is covered by an
+> isolating case or written `unreached` with a control or the table's reason
+> (`_check_unreached_sites_are_controlled`); k1–k4 and r1–r3, r5: `tests/Fixtures`. A
+> swapped product order moves no bit (held by A9 and `PlaneFormsTests` instead).
+
 <a id="per-cycle-sites-reformulated-2026-10-03"></a>
 
 ## 2026-10-03 — from "## Acceptance criteria" — "every site of the per-cycle plane is generated", the reformulation sentence
