@@ -237,17 +237,27 @@ beforehand.
       line 735, `Fmkarm2` not committed), each against the host call, bit for bit in
       outcome, streams, totals, record and scratch. Red, reverted: the kernel launched
       with `Corrections` cleared turns the three cases red.
-- [ ] The members agree with the defect report: a test of `tests/Particle.Tests` reads
+- [x] The members agree with the defect report: a test of `tests/Particle.Tests` reads
       `docs/ORIGINAL-DEFECTS.md`, collects the members named in `fixed (…)` values of
       the `Corrected` column, the reserved name `Model` (`src/Output`'s printing fixes,
       no flag) excepted, and asserts that set equals `CorrectionSet`'s members other
       than `None` and `All`, that each member has the value `API.md` lists and that
-      `All` is their sum. Red on a scratch page naming an unknown member and on one
-      member's rows set back to `unchanged`; right on the real page. Committed with the
-      fix that flips the last row: until then the two sets cannot be equal, and a check
-      that cannot be green is not committed (AGENTS.md §13). `CorrectionSet` is
-      internal: `PublicSurface.approved.txt` does not move for it. Status 2026-10-18
-      (T4): the page names `fixed (BridgeFrustum)`, `fixed (Fmkarm2OnAcceptance)` and
-      `fixed (WindowLowerEdge)`; `ExactConstants` and the eight `Statistics` members
-      still read `unchanged`, so the two sets cannot be equal yet and the test is not
-      written.
+      `All` is their sum. 2026-10-18, `tests/Particle.Tests`, `CorrectionMemberRowTests`
+      (22 cases, `CorrectionMemberRowCheck`): right on the real page, whose
+      members (`ExactConstants` in two rows, `Model` absent) equal the enum's, and on
+      the real `API.md`. Red on scratch pages through the same path: a member's only
+      row set back to `unchanged` (each but that one; `ExactConstants`, which has two
+      rows, stays named with one set back and is reported with both), a row naming an
+      unknown member alone and next to a known one, and, in `API.md`, a changed value,
+      an `All` that is not the sum and an unlisted member; `Model` alone and next to a
+      member, and a `fixed (…)` outside a table row, are not reported. Red, reverted,
+      on the real files: `WindowLowerEdge = 16` in `API.md`, and a `Phantom = 4096`
+      member in `CorrectionSet.cs`. Committed with the criterion's own condition met:
+      the last row flipped on the target branch (Particle: `BridgeFrustum`,
+      `Fmkarm2OnAcceptance`, `WindowLowerEdge`, `ExactConstants`; `Statistics`: the
+      other eight). `CorrectionSet` is internal: `PublicSurface.approved.txt` does not
+      move for it.
+
+  ⚠ 2026-10-18: was "not written" with `ExactConstants` and the eight `Statistics`
+  members still `unchanged` (T4), now written once every one of the twelve flags has its
+  `fixed (<Flag>)` row (T13a).
