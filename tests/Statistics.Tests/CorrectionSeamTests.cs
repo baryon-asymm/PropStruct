@@ -101,6 +101,59 @@ public class CorrectionSeamTests
         Assert.Empty(BitwiseComparison.Differences((oldShare, oldCumulative, oldSum), (newShare, newCumulative, newSum), name));
     }
 
+    public static IEnumerable<object[]> ProbabilityCasesUnderBothKinds() =>
+        FormulaCaseFiles.ReadSmallParticlesProbabilityCases().SelectMany(c => new[]
+        {
+            new object[] { c.Name, false },
+            new object[] { c.Name, true },
+        });
+
+    /// <summary>
+    /// <c>SmallParticles.Probability</c> on every case of <c>small_particles_probability.json</c>: the overload under
+    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/>,
+    /// returns the old overload's <c>pdoksmall</c> bit for bit.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ProbabilityCasesUnderBothKinds))]
+    public void ProbabilityUnderNoneAndUnderOriginalEqualsTheOldOverload(string caseName, bool original)
+    {
+        var c = FormulaCaseFiles.FindSmallParticlesProbabilityCase(caseName);
+        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+
+        var oldResult = SmallParticles.Probability(
+            c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(), kind);
+        var newResult = SmallParticles.Probability(
+            c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(), kind,
+            corrections);
+
+        Assert.Empty(BitwiseComparison.Differences(oldResult, newResult, caseName));
+    }
+
+    /// <summary>
+    /// Red, the comparison itself for <c>Probability</c>: on every case with <c>gdokleft &gt; 0</c> the scaling flag applied
+    /// under <see cref="PrecisionKind.Binary64"/> is a finding of the same comparison, so that the equalities above are
+    /// not vacuous.
+    /// </summary>
+    [Fact]
+    public void AFlagAppliedUnderNoneIsAFindingOnEveryCaseWithLeftOxidizer()
+    {
+        var cases = FormulaCaseFiles.ReadSmallParticlesProbabilityCases().Where(c => c.Gdokleft > 0.0).ToList();
+        Assert.NotEmpty(cases);
+
+        foreach (var c in cases)
+        {
+            var oldResult = SmallParticles.Probability(
+                c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(),
+                PrecisionKind.Binary64);
+            var flagged = SmallParticles.Probability(
+                c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(),
+                PrecisionKind.Binary64, CorrectionSet.ZdoksmallCoarseShare);
+
+            Assert.NotEmpty(BitwiseComparison.Differences(oldResult, flagged, c.Name));
+        }
+    }
+
     public static IEnumerable<object[]> ShippedNames() => ShippedFormulations.Names.Select(name => new object[] { name });
 
     /// <summary>

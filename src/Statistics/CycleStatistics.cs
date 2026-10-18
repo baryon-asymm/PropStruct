@@ -83,7 +83,7 @@ internal static class CycleStatistics
         var vdokstr = realTotals.Slice(layout.Vdokstr, ndok).ToArray();
         var pdoksmall = SmallParticles.Probability(
             ndok, di, setup.Ak2, echoes.OxidizerMassFractionEffective, gdokleft, setup.PocketCoefficient,
-            inputs.OxidizerDensity, inputs.PropellantDensity, vdokstr, setup.Kind);
+            inputs.OxidizerDensity, inputs.PropellantDensity, vdokstr, setup.Kind, corrections);
         Array.Copy(pdoksmall, nextPdoksmall, ndok);
         nextDmaxxx = SmallParticles.MaxSize(ndok, di, echoes.Ddokmax, setup.PocketCoefficient, setup.BridgeCoefficient, pdoksmall, setup.Kind);
 
