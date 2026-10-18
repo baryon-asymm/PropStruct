@@ -17,7 +17,7 @@ $ dotnet run --project tests/RateTableTool -- original-model-guard
 |---|---|---|
 | `rate-table` | `tests/Fixtures/rate-table.json`, `tests/Fixtures/rate-runs/<formulation>/<layout>/<precision>/<seedIndex>.m.txt` | 320: five formulations × two layouts × two precision kinds × sixteen seeds |
 | `seed-zero-snapshot` | `tests/Simulation.Tests/Snapshots/SeedZeroResultsM.approved.txt` | 20: five formulations × two layouts × two precision kinds, seed 0 |
-| `original-model-guard` | `tests/Simulation.Tests/Snapshots/OriginalModelGuard.approved.txt`: per case `<id> <SHA-256 of results.m> <SHA-256 of the result JSON>` | 33: the twenty seed-0 cases, the five references batched on the CPU, eight extra formulations (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard") |
+| `original-model-guard` | `tests/Simulation.Tests/Snapshots/OriginalModelGuard.approved.txt`: per case `<id> <SHA-256 of results.m> <SHA-256 of the result JSON>` | 34: the twenty seed-0 cases, the five references batched on the CPU, nine extra formulations (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard") |
 
 `--parallelism N` (default: `Environment.ProcessorCount`) sets
 `ParallelOptions.MaxDegreeOfParallelism` for `rate-table`'s `Parallel.For`; lower it if

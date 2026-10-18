@@ -71,6 +71,34 @@
       approved ones and `SeedZeroResultsMMatchesApprovedSnapshot` green; one character of
       `extra/P33-defaults`' JSON hash edited, red; reverted. Right once: regenerated three
       times from scratch, identical; its `results.m` column equals the untouched snapshot's.
+- [x] 2026-10-18 (T13): the guard sees every one of the twelve `CorrectionSet` flags. Each flag
+      was applied alone under `Original` (a scratch mapping at `SimulationOptions.EffectiveCorrections`,
+      `Model == Original ? <flag> : ...`, the flag read from an environment variable so that one
+      Release build served all twelve runs; reverted), `OriginalModelGuardTests` run (35 tests:
+      34 cases and the file's own); the unmapped run is green, 35 of 35. A case is red when the
+      flag changes a bit of its `results.m` or JSON. "B64" is the 24 `Binary64` cases (ten
+      `seed0/*/*/Binary64`, five `batched/*`, nine `extra/*`); no `seed0/*/*/Original` case is red
+      under any flag, since `Prepare` stores `None` under `PrecisionKind.Original`.
+
+      | Flag | Value | Red cases |
+      |---|---|---|
+      | `ExactConstants` | 1 | all 24 B64 |
+      | `BridgeFrustum` | 2 | all 24 B64 |
+      | `Fmkarm2OnAcceptance` | 4 | all 24 B64 |
+      | `WindowLowerEdge` | 8 | all 24 B64 |
+      | `VdokTotalOnCopy` | 16 | `extra/P312-cycles3`, `extra/PSAN02-sfr-dmin20-cycles3` |
+      | `ZdoksmallCoarseShare` | 32 | `extra/P312-defaults`, `-cycles3`, `-homogenized0.1`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20-di10` alone |
+      | `DoksdConsistent` | 128 | `seed0/P33/{Original,Independent}/Binary64`, `batched/P33`, `extra/P33-defaults`, `extra/P2-defaults` |
+      | `CategoriesOnCopy` | 256 | all 24 B64 |
+      | `CategoriesLastRowRecomputed` | 512 | 21: all B64 but `seed0/HMX/*/Binary64` and `batched/HMX` |
+      | `CategoriesEmptyRowsMerged` | 1024 | 12: `seed0/{HMX,inpt,PSAN02n}/*/Binary64`, `batched/{HMX,inpt,PSAN02n}`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `PdoksmallFirstCell` | 2048 | `extra/P312-dmin5` alone |
+
+      `GdokleftOnce` was seen by no case of the 33 before `extra/PSAN02-sfr-dmin20-di10` was added
+      (the 33 stay green under it); red once there: flag 64 turns that case red, right once:
+      the same case is green unmapped, on a line generated at `ac1fc20`
+      (`## The Original-model guard`). `PdoksmallFirstCell` and `GdokleftOnce` rest on one case each.
 - [x] 2026-10-18: the model kind is covered by `ModelKindTests` (18 cases) and
       `DegenerateConfigurationTests`' `Corrected` case: surface, mapping on P33's
       `Dok43sd` (the archive's 75.45 for `Original`, 112.66 for `Corrected`), the refusal and
