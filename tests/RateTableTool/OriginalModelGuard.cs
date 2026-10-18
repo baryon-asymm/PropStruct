@@ -1,4 +1,3 @@
-using System.Globalization;
 using PropStruct.Execution;
 using PropStruct.Input;
 using PropStruct.Simulation;
@@ -20,7 +19,8 @@ internal sealed record GuardCase(
     ExecutionMode Mode,
     StreamLayout Layout,
     PrecisionKind Precision,
-    ModelParameters Parameters)
+    ModelParameters Parameters,
+    bool IsLong = false)
 {
     public Formulation ReadFormulation()
     {
@@ -70,32 +70,11 @@ internal static class OriginalModelGuard
 
     /// <summary>The line the approved file carries for <paramref name="guardCase"/>: its id, the SHA-256 of its
     /// <c>results.m</c> (time line cut) and the SHA-256 of its normalised result JSON.</summary>
-    public static string Line(GuardCase guardCase, ReferenceModeRunner.Run run) =>
-        string.Create(CultureInfo.InvariantCulture, $"{guardCase.Id} {run.Sha256Hex} {run.JsonSha256Hex}");
+    public static string Line(GuardCase guardCase, ReferenceModeRunner.Run run) => ApprovedGuardFile.Line(guardCase.Id, run);
 
     /// <summary>The approved hashes by case id: (<c>results.m</c> hash, JSON hash). Empty when the file does
     /// not exist, so that the test can fail with the regeneration command instead of a file error.</summary>
-    public static Dictionary<string, (string ResultsM, string Json)> LoadApproved()
-    {
-        var map = new Dictionary<string, (string ResultsM, string Json)>(StringComparer.Ordinal);
-        if (!File.Exists(ApprovedPath))
-        {
-            return map;
-        }
-
-        foreach (var line in File.ReadAllLines(ApprovedPath))
-        {
-            if (line.Length == 0 || line.StartsWith('#'))
-            {
-                continue;
-            }
-
-            var fields = line.Split(' ');
-            map[fields[0]] = (fields[1], fields[2]);
-        }
-
-        return map;
-    }
+    public static Dictionary<string, (string ResultsM, string Json)> LoadApproved() => ApprovedGuardFile.Load(ApprovedPath);
 
     private static IEnumerable<GuardCase> BuildCases()
     {
@@ -122,20 +101,24 @@ internal static class OriginalModelGuard
         var defaults = ModelParameters.Default;
         var psan02 = defaults with { ReadPocketFormingFractions = true, Dmin = Length.FromMicrometres(20) };
         var psan02Di10 = psan02 with { CellSize = Length.FromMicrometres(10) };
-        yield return Extra("P312-defaults", "P312", cycles: null, defaults);
+        yield return Extra("P312-defaults", "P312", cycles: null, defaults, isLong: true);
         yield return Extra("P312-dmin5", "P312", cycles: null, defaults with { Dmin = Length.FromMicrometres(5) });
-        yield return Extra("P312-cycles3", "P312", cycles: 3, defaults);
-        yield return Extra("P312-homogenized0.1", "P312", cycles: null, defaults with { HomogenizedOxidizerFraction = 0.1 });
+        yield return Extra("P312-cycles3", "P312", cycles: 3, defaults, isLong: true);
+        yield return Extra("P312-homogenized0.1", "P312", cycles: null, defaults with { HomogenizedOxidizerFraction = 0.1 }, isLong: true);
         yield return Extra("PSAN02-sfr-dmin20", "PSAN02", cycles: null, psan02);
         yield return Extra("PSAN02-sfr-dmin20-cycles3", "PSAN02", cycles: 3, psan02);
         yield return Extra("PSAN02-sfr-dmin20-di10", "PSAN02", cycles: null, psan02Di10);
         yield return Extra("P33-defaults", "P33", cycles: null, defaults);
         yield return Extra("P2-defaults", "P2", cycles: null, defaults);
+
+        // The Original precision kind off the seed-0 formulations (2026-10-18, U3): a read SFR vector, three
+        // cycles and a non-zero Gdokleft, which the five references leave out under that kind.
+        yield return Extra("PSAN02-sfr-dmin20-cycles3/Original", "PSAN02", cycles: 3, psan02, PrecisionKind.Original);
     }
 
     private static GuardCase Whole(string id, string name, ExecutionMode mode, StreamLayout layout, PrecisionKind precision) =>
-        new(id, name, Cycles: null, ParticlesPerCycle: null, mode, layout, precision, ModelParameters.Default);
+        new(id, name, Cycles: null, ParticlesPerCycle: null, mode, layout, precision, ModelParameters.Default, IsLong: id.StartsWith("seed0/", StringComparison.Ordinal));
 
-    private static GuardCase Extra(string name, string formulation, int? cycles, ModelParameters parameters) =>
-        new($"extra/{name}", formulation, cycles, ExtraParticlesPerCycle, ExecutionMode.Reference, StreamLayout.Independent, PrecisionKind.Binary64, parameters);
+    private static GuardCase Extra(string name, string formulation, int? cycles, ModelParameters parameters, PrecisionKind precision = PrecisionKind.Binary64, bool isLong = false) =>
+        new($"extra/{name}", formulation, cycles, ExtraParticlesPerCycle, ExecutionMode.Reference, StreamLayout.Independent, precision, parameters, isLong);
 }
