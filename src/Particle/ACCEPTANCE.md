@@ -214,11 +214,15 @@ beforehand.
       none in cell 2, `dpoc[0] = 1.0`); `AttemptRunPassesTheFlagToTheWindow` (the same
       constructed attempt moves a record cell or total under the flag), red, reverted,
       when `Attempt.Run` hands `Build` the flag as false.
-- [ ] `WindowLowerEdge`'s positive control at program level, once `Simulation`'s seam
+- [x] `WindowLowerEdge`'s positive control at program level, once `Simulation`'s seam
       exists: the flag alone on the 2026-09-24 audit's apparatus (reference mode,
       `Independent`, `Binary64`, seeds `k·2¹⁷`, `k = 0..7`, the five references)
       reproduces `Dqmkm2` −2.8 % to −7.0 % and `Zkarm` +4.9 % to +13.5 % within their
-      standard errors (`tests/Simulation.Tests`, hand-run category).
+      standard errors (`tests/Simulation.Tests`, hand-run category). 2026-10-18,
+      `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, "Positive control,
+      `WindowLowerEdge` alone in reference mode": `Dqmkm2` −2.815 ± 0.013 % (inpt) to
+      −6.949 ± 0.010 % (HPEPA3), `Zkarm` +4.907 ± 0.219 % (HMX) to +13.514 ± 0.069 %
+      (PSAN02n), every shift inside the audit's range widened by two standard errors.
 - [x] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
       task with a scratch counter in `Attempt.Run` (reverted): the largest count and the
       mean per bridge, against `None`, on `AccumulatorSweep`'s sequence with 10⁵ cycle-1
