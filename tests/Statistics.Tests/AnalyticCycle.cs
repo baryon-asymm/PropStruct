@@ -59,6 +59,9 @@ internal sealed class AnalyticCycle
     /// <summary>The number of oxidizer cells, <c>Ndok</c>.</summary>
     public int Ndok => setup.Ndok;
 
+    /// <summary>The category-row step, <c>Dj</c>.</summary>
+    public double CategoryStep => setup.CategoryStep;
+
     /// <summary>The oxidizer density, <c>PLOT1</c>.</summary>
     public double OxidizerDensity => inputs.OxidizerDensity;
 

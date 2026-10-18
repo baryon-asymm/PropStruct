@@ -4,6 +4,36 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="per-cycle-sites-reformulated-2026-10-03"></a>
+
+## 2026-10-03 — from "## Acceptance criteria" — "every site of the per-cycle plane is generated", the reformulation sentence
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Reformulated: the 2026-10-01 criterion read the source under rule L
+> (`classify-cycle-plane.py` → `CyclePlane.generated.txt`), retired 2026-10-03, nothing
+> reading it; its verdicts the archive confirms are the generator's own right proof now
+> (16 verdicts, `classify-cycle-plane-listing.py selftest`).
+
+<a id="rate-criterion-dating-2026-10-02"></a>
+
+## 2026-10-02 — from "## Acceptance criteria" — the rate criterion's dating, two corrections
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> ⚠ 2026-10-02: was dated 2026-09-24, before the per-cycle plane changed the report
+> under `Original` (2026-10-01); now the root's re-run of that day. ⚠ 2026-09-28: was
+> "23 of 160 against 22 of 197, p = 0.124", stale; now cited (§8)
+
+<a id="doksd-rule-l-2026-10-03"></a>
+
+## 2026-10-03 — from "## Acceptance criteria" — A2, `DOKM`/`DOKSD` under rule L
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> ⚠ 2026-10-01 (A2): `DOKM`/`DOKSD` under rule L; only PSAN02n's `Original` runs moved.
+> Rule L is retired, 2026-10-03: the listing's schedules (`BOOT.md`, "## Setup plane").
+
 <a id="corrected-setup-binary64-unchanged-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Invariants" — "The setup follows the precision kind", before the `Original` model qualified its `Binary64` half

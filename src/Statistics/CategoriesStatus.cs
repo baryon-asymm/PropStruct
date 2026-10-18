@@ -1,7 +1,7 @@
 namespace PropStruct.Statistics;
 
 /// <summary>
-/// The one precondition <see cref="Categories.MergeAndDescribe"/> checks before its
+/// The one precondition <c>Categories.MergeAndDescribe</c> checks before its
 /// step-1 loop (BOOT.md, "## Categories"): the initial category count <c>DPRow</c>
 /// (<c>int(DPmax/Dj) + 1</c>, the original's own formula, no clamp) must not exceed
 /// <c>Ncat</c>, the capacity every category array — <c>Dpockets</c>, <c>Qdoks</c>'s own
