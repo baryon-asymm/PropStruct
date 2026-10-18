@@ -67,9 +67,10 @@ internal static class Setup
 
     /// <summary>
     /// Fortran lines 379-406: the analytical mass-medium oxidizer size and its standard
-    /// deviation. <c>DOKSD</c> uses the same formula for both size laws (lines 385-386,
-    /// 399-400); only <c>DOKM</c> differs, and the final <c>DOKSD -= DOKM^2</c> (line
-    /// 405) applies to both (BOOT.md, Invariants).
+    /// deviation. Under the <c>Original</c> model <c>DOKSD</c> uses the same formula for both size laws
+    /// (lines 385-386, 399-400); only <c>DOKM</c> differs, and the final <c>DOKSD -= DOKM^2</c> (line
+    /// 405) applies to both (BOOT.md, Invariants); <see cref="CorrectionSet.DoksdConsistent"/> gives the
+    /// size law 2 its own second moment (BOOT.md, "## Corrected model").
     /// </summary>
     /// <remarks>
     /// Under <see cref="PrecisionKind.Original"/> (BOOT.md, "## Setup plane", "Sums as the

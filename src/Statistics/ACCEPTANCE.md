@@ -389,17 +389,22 @@
   existing test unchanged and green; red on one flag applied under `None`. A structural
   test finds no `CyclePlaneRounding`, `CyclePlaneOrder` or `UnrolledSchedule` call in a
   block a `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests`
-  green.
+  green. Met 2026-10-18 for `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files,
+  both kinds; `CorrectionSeamTests`, `CorrectedStatementStructureTests`, each red on a
+  mutation); open for `MergeAndDescribe`, `Probability`, with the flags that read them.
 - [ ] Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is the `None`
   value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base, each to
   1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the matches of
   `3\.14\d*`, `12\.566\d*`, `0?\.333\d*` and the quotient `1/3.` (not after a letter,
   digit or point) in the four line-map ranges at exactly 1704, 1716, 1014 and 1016
-  (twice), red on a removed site.
-- [ ] Corrected, `DoksdConsistent`: right: one `JZZ = 2` fraction gives the closed form
-  `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance, to
-  1e-12; P33 prints `Dok43sd` 112.66 µm, P2 8.07 µm; red: `None`'s 75.45 µm and `NaN`;
-  `JZZ ≠ 2` bit-identical to `None`.
+  (twice), red on a removed site. Met 2026-10-18 for the two `PARAM` sites and the `ZSS`
+  ratio on 49 files, red under `None` and on each coefficient reverted
+  (`ExactConstantsTests`); open for `mp` and the `Legacy` test, with 1014 and 1016.
+- [x] 2026-10-18: Corrected, `DoksdConsistent`: one `JZZ = 2` fraction gives the closed
+  form `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance,
+  also on every shipped `JZZ = 2` file, to 1e-12; P33 prints `Dok43sd` 112.66 µm, P2
+  8.07 µm; red: `None`'s 75.45 µm and `NaN`; `JZZ ≠ 2` bit-identical to `None`
+  (`DoksdConsistentTests`; red on `1/3` for `2/3` and on the flag read as another).
 - [ ] Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0` fraction across
   `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by `GGG·GDOK·φ(b)`
   and the flag equals it, under both laws; `b` at or below the bound: bit-identical; on
@@ -426,3 +431,4 @@
   references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
   with its flag's code and these criteria's evidence, never before.
+  Landed: `DoksdConsistent`, 2026-10-18.
