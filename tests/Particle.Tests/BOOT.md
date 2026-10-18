@@ -20,6 +20,7 @@ each is checked against, what is covered and what is not.
 | Snapshot | first 1000 attempts of cycle 0 per reference formulation | approved bit snapshots, one case per formulation carrying all 1000 attempts | ✅ |
 | Snapshot | first 10⁴ attempts of cycle 1 per reference formulation, `Corrections` unset, under both precision kinds (the `None` guard of the `Corrected` work, `CycleOneSnapshotTests`) | approved bit snapshots, one case per formulation and kind, each attempt contributing the SHA-256 of its trace row; `AccumulatorSweep`'s sequence (`CycleOneRun`: 4000 cycle-0 attempts, QKS1 refreshed after every completed loop, `pdoksmall` zero, `Dmaxxx` 1e30), which reaches the window, Var#1 pockets, both Var#2 branches and the tests of lines 723–738, asserted before the hash | ✅ |
 | L0/L1 | `Corrected` flags: the `BridgeFrustum` volume, one flag moving only the fields its entry names (`BridgeFrustum`, `Fmkarm2OnAcceptance`), `ExactConstants` at `Attempt.Run`'s sites (the `rrL` site by value) and its generated site list, `Fmkarm2OnAcceptance` on a constructed rejected attempt, `WindowLowerEdge` by a χ² over 10⁶ draws of `SamplePocket` | an independent quadrature of the solid, the `None` run of the same sequence, `ConstructedModel.PeekFirstNeighbour`'s oracle, the masses of a constructed QKS1, `ExactConstantLiterals.generated.txt` (by `scan-exact-constants.py`) against `ExactConstantSites.txt` and `Attempt.cs` | ✅ |
+| L0 | `CorrectionSet`'s members against the generated defect page and `src/Particle/API.md` | `docs/ORIGINAL-DEFECTS.md`'s `fixed (…)` values, `API.md`'s enum block (`CorrectionMemberRowTests`; red on scratch texts through the same path and on two real-file mutations) | ✅ |
 
 The snapshot hashes raw `double` bits that depend on `Math.Log` and `Math.Pow`, which
 CoreCLR takes from the C runtime; they hold on Windows 11 x64, UCRT with FMA3, .NET 10,
@@ -304,7 +305,8 @@ Outside the tree: xunit.
       `BridgeGeometryTests` (the four `BridgeFrustum` facts), `CorrectionIsolationTests` (3),
       `ExactConstantsTests` (4), `ExactConstantSiteTests` (3 fast, 2 `Legacy`),
       `BridgeWindowTests.WindowLowerEdgeMovesTheOriginAndNothingElse`,
-      `HostEqualsCpuAcceleratorTests` with the flag set; each proven red by the
+      `HostEqualsCpuAcceleratorTests` with the flag set, `CorrectionMemberRowTests` (22,
+      2026-10-18, the members against the page); each proven red by the
       mutations recorded in `src/Particle/ACCEPTANCE.md` (the `Corrected` items) and, for
       `WindowLowerEdgeMovesTheOriginAndNothingElse`, by the `Build` parameter swapped
       (the fixture cases red) and ignored in the flag's arm (the new fact red alone).
