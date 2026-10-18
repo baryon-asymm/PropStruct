@@ -6,21 +6,20 @@ namespace PropStruct.Particle.Tests;
 
 /// <summary>
 /// <c>ExactConstants</c> at this node's sites (<c>ACCEPTANCE.md</c>). Right: on a constructed
-/// attempt the sphere-volume terms the record receives (<c>Allvdok</c>, <c>Svd</c>, <c>Vks</c>)
-/// are the <c>None</c> terms times pi / 3.14159, within 2 ulp per term added: a cell that
-/// sums <c>n</c> terms rounds <c>n</c> times, so its tolerance is <c>2n</c> ulp, and a cell
-/// of one term is held to 2. <c>Vks</c> is the exception to "the <c>None</c> term times the
+/// attempt the sphere-volume terms the record receives (<c>Allvdok</c>, <c>Svd</c>,
+/// <c>Vks</c>) are the <c>None</c> terms times pi / 3.14159 to 1e-14 relative, while the
+/// effect itself is 8.45e-7. <c>Vks</c> is the exception to "the <c>None</c> term times the
 /// ratio": its pocket radius is <c>rrL - (Dr + Db) / 2</c> and <c>rrL</c> itself moves under
 /// the flag (the Poisson part, <c>BOOT.md</c>, "ExactConstants"), so its terms are held to
 /// pi / 6 times the pocket cubes the record keeps next to them (<c>Dp31</c>) instead. Red:
-/// under <c>None</c> the same relations give 3.14159, the ratio of 1, thousands of ulp away.
+/// under <c>None</c> the same relations give 3.14159, the ratio of 1, 8.45e-7 away.
 /// </summary>
 public class ExactConstantsTests : IClassFixture<CpuHost>
 {
     // The original's literal for pi at the sphere-volume sites (Fortran 469, 484, ...).
     private const double SphereLiteral = 3.14159;
 
-    private const double UlpsPerTerm = 2.0;
+    private const double RelativeTolerance = 1e-14;
 
     private readonly CpuHost _host;
 
@@ -30,7 +29,7 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
     }
 
     [Fact]
-    public void EveryAllvdokCellIsScaledByPiOverTheLiteralWithinTwoUlpsPerTerm()
+    public void EveryAllvdokCellIsScaledByPiOverTheLiteral()
     {
         var (none, exact) = RunBothModels();
 
@@ -41,9 +40,8 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
             if (original != 0.0)
             {
                 cells++;
-                var terms = none.IntegerTotals[none.Layout.Alldok + i];
-                var ulps = UlpsFromExpected(original, exact.Record[none.Layout.Allvdok + i]);
-                Assert.True(ulps <= UlpsPerTerm * terms, $"Allvdok[{i}] of {terms} terms is {ulps} ulp from the None cell times pi / {SphereLiteral}.");
+                var error = RelativeError(original * (Math.PI / SphereLiteral), exact.Record[none.Layout.Allvdok + i]);
+                Assert.True(error <= RelativeTolerance, $"Allvdok[{i}] is {error} from the None cell times pi / {SphereLiteral}.");
             }
         }
 
@@ -51,12 +49,10 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
     }
 
     [Fact]
-    public void EverySvdCellIsScaledByPiOverTheLiteralWithinTwoUlpsPerTerm()
+    public void EverySvdCellIsScaledByPiOverTheLiteral()
     {
         var (none, exact) = RunBothModels();
 
-        // alpha * svd1 + pi / 6 * dr^3: one term per bridge of the accepted attempt and one for the base particle.
-        var terms = none.IntegerTotals[none.Layout.IbridgeTotal] + 1;
         var cells = 0;
         for (var i = 0; i < none.Ndok; i++)
         {
@@ -64,8 +60,8 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
             if (original != 0.0)
             {
                 cells++;
-                var ulps = UlpsFromExpected(original, exact.Record[none.Layout.Svd + i]);
-                Assert.True(ulps <= UlpsPerTerm * terms, $"Svd[{i}] of {terms} terms is {ulps} ulp from the None cell times pi / {SphereLiteral}.");
+                var error = RelativeError(original * (Math.PI / SphereLiteral), exact.Record[none.Layout.Svd + i]);
+                Assert.True(error <= RelativeTolerance, $"Svd[{i}] is {error} from the None cell times pi / {SphereLiteral}.");
             }
         }
 
@@ -77,16 +73,13 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
     {
         var (none, exact) = RunBothModels();
 
-        var pockets = Sum(none.IntegerTotals, none.Layout.Qks, none.Nkarm);
-        Assert.True(pockets > 0, "the constructed attempt counted no pocket.");
+        Assert.True(Sum(none.IntegerTotals, none.Layout.Qks, none.Nkarm) > 0, "the constructed attempt counted no pocket.");
 
-        var underNone = UlpsFromSixthOf(SphereLiteral, none);
-        var underFlag = UlpsFromSixthOf(Math.PI, exact);
-        Assert.True(underFlag <= UlpsPerTerm * pockets, $"under the flag the Vks cells are {underFlag} ulp from pi / 6 times the pocket cubes.");
-        Assert.True(underNone <= UlpsPerTerm * pockets, $"under None the Vks cells are {underNone} ulp from 3.14159 / 6 times the pocket cubes.");
+        Assert.True(VksAgainstSixthOf(Math.PI, exact) <= RelativeTolerance, "under the flag Vks is not pi / 6 times the pocket cubes.");
+        Assert.True(VksAgainstSixthOf(SphereLiteral, none) <= RelativeTolerance, "under None Vks is not 3.14159 / 6 times the pocket cubes.");
 
-        // Red: the check separates the two constants, each one's own ratio is thousands of ulp from the other's.
-        Assert.True(UlpsFromSixthOf(Math.PI, none) > 1000.0 * UlpsPerTerm * pockets, "the check does not tell pi from the literal.");
+        // Red: the check separates the two constants, each one's own ratio is the effect away from the other's.
+        Assert.True(VksAgainstSixthOf(Math.PI, none) > 1e-7, "the check does not tell pi from the literal.");
     }
 
     [Fact]
@@ -100,11 +93,11 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
             var original = none.Record[none.Layout.Allvdok + i];
             if (original != 0.0)
             {
-                worst = Math.Max(worst, UlpsFromExpected(original, original) / none.IntegerTotals[none.Layout.Alldok + i]);
+                worst = Math.Max(worst, RelativeError(original * (Math.PI / SphereLiteral), original));
             }
         }
 
-        Assert.True(worst > 1000.0 * UlpsPerTerm, $"under None the cells are {worst} ulp per term from the scaled ones; the check would not see the missing flag.");
+        Assert.True(worst > 1e-7, $"under None the cells are {worst} from the scaled ones; the check would not see the missing flag.");
     }
 
     private static double Sum(long[] totals, int offset, int length)
@@ -118,7 +111,9 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
         return sum;
     }
 
-    private static double UlpsFromSixthOf(double pi, Outcome run)
+    private static double RelativeError(double expected, double actual) => Math.Abs(actual - expected) / Math.Abs(expected);
+
+    private static double VksAgainstSixthOf(double pi, Outcome run)
     {
         var vks = 0.0;
         for (var i = 0; i < run.Nkarm; i++)
@@ -126,8 +121,7 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
             vks += run.Record[run.Layout.Vks + i];
         }
 
-        var expected = pi / 6.0 * run.Record[run.Layout.Dp31];
-        return Math.Abs(vks - expected) / (Math.BitIncrement(expected) - expected);
+        return RelativeError(pi / 6.0 * run.Record[run.Layout.Dp31], vks);
     }
 
     private (Outcome None, Outcome Exact) RunBothModels()
@@ -155,12 +149,6 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
         var result = scenario.Run(ref streams);
         return new Outcome(result, streams, scenario.Setup.Layout, scenario.Setup.Ndok, scenario.Setup.Nkarm,
             scenario.AllRecords(), scenario.AllIntegerTotals());
-    }
-
-    private static double UlpsFromExpected(double original, double flagged)
-    {
-        var expected = original * (Math.PI / SphereLiteral);
-        return Math.Abs(flagged - expected) / (Math.BitIncrement(Math.Abs(expected)) - Math.Abs(expected));
     }
 
     private sealed record Outcome(

@@ -59,12 +59,13 @@ public class BridgeGeometryTests
         }
     }
 
-    // The geometry of the BridgeFrustum cases (ACCEPTANCE.md): the larger sphere's radius, the
-    // pocket's radius and the gap, metres; R2/R1 is the case. For these three, `bb` is positive
-    // at all three ratios, so the volume is computed rather than the JJ = 0 return taken.
-    private const double R1 = 5.0e-5;
-    private const double Rk = 0.4 * R1;
-    private const double A = 0.1 * R1;
+    // The geometry of the BridgeFrustum cases (ACCEPTANCE.md), Volume's own arguments in metres:
+    // r1 = 50 um, rk = 40 um, a = 5 um; R2/R1 is the case. `bb` is positive at all three ratios,
+    // so the volume is computed rather than the JJ = 0 return taken, and the original comes out
+    // 69 times short at 0.998 and -1.17e-13 m^3 at 1 (computed 2026-10-18).
+    private const double R1 = 50e-6;
+    private const double Rk = 40e-6;
+    private const double A = 5e-6;
 
     private static readonly double[] Ratios = [0.6, 0.998, 1.0];
 
