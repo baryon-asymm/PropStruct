@@ -114,7 +114,7 @@ internal static class CycleStatistics
                 out dkarm43Cor, out sdevp43Cor, out dqkarmCor, out dfmk432, out sdevp243,
                 out dqmkm1, out dqmkm2, out qmcoef);
 
-            MassFractions(rounding, setup, layout, realTotals, echoes.OxidizerMassFractionEffective, inputs.OxidizerDensity,
+            MassFractions(rounding, setup, layout, realTotals, corrections, echoes.OxidizerMassFractionEffective, inputs.OxidizerDensity,
                 gdokleft, plotsmdok, plotsm, vdokleft, out dolM1, out dolM2, out dolM3);
 
             Convergence(rounding, echoes, epsy, epsmd3, epsmd4, alldok43, alldoksd, dolM2,
@@ -553,10 +553,14 @@ internal static class CycleStatistics
         }
     }
 
-    /// <summary>Fortran lines 1137-1152 (cycles &gt;= 1 only): in-place division of <c>VdokTotal</c> (per cell) and <c>VdokTotal2</c> (scalar) by <c>1 - gdokleft/GGG</c>, as the original (BOOT.md, "In-place rewrites of the totals").</summary>
+    /// <summary>
+    /// Fortran lines 1137-1152 (cycles &gt;= 1 only): in-place division of <c>VdokTotal</c> (per cell) and <c>VdokTotal2</c>
+    /// (scalar) by <c>1 - gdokleft/GGG</c>, as the original (BOOT.md, "In-place rewrites of the totals"); under
+    /// <see cref="CorrectionSet.VdokTotalOnCopy"/> the quotients feed the sums and are stored nowhere.
+    /// </summary>
     private static void MassFractions(
         CyclePlaneRounding rounding, in ModelSetup setup, AccumulatorLayout layout, Span<double> realTotals,
-        double ggg, double plot1, double gdokleft, double plotsmdok, double plotsm, double vdokleft,
+        CorrectionSet corrections, double ggg, double plot1, double gdokleft, double plotsmdok, double plotsm, double vdokleft,
         out double dolM1, out double dolM2, out double dolM3)
     {
         var ndok = setup.Ndok;
@@ -581,7 +585,11 @@ internal static class CycleStatistics
         for (var i = 0; i < ndok; i++)
         {
             var updated = rounding.Store(realTotals[layout.VdokTotal + i] / divisor); // Fortran 1145
-            realTotals[layout.VdokTotal + i] = updated; // in-place rewrite, as the original (BOOT.md).
+            if (!corrections.HasFlag(CorrectionSet.VdokTotalOnCopy))
+            {
+                realTotals[layout.VdokTotal + i] = updated; // in-place rewrite, as the original (BOOT.md).
+            }
+
             vdokTotalSum += updated;
         }
 
@@ -589,7 +597,10 @@ internal static class CycleStatistics
 
         // 1150's store is what 1151 reads, and what the next cycle reads.
         var vdokTotal2 = rounding.Store(realTotals[layout.VdokTotal2] / divisor); // Fortran 1150
-        realTotals[layout.VdokTotal2] = vdokTotal2;
+        if (!corrections.HasFlag(CorrectionSet.VdokTotalOnCopy))
+        {
+            realTotals[layout.VdokTotal2] = vdokTotal2; // in-place rewrite, as the original (BOOT.md).
+        }
 
         dolM3 = rounding.Store(realTotals[layout.VmkmTotal2] * (1.0 - vdokleft) / (t2 * (vdokTotal2 * plot1) / ggg / plotsm)); // Fortran 1151
     }

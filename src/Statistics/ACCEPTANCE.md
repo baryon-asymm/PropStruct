@@ -418,10 +418,10 @@
   (`SmallParticlesCorrectedTests`, red on each mutation). Reported (P312's own mass CDF,
   `CorrectedCycleEvidenceTests`): `gdokleft` 0.122, a cell moves ≤ 21.6 %; `Dmin` 5 µm:
   `pdoksmall[0]` 0 → 0.191.
-- [ ] Corrected, `VdokTotalOnCopy`: over two cycles of constructed totals `None` divides
-  them in place twice, while under the flag they are byte-identical after both calls and
-  `DolM2`, `DolM3` equal their closed form over the undivided totals; cycle 1
-  bit-identical to `None`; P312 with `KXX = 3` moves them from cycle 2 (reported).
+- [x] 2026-10-18: Corrected, `VdokTotalOnCopy`: over two cycles `None` divides the
+  constructed totals in place twice, the flag leaves them byte-identical and `DolM2`,
+  `DolM3` equal their closed form over the undivided totals; cycle 1 equals `None`;
+  P312, `KXX = 3`: moves from cycle 2 (×0.774, ×0.599; `VdokTotalOnCopyTests`).
 - [ ] Corrected, the categories: `CategoriesOnCopy` leaves the totals byte-identical and
   a second call equal to the first, its report that of `None` on a fresh copy, where
   `None`'s second call differs; `CategoriesLastRowRecomputed` on rows whose last merge
@@ -430,5 +430,5 @@
   an empty middle row `None` keeps, a `QDOKSS = 1` row under neither. The five
   references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
-  with its flag's code and these criteria's evidence, never before.
-  Landed 2026-10-18: Doksd, ExactConstants, GdokleftOnce, the two of `Probability`.
+  with its flag's code and these criteria's evidence, never before. Landed 2026-10-18:
+  every flag but the three of the categories.

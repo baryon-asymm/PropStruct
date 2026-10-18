@@ -9,7 +9,7 @@ This page lists what is wrong with the legacy Fortran program `PropStructV3` and
 
 44 defects from 5 nodes.
 
-By `Corrected`: 21 unchanged, 14 not reachable, 9 fixed.
+By `Corrected`: 20 unchanged, 14 not reachable, 10 fixed.
 
 ## algorithm
 
@@ -26,7 +26,7 @@ By `Corrected`: 21 unchanged, 14 not reachable, 9 fixed.
 | `src/Statistics` | 947–959 | The last-row merge does not return to label 600: the new last row keeps the statistics of before the merge and is never checked again (## Invariants, "The merge loop of the original, literally"). | not measured | reproduced | unchanged |
 | `src/Statistics` | 1001–1006 | gdokleft = FMDOK(int(Dmin/Di)+1)·GGG + Σ_{SFR=0} GDOK·GGG counts an SFR = 0 fraction's mass below b = int(Dmin/Di)·Di twice; pocket-forming mass in [b, Dmin), when Dmin is no multiple of Di, is counted nowhere, a resolution limit both models keep ("## Corrected model", `GdokleftOnce`). | measured 2026-10-18 under `GdokleftOnce`: PSAN02 read with its pocket-forming flags at `Dmin` 20 µm, `Di` 10 µm: `gdokleft` 0.0119 lower, 0.0175 of the oxidizer (`tests/Statistics.Tests/GdokleftOnceTests`). | reproduced | fixed (GdokleftOnce) |
 | `src/Statistics` | 1047 | zdoksmall, a share of the drawn coarse oxidizer vdokstr, is scaled by GGG instead of GGG − gdokleft, the share 1050 and 1053 give that oxidizer ("## Corrected model", `ZdoksmallCoarseShare`). | measured 2026-10-18 under `ZdoksmallCoarseShare`, on totals of P312's own mass CDF at its defaults (`gdokleft` 0.122): a cell of `pdoksmall` moves by at most 21.6 % relative (`tests/Statistics.Tests/CorrectedCycleEvidenceTests`). | reproduced | fixed (ZdoksmallCoarseShare) |
-| `src/Statistics` | 1145, 1150 | Every cycle ≥ 1 divides the stored Vdok_total cells and Vdok_total2 by 1 − gdokleft/GGG in place, so each later cycle divides the earlier cycles' particles again (## Invariants, "In-place rewrites of the totals, as the original"; "## Corrected model", `VdokTotalOnCopy`). | not measured | reproduced | unchanged |
+| `src/Statistics` | 1145, 1150 | Every cycle ≥ 1 divides the stored Vdok_total cells and Vdok_total2 by 1 − gdokleft/GGG in place, so each later cycle divides the earlier cycles' particles again (## Invariants, "In-place rewrites of the totals, as the original"; "## Corrected model", `VdokTotalOnCopy`). | measured 2026-10-18 under `VdokTotalOnCopy`, on constant totals of P312's own mass CDF (`gdokleft` 0.122): `None`'s `DolM2` and `DolM3` are the flag's times 0.774 in cycle 2 and 0.599 in cycle 3, the divisor 1 − gdokleft/GGG and its square, cycle 1 equal (`tests/Statistics.Tests/VdokTotalOnCopyTests`). | reproduced | fixed (VdokTotalOnCopy) |
 | `src/Particle` | 1616–1627 | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | not measured | reproduced | fixed (BridgeFrustum) |
 
 ## statistics

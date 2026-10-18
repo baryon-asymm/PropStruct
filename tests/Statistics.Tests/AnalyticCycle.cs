@@ -43,6 +43,15 @@ internal sealed class AnalyticCycle
         return new AnalyticCycle(formulation, setup, tables, echoes, inputs);
     }
 
+    /// <summary>The layout of the totals.</summary>
+    public AccumulatorLayout Layout => setup.Layout;
+
+    /// <summary>The number of oxidizer cells, <c>Ndok</c>.</summary>
+    public int Ndok => setup.Ndok;
+
+    /// <summary>The oxidizer density, <c>PLOT1</c>.</summary>
+    public double OxidizerDensity => inputs.OxidizerDensity;
+
     /// <summary>Fresh integer totals, all zero.</summary>
     public long[] IntegerTotals() => new long[setup.Layout.IntegerLength];
 
