@@ -178,11 +178,19 @@ beforehand.
       integer totals bit-equal). Red, reverted: the flag read forced off turns the second
       red (both kinds); the `None` cycle-1 and cycle-0 snapshots stay green with the write
       moved after line 738.
-- [ ] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
+- [x] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
       built from a constructed QKS1 with `mindk ≥ 2`. Right: under the flag
       `dpoc[0] = Di·(mindk − 1)` and the draws per QKS1 cell match the cell masses
       (χ² at `α = 10⁻³`). Red: under `None` the same test rejects, each draw one cell
-      high.
+      high. 2026-10-18, `tests/Particle.Tests`, `WindowLowerEdgeTests`
+      (`Di = 0.5`, `Dr = 4`, `AK3 = 0.2`, `AK4 = 0.95`, cells 2..8 of a QKS1 of mass
+      `1 + i`, 10⁶ draws from stream 6 of the original seeds, critical value 22.458 at
+      6 degrees of freedom): `UnderTheFlagTheDrawsPerCellMatchTheCellMasses` (χ² =
+      1.659, no draw outside cells 2..8, `dpoc[0] = 0.5`) and
+      `UnderNoneTheSameTestRejectsEachDrawOneCellHigh` (χ² = 92 033, draws above cell 8,
+      none in cell 2, `dpoc[0] = 1.0`); `AttemptRunPassesTheFlagToTheWindow` (the same
+      constructed attempt moves a record cell or total under the flag), red, reverted,
+      when `Attempt.Run` hands `Build` the flag as false.
 - [ ] `WindowLowerEdge`'s positive control at program level, once `Simulation`'s seam
       exists: the flag alone on the 2026-09-24 audit's apparatus (reference mode,
       `Independent`, `Binary64`, seeds `k·2¹⁷`, `k = 0..7`, the five references)

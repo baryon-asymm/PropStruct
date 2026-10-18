@@ -60,6 +60,7 @@ internal static class Attempt
         var exactConstants = (setup.Corrections & CorrectionSet.ExactConstants) != 0; // each flag read once, by & (BOOT.md, "## Corrected model")
         var bridgeFrustum = (setup.Corrections & CorrectionSet.BridgeFrustum) != 0;
         var fmkarm2OnAcceptance = (setup.Corrections & CorrectionSet.Fmkarm2OnAcceptance) != 0;
+        var windowLowerEdge = (setup.Corrections & CorrectionSet.WindowLowerEdge) != 0;
 
         // The two constants of "ExactConstants", chosen once, each operand a compile-time constant
         // so the Original arm is the folded value the code always used: the sphere volume's
@@ -252,7 +253,7 @@ internal static class Attempt
 
         if (!windowBuilt)
         {
-            if (!BridgeWindow.Build(dr, setup.Ak3, setup.Ak4, setup.CellSize, nkarm, cycle.Qks1, fqks, dpoc, out windowNnn1))
+            if (!BridgeWindow.Build(dr, setup.Ak3, setup.Ak4, setup.CellSize, nkarm, windowLowerEdge, cycle.Qks1, fqks, dpoc, out windowNnn1))
             {
                 return AttemptOutcome.RestartedInsideLoop; // AUS == 0 (590)
             }
