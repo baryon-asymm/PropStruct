@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Security.Cryptography;
 using System.Text;
 using PropStruct.Execution;
@@ -38,37 +39,67 @@ internal static class ReferenceModeRunner
     /// <c>results.m</c> text with the one line that varies with wall time (<c>tests/Harness/BOOT.md</c>, "The time
     /// line ... is recognized by its <c>Calculation time</c> prefix and never becomes a quantity") removed;
     /// <paramref name="Sha256Hex"/> is that text's own SHA-256, hex-encoded, upper case (<see cref="Convert.ToHexString"/>'s
-    /// own casing) — the snapshot unit both callers above compare.</summary>
-    internal readonly record struct Run(IReadOnlyDictionary<string, double[]> Candidate, string NormalizedText, string Sha256Hex);
+    /// own casing) — the snapshot unit both callers above compare; <paramref name="JsonSha256Hex"/> is the SHA-256
+    /// of the whole <see cref="SimulationResult"/> as <see cref="ResultsJson"/> writes it (every double round-trips,
+    /// so a change below <c>results.m</c>'s print resolution moves it), with the fields that depend on the run's
+    /// wall time or machine — <c>Diagnostics.Elapsed</c> and <c>Diagnostics.Accelerator</c> — replaced by constants
+    /// and the line endings made LF.</summary>
+    internal readonly record struct Run(
+        IReadOnlyDictionary<string, double[]> Candidate, string NormalizedText, string Sha256Hex, string JsonSha256Hex);
 
-    public static Run RunSeed(Formulation formulation, StreamLayout layout, PrecisionKind precision, ulong seed)
-    {
-        using var simulator = Simulator.Create(new SimulationOptions
+    private static readonly AcceleratorInfo NormalizedAccelerator =
+        new(AcceleratorKind.Cpu, "normalized", MemoryBytes: 0L, LibDeviceLinked: false, CudaSkippedBecause: null);
+
+    public static Run RunSeed(Formulation formulation, StreamLayout layout, PrecisionKind precision, ulong seed) =>
+        Execute(formulation, new SimulationOptions
         {
             Mode = ExecutionMode.Reference,
             Accelerator = AcceleratorKind.Cpu,
             Streams = layout,
             Precision = precision,
             Seed = seed,
-        });
+        }, parseCandidate: true);
+
+    /// <summary>The hashes of one run of a formulation under <paramref name="options"/>, whose
+    /// <see cref="SimulationOptions.Parameters"/> are the parameters its <c>results.m</c> is written with. The
+    /// returned run carries no parsed <see cref="Run.Candidate"/> (it is empty): the Original-model guard hashes
+    /// what the run prints and holds, and a run whose <c>results.m</c> prints <c>NaN</c> is a legitimate case
+    /// of it, one <see cref="ResultsMFile"/> does not parse.</summary>
+    public static Run Fingerprint(Formulation formulation, SimulationOptions options) =>
+        Execute(formulation, options, parseCandidate: false);
+
+    private static Run Execute(Formulation formulation, SimulationOptions options, bool parseCandidate)
+    {
+        using var simulator = Simulator.Create(options);
         var result = simulator.Run(formulation);
 
         var tempPath = Path.GetTempFileName();
         try
         {
-            ResultsMWriter.Write(formulation, ModelParameters.Default, result, tempPath);
-            var candidate = ResultsMFile.Parse(tempPath);
+            ResultsMWriter.Write(formulation, options.Parameters, result, tempPath);
+            var candidate = parseCandidate ? ResultsMFile.Parse(tempPath) : FrozenDictionary<string, double[]>.Empty;
 
             using var withoutTimeLine = new StringReader(Encoding.UTF8.GetString(ResultsMTimeLine.Remove(File.ReadAllBytes(tempPath))));
             var normalizedText = string.Join('\n', ReadLines(withoutTimeLine));
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedText)));
 
-            return new Run(candidate, normalizedText, hash);
+            return new Run(candidate, normalizedText, hash, JsonSha256Of(result, tempPath));
         }
         finally
         {
             File.Delete(tempPath);
         }
+    }
+
+    private static string JsonSha256Of(SimulationResult result, string path)
+    {
+        var normalized = result with
+        {
+            Diagnostics = result.Diagnostics with { Elapsed = TimeSpan.Zero, Accelerator = NormalizedAccelerator },
+        };
+        ResultsJson.Write(normalized, path);
+        var text = File.ReadAllText(path).Replace("\r\n", "\n", StringComparison.Ordinal);
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
     }
 
     private static IEnumerable<string> ReadLines(TextReader reader)

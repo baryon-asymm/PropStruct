@@ -64,3 +64,10 @@
       here (`CudaRequirementWiringTests`), and fails under `PROPSTRUCT_REQUIRE_CUDA=1` on a
       machine where CUDA is refused: 6 facts of this node, 1 of them in the fast set, red
       with `PROPSTRUCT_NO_CUDA=1` and the variable set, green without it (stage S4).
+- [x] 2026-10-18: the `Original` model is guarded by hashes of the full result
+      (`OriginalModelGuardTests`): 33 cases, green in Debug against a Release-written file.
+      Red once: one ulp added to `Pockets.Dp43` in `ReferenceModeRunner.Execute` turned the
+      four `seed0/inpt` cases red on the JSON hash, their `results.m` hashes equal to the
+      approved ones and `SeedZeroResultsMMatchesApprovedSnapshot` green; one character of
+      `extra/P33-defaults`' JSON hash edited, red; reverted. Right once: regenerated three
+      times from scratch, identical; its `results.m` column equals the untouched snapshot's.
