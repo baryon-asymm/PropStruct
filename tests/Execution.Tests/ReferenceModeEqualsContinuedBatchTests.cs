@@ -1,4 +1,5 @@
 using PropStruct.Input;
+using PropStruct.Particle;
 using PropStruct.Random;
 using PropStruct.Statistics;
 using PropStruct.Tests.Harness;
@@ -20,7 +21,8 @@ namespace PropStruct.Execution.Tests;
 /// the equivalence this class proves — reference mode equals a continued batch, bit for bit — is proven
 /// under the layout `RunContinuedBatch` still accepts. The claim is about the continuation mechanism, not
 /// about which layout produced the starting streams, so nothing about what this class checks changes with
-/// the switch.
+/// the switch. Run under the <c>Original</c> model and under the <c>Corrected</c> one
+/// (<see cref="CorrectionSet.All"/>).
 /// </summary>
 public sealed class ReferenceModeEqualsContinuedBatchTests
 {
@@ -28,15 +30,25 @@ public sealed class ReferenceModeEqualsContinuedBatchTests
     private const long MaxAttemptsPerParticle = 1_000_000;
 
     [Fact]
-    public void ReferenceModeEqualsContinuedBatchBitForBitOverHpepa3sFirst1000Particles()
+    public void ReferenceModeEqualsContinuedBatchBitForBitOverHpepa3sFirst1000Particles() =>
+        AssertReferenceModeEqualsContinuedBatch(CorrectionSet.None);
+
+    [Fact]
+    public void ReferenceModeEqualsContinuedBatchBitForBitUnderTheCorrectedModel() =>
+        AssertReferenceModeEqualsContinuedBatch(CorrectionSet.All);
+
+    private static void AssertReferenceModeEqualsContinuedBatch(CorrectionSet corrections)
     {
         var path = RepositoryPaths.Resolve("tests", "Fixtures", "Legacy", "formulations", "HPEPA3.dat");
         var formulation = DatFile.Read(path);
         var parameters = ModelParameters.Default;
 
-        var prepareStatus = Setup.Prepare(formulation, parameters, Particle.PrecisionKind.Binary64, neighbourBudget: 10_000_000, pocketRedrawBudget: 1_000_000,
-            out var setup, out var tables, out var draw, out var pending);
+        var prepareStatus = Setup.Prepare(formulation, parameters, Particle.PrecisionKind.Binary64, corrections,
+            neighbourBudget: 10_000_000, pocketRedrawBudget: 1_000_000,
+            out var setup, out var tables, out var draw, out var pending, out _);
         Assert.Equal(SetupStatus.Ok, prepareStatus);
+        // The set must have reached the setup both engines load, or the Corrected case would repeat the Original one.
+        Assert.Equal(corrections, setup.Corrections);
 
         using var reference = Engine.Create(AcceleratorKind.Cpu, 1L << 24);
         reference.SampleSize(setup.SizeLaw, setup.FractionCount, tables.Bounds, tables.Cumulative, draw.X, draw.X1, out var dmax, out _);

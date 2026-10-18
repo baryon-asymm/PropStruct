@@ -1,4 +1,5 @@
 using PropStruct.Input;
+using PropStruct.Particle;
 using PropStruct.Random;
 using PropStruct.Statistics;
 using PropStruct.Tests.Harness;
@@ -14,7 +15,9 @@ namespace PropStruct.Execution.Tests;
 /// kernel path only"); this test runs the same 1000 particles through both and checks equal bits, so
 /// "kernel-compatible" stays exercised on every build even though the accelerator itself does not. Fast on
 /// purpose (HPEPA3's first 1000 particles of cycle 0, no prior cycle needed): unlike the full matrix of
-/// <see cref="HostThreadMatrixTests"/>, this row is not <c>Category=Long</c>.
+/// <see cref="HostThreadMatrixTests"/>, this row is not <c>Category=Long</c>. Run under the <c>Original</c>
+/// model and under the <c>Corrected</c> one (<see cref="CorrectionSet.All"/>), so the kernel path is held to the
+/// host-thread path with the corrected statements in it too.
 /// </summary>
 public sealed class HostThreadOracleTests
 {
@@ -23,15 +26,25 @@ public sealed class HostThreadOracleTests
     private const long MaxAttemptsPerParticle = 1_000_000;
 
     [Fact]
-    public void HostThreadsEqualsTheIlgpuCpuAcceleratorOracleBitForBitOverHpepa3sFirst1000Particles()
+    public void HostThreadsEqualsTheIlgpuCpuAcceleratorOracleBitForBitOverHpepa3sFirst1000Particles() =>
+        AssertHostThreadsEqualTheOracle(CorrectionSet.None);
+
+    [Fact]
+    public void HostThreadsEqualsTheIlgpuCpuAcceleratorOracleBitForBitUnderTheCorrectedModel() =>
+        AssertHostThreadsEqualTheOracle(CorrectionSet.All);
+
+    private static void AssertHostThreadsEqualTheOracle(CorrectionSet corrections)
     {
         var path = RepositoryPaths.Resolve("tests", "Fixtures", "Legacy", "formulations", "HPEPA3.dat");
         var formulation = DatFile.Read(path);
         var parameters = ModelParameters.Default;
 
-        var prepareStatus = Setup.Prepare(formulation, parameters, Particle.PrecisionKind.Binary64, neighbourBudget: 10_000_000, pocketRedrawBudget: 1_000_000,
-            out var setup, out var tables, out var draw, out var pending);
+        var prepareStatus = Setup.Prepare(formulation, parameters, Particle.PrecisionKind.Binary64, corrections,
+            neighbourBudget: 10_000_000, pocketRedrawBudget: 1_000_000,
+            out var setup, out var tables, out var draw, out var pending, out _);
         Assert.Equal(SetupStatus.Ok, prepareStatus);
+        // The set must have reached the setup both engines load, or the Corrected case would repeat the Original one.
+        Assert.Equal(corrections, setup.Corrections);
 
         using var oracle = Engine.Create(AcceleratorKind.Cpu, 1L << 24, forceIlgpuKernelsOnCpu: true);
         oracle.SampleSize(setup.SizeLaw, setup.FractionCount, tables.Bounds, tables.Cumulative, draw.X, draw.X1, out var dmax, out _);
