@@ -78,6 +78,29 @@ public class CorrectionSeamTests
         Assert.Empty(BitwiseComparison.Differences((oldDokm, oldDoksd), (newDokm, newDoksd), name));
     }
 
+    /// <summary>
+    /// <c>FractionLaw.Build</c> on the formulation's own masses and bounds: the overload under
+    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with
+    /// <see cref="PrecisionKind.Original"/>, returns the old overload's tables and sum bit for bit.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(FormulationsUnderBothKinds))]
+    public void FractionLawBuildUnderNoneAndUnderOriginalEqualTheOldOverload(string name, bool original)
+    {
+        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        var formulation = ShippedFormulations.Read(name);
+        var prepared = PrepareOld(formulation, kind);
+        Assert.Equal(SetupStatus.Ok, prepared.Status);
+        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+
+        FractionLaw.Build(formulation.SizeLawCode, formulation.Fractions.Length, prepared.Tables.MassShare, prepared.Tables.Bounds,
+            kind, out var oldShare, out var oldCumulative, out var oldSum);
+        FractionLaw.Build(formulation.SizeLawCode, formulation.Fractions.Length, prepared.Tables.MassShare, prepared.Tables.Bounds,
+            kind, corrections, out var newShare, out var newCumulative, out var newSum);
+
+        Assert.Empty(BitwiseComparison.Differences((oldShare, oldCumulative, oldSum), (newShare, newCumulative, newSum), name));
+    }
+
     public static IEnumerable<object[]> ShippedNames() => ShippedFormulations.Names.Select(name => new object[] { name });
 
     /// <summary>

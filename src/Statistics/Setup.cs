@@ -218,7 +218,7 @@ internal static class Setup
     /// <summary>
     /// The setup preconditions (BOOT.md, Constraints: "the original hangs or indexes
     /// out of bounds without them"), checked in the order <see cref="SetupStatus"/>
-    /// declares them; the fraction-law tables (<see cref="FractionLaw.Build"/>), the
+    /// declares them; the fraction-law tables (<see cref="FractionLaw.Build(int, int, double[], double[], PrecisionKind, CorrectionSet, out double[], out double[], out double)"/>), the
     /// tail-probability draw (<see cref="FractionLaw.TryTailDraw"/>) and the analytical
     /// oxidizer size (<see cref="AnalyticSizes(int, int, double[], double[], double[], PrecisionKind, CorrectionSet, out double, out double)"/>) only run once every precondition
     /// holds. <paramref name="setup"/>'s own <c>Dmax</c> is left at its default (0) and
@@ -427,7 +427,7 @@ internal static class Setup
             return SetupStatus.InvalidNnWindow;
         }
 
-        FractionLaw.Build(formulation.SizeLawCode, fractionCount, massShare, bounds, precision, out var share2, out var cumulative, out var zss);
+        FractionLaw.Build(formulation.SizeLawCode, fractionCount, massShare, bounds, precision, effective, out var share2, out var cumulative, out var zss);
         if (!FractionLaw.TryTailDraw(fractionCount, bounds, cumulative, tailProbability, out var x, out var x1, out var tailProbabilityModified))
         {
             return SetupStatus.NoActiveFraction;
