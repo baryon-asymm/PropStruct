@@ -9,7 +9,9 @@ namespace PropStruct.RateTableTool;
 /// One case of the guard that keeps the <c>Original</c> model bit for bit what it is (BOOT.md, "## The
 /// Original-model guard"): a formulation, the options of a CPU run and the model parameters, all fixed here
 /// so that the generator and the test read one definition. <paramref name="Id"/> has no blank: it is the
-/// first field of a line of the approved file.
+/// first field of a line of the approved file. <paramref name="IsLong"/> says that the test runs the case under
+/// <c>Category=Long</c> (BOOT.md of <c>tests/Simulation.Tests</c>, "## The Original-model guard"): it is the cases
+/// that took more than about 30 s in Debug, measured, and the twenty seed-0 cases.
 /// </summary>
 internal sealed record GuardCase(
     string Id,

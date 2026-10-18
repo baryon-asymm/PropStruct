@@ -3,14 +3,20 @@
 ## Purpose
 
 The one place that runs a reference-mode simulation, seed by seed, and turns its
-`results.m` into a hash and a criterion verdict — and the three generators built on that
+`results.m` into a hash and a criterion verdict — and the four generators built on that
 one implementation: `tests/Fixtures/rate-table.json` (root BOOT.md, "the pass condition
 compares failure rates, not single runs"),
 `tests/Simulation.Tests/Snapshots/SeedZeroResultsM.approved.txt` (that node's own
-change-detector test, `SeedZeroResultsMMatchesApprovedSnapshot`) and
-`tests/Simulation.Tests/Snapshots/OriginalModelGuard.approved.txt` (`OriginalModelGuardTests`).
+change-detector test, `SeedZeroResultsMMatchesApprovedSnapshot`),
+`tests/Simulation.Tests/Snapshots/OriginalModelGuard.approved.txt`
+(`OriginalModelGuardTests`) and
+`tests/Simulation.Tests/Snapshots/CorrectedModelSnapshot.approved.txt`
+(`CorrectedModelGuardTests`).
 
 ⚠ 2026-10-18: was two generators, now three: `original-model-guard` (`## The Original-model guard`).
+
+⚠ 2026-10-18 (U3): was three generators, now four: `corrected-model-snapshot` (`## The
+Corrected-model snapshot`).
 
 Both files used to be written by `[Fact(Skip = "manual regeneration only")]` tests
 inside `tests/Simulation.Tests` (`RateTableGenerator.Regenerate` and
@@ -36,6 +42,10 @@ measurement (2026-09-24)"). `ReferenceModeRunner` stays `internal`, as it was th
   only place that constructs a `Simulator`, runs it and writes and hashes its `results.m`;
   the generators and the neighbours' own tests call it, never a second copy (root BOOT.md
   Taboos).
+- **One approved-file format.** `ApprovedGuardFile` is the only writer and reader of the
+  line `<id> <SHA-256 of results.m> <SHA-256 of the result JSON>` that both guards'
+  files hold (`OriginalModelGuard`, `CorrectedModelGuard`); neither has a copy of it
+  (U3).
 - **Nothing here is asserted.** Like `tests/Benchmarks`, this node writes fixtures;
   the assertions that read them live in `tests/Harness.Tests` (the rate criterion) and
   `tests/Simulation.Tests` (the seed-0 snapshot).
@@ -77,10 +87,12 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   not exported as a type, exactly as it was when these types lived in
   `tests/Simulation.Tests` — moving them does not turn a documented-schema file into a
   shared-type contract.
-- Three subcommands, one process: `rate-table`, `seed-zero-snapshot` and `original-model-guard` share
-  `ReferenceModeRunner` rather than existing as two separate tools, since a second
-  console entry point would still need the same runner and duplicating the project
-  scaffolding around it buys nothing.
+- Four subcommands, one process: `rate-table`, `seed-zero-snapshot`,
+  `original-model-guard` and `corrected-model-snapshot` share `ReferenceModeRunner`
+  rather than existing as separate tools, since a second console entry point would still
+  need the same runner and duplicating the project scaffolding around it buys nothing.
+
+  ⚠ 2026-10-18: was "Three subcommands", now four with `corrected-model-snapshot` (U3).
 
 ## Acceptance criteria
 
@@ -96,10 +108,17 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
       per (formulation, layout, precision, seed index), and the regeneration that added
       it moves no verdict: zero `FailingCells`/`FailingNames`/`ResultSha256` differences
       against the pre-run table (`## Regeneration runs` below).
-- [x] 2026-10-18: `original-model-guard` writes `OriginalModelGuard.approved.txt`, 33 lines (34 since T13),
-      byte-identical on three regenerations from scratch (Release); its `results.m` column
+- [x] 2026-10-18: `original-model-guard` writes `OriginalModelGuard.approved.txt`, 33
+      lines (34 since T13, 35 since U3), byte-identical on three regenerations from
+      scratch (Release); its `results.m` column
       equals `SeedZeroResultsM.approved.txt` on the twenty seed-0 cases, a file this task did
-      not touch, so `RunSeed`'s `results.m` is what it was (`## The Original-model guard`).
+      not touch, so `RunSeed`'s `results.m` is what it was (`## The Original-model
+      guard`). U3's added line came from the product code of `ac1fc20`, the 34 others
+      byte-identical to the file before it.
+- [x] 2026-10-18 (U3): `corrected-model-snapshot` writes
+      `CorrectedModelSnapshot.approved.txt`, 10 lines, byte-identical on a second
+      regeneration from scratch (Release, 52 s and 50 s), and `CorrectedModelGuardTests`
+      passes against it in Debug, 11 of 11 (`## The Corrected-model snapshot`).
 
 ## Taboos
 
@@ -311,8 +330,9 @@ move; `SnapshotSha256` did, with the snapshot. `RateCriterionTests` and
 ## The Original-model guard
 
 Task T2, 2026-10-18 (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard", owns the
-why). `OriginalModelGuard.Cases` is the one list of the 34 cases (twenty seed-0, five batched
-CPU, nine `extra/...`), `OriginalModelGuard.Line` the one line format, `ApprovedPath` the one
+why). `OriginalModelGuard.Cases` is the one list of the 35 cases (twenty seed-0, five
+batched CPU, ten `extra/...`, one of them under the `Original` precision kind),
+`OriginalModelGuard.Line` the one line format, `ApprovedPath` the one
 path; the generator writes and the neighbour's test reads through them. A case runs through
 `ReferenceModeRunner.Fingerprint`, which hashes the `results.m` text and the `ResultsJson`
 text of the result with `Diagnostics.Elapsed` and `Diagnostics.Accelerator` replaced by
@@ -328,3 +348,25 @@ older lines came out byte-identical, the new one is the only difference.
 Per case: seed-0 HMX 43 s each, HPEPA3 19 s, PSAN02n 6-11 s, `inpt` and `P33` 1-2 s; batched
 HMX 7.6 s, HPEPA3 3.8 s; `extra/P312-defaults` 13.9 s, `-cycles3` 28.3 s, `-homogenized0.1`
 13.7 s, the other five under a second.
+
+**2026-10-18 (U3), `extra/PSAN02-sfr-dmin20-cycles3/Original`.** Added with `src/`
+removed and checked out at `ac1fc20`, `Program.cs` as it stood before U3 and
+`CorrectedModelGuard.cs` set aside (the original port has no `ModelKind`): 35 cases in 6
+m 45 s, Release; the 34 older lines came out byte-identical, the new one is the only
+difference. `GuardCase` gained `IsLong`, which says which cases the test runs in the
+fast set (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard"); the cases,
+their order and their options are unchanged.
+
+## The Corrected-model snapshot
+
+Task U3, 2026-10-18 (`tests/Simulation.Tests/BOOT.md`, "## The Corrected-model
+snapshot", owns the why). `CorrectedModelGuard.Cases` is the one list of its 10 cases,
+each a case of `OriginalModelGuard.Cases` found by id and run with
+`SimulationOptions.Model` set to `ModelKind.Corrected` and no seam; ids carry the prefix
+`corrected/`. The subcommand reads the same `ReferenceModeRunner.Fingerprint` and writes
+the same line format through `ApprovedGuardFile`. It needs the head's product code:
+unlike the Original guard it cannot be generated at `ac1fc20`.
+
+**2026-10-18, `corrected-model-snapshot`.** Release build, `PROPSTRUCT_NO_CUDA=1`, 16
+logical CPUs: 10 cases in 52 s and again in 50 s, the two files identical. Per case:
+`extra/P312-cycles3` 32 s, `-defaults` 16 s, the other eight under 1.3 s.

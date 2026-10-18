@@ -65,26 +65,39 @@
       machine where CUDA is refused: 6 facts of this node, 1 of them in the fast set, red
       with `PROPSTRUCT_NO_CUDA=1` and the variable set, green without it (stage S4).
 - [x] 2026-10-18: the `Original` model is guarded by hashes of the full result
-      (`OriginalModelGuardTests`): 33 cases, green in Debug against a Release-written file.
-      Red once: one ulp added to `Pockets.Dp43` in `ReferenceModeRunner.Execute` turned the
+      (`OriginalModelGuardTests`): 35 cases, 12 of them in the fast set (every
+      `batched/*` and `extra/*` case but the three P312 extras that take 44 to 94 s in
+      Debug) and 23 `Category=Long`, green in Debug against a Release-written file; the
+      Long ones green in Release too. Red once: one ulp added to `Pockets.Dp43` in
+      `ReferenceModeRunner.Execute` turned the
       four `seed0/inpt` cases red on the JSON hash, their `results.m` hashes equal to the
       approved ones and `SeedZeroResultsMMatchesApprovedSnapshot` green; one character of
       `extra/P33-defaults`' JSON hash edited, red; reverted. Right once: regenerated three
       times from scratch, identical; its `results.m` column equals the untouched snapshot's.
-- [x] 2026-10-18 (T13): the guard sees every one of the twelve `CorrectionSet` flags. Each flag
+      U3: one character of the new `extra/PSAN02-sfr-dmin20-cycles3/Original` line
+      edited, that case alone red, reverted; its line is generated with the product code
+      of `ac1fc20` (`BOOT.md`, "## The Original-model guard"), the 34 older lines
+      byte-identical.
+
+  ⚠ 2026-10-18: was "33 cases, green in Debug against a Release-written file", the whole
+  guard `Category=Long` and so run by no CI →
+  HISTORY.md#original-guard-criterion-33-cases
+- [x] 2026-10-18 (T13): the guard sees every one of the eleven `CorrectionSet` flags
+      (twelve until `Fmkarm2OnAcceptance` was withdrawn, U1). Each flag
       was applied alone under `Original` (a scratch mapping at `SimulationOptions.EffectiveCorrections`,
       `Model == Original ? <flag> : ...`, the flag read from an environment variable so that one
       Release build served all twelve runs; reverted), `OriginalModelGuardTests` run (35 tests:
       34 cases and the file's own); the unmapped run is green, 35 of 35. A case is red when the
       flag changes a bit of its `results.m` or JSON. "B64" is the 24 `Binary64` cases (ten
       `seed0/*/*/Binary64`, five `batched/*`, nine `extra/*`); no `seed0/*/*/Original` case is red
-      under any flag, since `Prepare` stores `None` under `PrecisionKind.Original`.
+      under any flag, since `Prepare` stores `None` under `PrecisionKind.Original` (nor
+      is the case added by U3, `extra/PSAN02-sfr-dmin20-cycles3/Original`).
 
       | Flag | Value | Red cases |
       |---|---|---|
       | `ExactConstants` | 1 | all 24 B64 |
       | `BridgeFrustum` | 2 | all 24 B64 |
-      | `Fmkarm2OnAcceptance` | 4 | all 24 B64 |
+      | `Fmkarm2OnAcceptance` | 4 — retired 2026-10-18 (withdrawn after the audit) | all 24 B64, when it stood |
       | `WindowLowerEdge` | 8 | all 24 B64 |
       | `VdokTotalOnCopy` | 16 | `extra/P312-cycles3`, `extra/PSAN02-sfr-dmin20-cycles3` |
       | `ZdoksmallCoarseShare` | 32 | `extra/P312-defaults`, `-cycles3`, `-homogenized0.1`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
@@ -99,13 +112,91 @@
       (the 33 stay green under it); red once there: flag 64 turns that case red, right once:
       the same case is green unmapped, on a line generated at `ac1fc20`
       (`## The Original-model guard`). `PdoksmallFirstCell` and `GdokleftOnce` rest on one case each.
-- [x] 2026-10-18: the model kind is covered by `ModelKindTests` (18 cases) and
+- [x] 2026-10-18: the model kind is covered by `ModelKindTests` (24 cases) and
       `DegenerateConfigurationTests`' `Corrected` case: surface, mapping on P33's
       `Dok43sd` (the archive's 75.45 for `Original`, 112.66 for `Corrected`), the refusal and
       the batched refusals' unchanged messages, the seam with its negative and positive
       controls, determinism, the stored ratios; every one red once, `## Mutations`, "Model
       kind". The guard stayed green, 34 of 34, and the `SeedZero` facts, 59 of 59.
-- [x] 2026-10-18: the effect of each correction is measured on the five references (16
+      U3 adds the mapping itself,
+      `TheEffectiveCorrectionsAreEveryFlagUnderCorrectedWithNoSeamAndNoneUnderOriginal`:
+      `Corrected` with no seam is `CorrectionSet.All` and `Original` is `None`. Before
+      it, a mapping of `All & ~GdokleftOnce` (a scratch edit of `EffectiveCorrections`,
+      the dropped flag read from an environment variable) left the other 23 facts green,
+      23 of 23; with the new fact it is the one red, its failure printing the ten flags
+      that are left; unmapped, 24 of 24; reverted.
+
+  ⚠ 2026-10-18: was "`ModelKindTests` (18 cases)"; the file held 23 cases before U3, so
+  the figure was already stale → HISTORY.md#model-kind-tests-case-count
+- [x] 2026-10-18 (U3): the `Corrected` results are guarded by hashes of the full result
+      (`CorrectedModelGuardTests`, `Snapshots/CorrectedModelSnapshot.approved.txt`,
+      written by `dotnet run --project tests/RateTableTool -- corrected-model-snapshot`;
+      `BOOT.md`, "## The Corrected-model snapshot"): 10 cases (8 in the fast set, the
+      two P312 ones `Category=Long`), generated at the head, `Binary64`, no seam. Green
+      in Debug against the Release-written file, 11 of 11. Red once: one character of
+      `corrected/extra/P33-defaults`' hash edited, that case alone red, reverted. Each
+      of the eleven flags dropped in turn from the `Corrected` mapping (a scratch `All &
+      ~<flag>` in `EffectiveCorrections`, the flag read from an environment variable so
+      one Release build served all eleven runs; reverted) turns at least one case red,
+      none stays green:
+
+      | Flag dropped | Value | Red cases (of 10) |
+      |---|---|---|
+      | `ExactConstants` | 1 | all 10 |
+      | `BridgeFrustum` | 2 | all 10 |
+      | `WindowLowerEdge` | 8 | all 10 |
+      | `VdokTotalOnCopy` | 16 | `extra/P312-cycles3`, `extra/PSAN02-sfr-dmin20-cycles3` |
+      | `ZdoksmallCoarseShare` | 32 | `extra/P312-defaults`, `-cycles3`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20-di10` alone |
+      | `DoksdConsistent` | 128 | `extra/P33-defaults`, `extra/P2-defaults` |
+      | `CategoriesOnCopy` | 256 | all 10 |
+      | `CategoriesLastRowRecomputed` | 512 | all 10 |
+      | `CategoriesEmptyRowsMerged` | 1024 | `batched/inpt`, `batched/PSAN02n`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `PdoksmallFirstCell` | 2048 | `extra/P312-dmin5` alone |
+
+      Every flag is seen by at least one fast case, so the two Long cases are not the
+      only guard of any; `GdokleftOnce` and `PdoksmallFirstCell` rest on one case each.
+      Right once: the unmapped run is green.
+- [x] 2026-10-18 (U3): the Original guard's fast subset still sees every flag. The 12
+      fast cases (`batched/*` five, `extra/P312-dmin5`, `extra/PSAN02-sfr-dmin20`,
+      `-cycles3`, `-di10`, `extra/P33-defaults`, `extra/P2-defaults`,
+      `extra/PSAN02-sfr-dmin20-cycles3/Original`), run with each flag applied alone
+      under `Original` as T13 did (a scratch mapping, one Release build): the unmapped
+      run is green, 12 of 12; every flag turns at least one red, 11 of the 12 for
+      `ExactConstants`, `BridgeFrustum`, `WindowLowerEdge` and `CategoriesOnCopy` (all
+      the `Binary64` ones; the `Original`-precision case is red under none), 10 for
+      `CategoriesLastRowRecomputed` (all but `batched/HMX`), `VdokTotalOnCopy` by
+      `extra/PSAN02-sfr-dmin20-cycles3`, `ZdoksmallCoarseShare` by the three PSAN02
+      extras, `GdokleftOnce` by `extra/PSAN02-sfr-dmin20-di10`, `DoksdConsistent` by
+      `batched/P33`, `extra/P33-defaults` and `extra/P2-defaults`,
+      `CategoriesEmptyRowsMerged` by six (`batched/{HMX,inpt,PSAN02n}`, the three PSAN02
+      extras), `PdoksmallFirstCell` by `extra/P312-dmin5`. The cheap subset costs, in
+      Debug, 32 s for the 22 fast tests of `OriginalModelGuardTests` and
+      `CorrectedModelGuardTests` together (`batched/HMX` 17 s, `batched/HPEPA3` 7 s, the
+      rest 0.03 to 7 s a case); the other 169 fast tests of this assembly take 9 s, and
+      inside `dotnet test PropStruct.sln` the assembly took 48 s (1 m 29 s for the whole
+      fast set, `tests/Harness.Tests`' 1 m 13 s the longest): a growth of about 32 to 39
+      s, under the 90 s the task allowed. The Long ones, in Debug: `extra/P312-cycles3`
+      94 s, `-homogenized0.1` 45 s, `-defaults` 44 s, and the Corrected P312 pair 102 s
+      and 47 s.
+- [x] 2026-10-18 (U3): the correction-effects tooling
+      (`CorrectionMeasurementToolingTests`, 10 cases, fast): every case's seeds, at its
+      own count, and the audit's eight have distinct phases modulo 2^20
+      (`EveryCasesSeedsAndTheAuditsEightHaveDistinctPhasesModulo2To20`); sixteen seeds
+      at the old stride 2^17 repeat exactly the eight seeds 8..15
+      (`TheOldStrideWithSixteenSeedsRepeatsEightPhasesAndTheCheckNamesThem`); the report
+      refuses an arm with a repeated phase, in its section and in the even-against-odd
+      floor, and runs over distinct ones
+      (`TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes`); the
+      headline columns hold `Dkarm43_cor(1)`, `Dkarm43_cor(2)`, `Dagg43_cor(1)`,
+      `Dagg43_cor(2)` and `Zkarm_cor`; the arms are `Original`, `All`, eleven single
+      flags and the three `AllBut` arms. Red once each (`BOOT.md`, "## Mutations",
+      "U3"): the stride set back to 2^17, the phase check removed, `AllBut` mapped to
+      `All & flag`, the `AllBut` arms dropped, one column dropped. Smoke run,
+      `PROPSTRUCT_MEASUREMENT_SEEDS=2`, `AnalyseCase` on P33 and PSAN02: 16 arms, the
+      new columns and the three `AllBut` rows in `case-P33.md` and `raw-P33.csv`; the
+      generated files restored after, the run store deleted.
+- [ ] 2026-10-18: the effect of each correction is measured on the five references (16
       seeds) and four extra cases (8 seeds), per arm and printed quantity
       (`CorrectionEffectsMeasurement`, `Measurements/corrections-2026-10-18.md`; `BOOT.md`,
       "## Correction-effects measurement"; 9 cases, 14 arms, 1568 runs, none failed, about 95
@@ -118,3 +209,12 @@
       odd seeds) is not clean: 0 to 9 differing cells of 1200 to 7000, all in cells
       `TwoSampleBiasOfSets` cannot judge (one half prints, the other not; print resolution),
       under the asserted one per cent (`BOOT.md`, "Floor").
+
+  ⚠ 2026-10-18 (U3): unticked. The run behind it took its sixteen seeds as `k << 17`,
+  which are eight distinct phases: the streams jump by `seed · 2^80` in a period of
+  2^100, so seed k equals seed k + 8 (all 560 pairs of the five committed raw CSVs of 16
+  seeds, 14 arms times 8 seeds times 5 cases, are identical in every printed column),
+  the standard errors were understated and the paired t's were taken over copies.
+  Re-ticked by the re-run over `k << 16`, with the `AllBut` arms and the `Dkarm43_cor`,
+  `Dagg43_cor` columns (`BOOT.md`, "## Correction-effects measurement") →
+  HISTORY.md#correction-effects-seeds-repeat-2026-10-18
