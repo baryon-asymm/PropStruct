@@ -424,11 +424,16 @@ internal static class CycleStatistics
         {
             if (tables.PocketForming[i] == 0)
             {
-                // GdokleftOnce: the mass of this fraction below b is already in FMDOK, so only the rest counts.
-                var countedInFmdok = corrections.HasFlag(CorrectionSet.GdokleftOnce)
-                    ? MassCumulative(setup.SizeLaw, tables.Bounds[2 * i], tables.Bounds[2 * i + 1], below)
-                    : 0.0;
-                gdoksfr += tables.MassShare[i] * (1.0 - countedInFmdok) * ggg;
+                if ((corrections & CorrectionSet.GdokleftOnce) != 0)
+                {
+                    // GdokleftOnce: the mass of this fraction below b is already in FMDOK, so only the rest counts.
+                    var countedInFmdok = MassCumulative(setup.SizeLaw, tables.Bounds[2 * i], tables.Bounds[2 * i + 1], below);
+                    gdoksfr += tables.MassShare[i] * (1.0 - countedInFmdok) * ggg;
+                }
+                else
+                {
+                    gdoksfr += tables.MassShare[i] * ggg;
+                }
             }
         }
 

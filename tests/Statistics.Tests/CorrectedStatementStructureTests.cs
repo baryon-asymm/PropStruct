@@ -54,7 +54,42 @@ public static partial class CorrectedStatementStructureTests
 
         var blocks = GuardedBlocks(source).ToList();
 
-        Assert.Collection(blocks, block => Assert.Contains("rounding. or order.", Violations(block).Single(), StringComparison.Ordinal));
+        Assert.Collection(blocks, block => Assert.Contains("rounding. or order. call", Violations(block)));
+    }
+
+    /// <summary>
+    /// Red on the two shapes the node once had: a flag-selected local (<c>GGG - gdokleft</c> against <c>GGG</c>; the
+    /// mass already counted in <c>FMDOK</c> against 0) that a shared statement reads, so that the corrected statement
+    /// is the original one rewritten for both models.
+    /// </summary>
+    [Theory]
+    [InlineData("var coarseShare = corrections.HasFlag(CorrectionSet.ZdoksmallCoarseShare) ? ggg - gdokleft : ggg;")]
+    [InlineData("var countedInFmdok = corrections.HasFlag(CorrectionSet.GdokleftOnce)\n    ? MassCumulative(law, lower, upper, below)\n    : 0.0;")]
+    [InlineData("var share = (corrections & CorrectionSet.GdokleftOnce) != 0 ? 1.0 - cumulative : 1.0;")]
+    public static void AFlagSelectedValueThatIsNotAPairOfConstantsIsFound(string statement)
+    {
+        var blocks = GuardedBlocks(statement + "\n").ToList();
+
+        Assert.Collection(blocks, block => Assert.Single(Violations(block)));
+    }
+
+    /// <summary>
+    /// Right on the shapes that replaced them: the corrected statement in an <c>if</c> block with the original beside
+    /// it in an <c>else</c> (its rounding and citation intact there, outside the scan), and a flag selecting between
+    /// two constants, are no finding.
+    /// </summary>
+    [Theory]
+    [InlineData("if ((corrections & CorrectionSet.ZdoksmallCoarseShare) != 0)\n{\n    zdoksmall[k] *= ggg - gdokleft;\n}\n"
+        + "else\n{\n    zdoksmall[k] = rounding.Store(zdoksmall[k] * ggg); // Fortran 1047\n}\n")]
+    [InlineData("var coefficient = corrections.HasFlag(CorrectionSet.ExactConstants) ? 24.0 / Math.PI : 24.0 / 3.14;\n")]
+    [InlineData("var third = (corrections & CorrectionSet.ExactConstants) != 0 ? 1.0 / 3.0 : 0.3333;\n")]
+    public static void TheStandAloneShapesAreNoFinding(string source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        var block = Assert.Single(GuardedBlocks(source));
+
+        Assert.Empty(Violations(block));
     }
 
     /// <summary>Right on a known answer: a clean guarded block, an <c>else</c> body and a plain statement are no finding.</summary>
@@ -89,6 +124,34 @@ public static partial class CorrectedStatementStructureTests
         {
             yield return "// Fortran";
         }
+
+        if (SelectsMoreThanConstants(block))
+        {
+            yield return "flag-selected value that is not a pair of constants";
+        }
+    }
+
+    /// <summary>
+    /// A statement that names a flag in a conditional expression, outside an <c>if</c>, may select between constants only
+    /// (<c>exact ? 3.0 / Math.PI : 3.0 / 3.14</c>): a flag-selected local that a shared statement then reads is the
+    /// corrected statement written into the shared one (<c>src/Statistics/BOOT.md</c>, "## Corrected model", a fix
+    /// "branches on its flag around the statements it names").
+    /// </summary>
+    private static bool SelectsMoreThanConstants(string block)
+    {
+        if (block.TrimStart().StartsWith("if (", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var selected = FlagSelectedBranches().Match(block);
+        if (!selected.Success)
+        {
+            return false;
+        }
+
+        var residue = Number().Replace(PiConstant().Replace(selected.Groups["branches"].Value, string.Empty), string.Empty);
+        return !OperatorsOnly().IsMatch(residue);
     }
 
     /// <summary>
@@ -149,4 +212,16 @@ public static partial class CorrectedStatementStructureTests
 
     [GeneratedRegex(@"// Fortran \d+")]
     private static partial Regex Citation();
+
+    [GeneratedRegex(@"CorrectionSet\.\w+\)?[^?;]*\?(?<branches>[^;]*);", RegexOptions.Singleline)]
+    private static partial Regex FlagSelectedBranches();
+
+    [GeneratedRegex(@"Math\.PI")]
+    private static partial Regex PiConstant();
+
+    [GeneratedRegex(@"\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")]
+    private static partial Regex Number();
+
+    [GeneratedRegex(@"^[\s/*+\-:()]*$")]
+    private static partial Regex OperatorsOnly();
 }

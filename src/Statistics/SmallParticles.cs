@@ -96,11 +96,17 @@ internal static class SmallParticles
             }
         }
 
-        // ZdoksmallCoarseShare: the drawn coarse oxidizer is GGG - gdokleft of the propellant, not GGG.
-        var coarseShare = corrections.HasFlag(CorrectionSet.ZdoksmallCoarseShare) ? ggg - gdokleft : ggg;
         for (var k = 0; k < ndok; k++)
         {
-            zdoksmall[k] = rounding.Store(zdoksmall[k] * coarseShare); // Fortran 1047
+            if ((corrections & CorrectionSet.ZdoksmallCoarseShare) != 0)
+            {
+                // ZdoksmallCoarseShare: the drawn coarse oxidizer is GGG - gdokleft of the propellant, not GGG.
+                zdoksmall[k] *= ggg - gdokleft;
+            }
+            else
+            {
+                zdoksmall[k] = rounding.Store(zdoksmall[k] * ggg); // Fortran 1047
+            }
         }
 
         // The compiler's temporaries, recomputed from the same operands: T1 and T2 are hoisted
