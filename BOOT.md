@@ -173,8 +173,10 @@ errors, openly and as an option (`## Invariants`, "Model kind").
   the six original streams continued across particles and cycles: the same decisions
   in the same order as the Fortran. The pocket histogram QKS1 is refreshed after every
   attempt that completes the neighbour loop (attempts abandoned inside the loop skip
-  the refresh, as in the original); rejected attempts keep all their side effects;
-  accumulators are never reset between cycles.
+  the refresh, as in the original); rejected attempts keep all their side effects, but
+  `fmkarm2`'s under `Corrected` (`src/Particle`); no accumulator is reset between cycles.
+
+  ⚠ 2026-10-18: was "rejected attempts keep all their side effects" under every model, now all but `fmkarm2`'s under `Corrected` → HISTORY.md#reference-mode-side-effects-corrected-2026-10-18
 - **Batched mode freezes only QKS1, per launch** (decided 2026-09-17, refined the same
   day). Within one launch of the particle kernel the normalized pocket histogram is
   fixed; before each launch, the first of a batch and every relaunch of its unfinished

@@ -185,8 +185,8 @@ fixes are `Particle`'s and `Statistics`' (`CorrectionSet`, `../Particle/API.md`)
   seam run is labelled `Corrected` like any other (`RunDiagnostics.Model` records the
   option, not the set), so a subset's numbers stay inside those tests: no public
   option, no flag, no file. `Corrections = None` under `Corrected` is the negative
-  control: its `SimulationResult` equals the `Original` run's with `Diagnostics.Model`
-  normalised.
+  control: its `SimulationResult` equals the `Original` run's with `Diagnostics.Model`,
+  `Elapsed` and `StoredSetup.Ak1`/`Ak2`/`Ak4` normalised.
 - **The refusal.** `Model == Corrected` with `Precision == PrecisionKind.Original`:
   `SimulationFailedException(RunStatus.InvalidSetup, …)` from the validator in
   `Simulator.Create`, `SetupFailure` `null`, checked after the two batched refusals,

@@ -67,7 +67,7 @@ nothing else in that section. A table with the old six-column header, ending at
   (unreachable, unassigned or unused), `cosmetic` (printing only);
 - `Consequence` is the measured effect with the place the measurement lives, or the
   words `not measured`; a guess is not a consequence;
-- `The port` is `reproduced`, `declared, not reproduced` or `open`; a defect silently
+- `The port` is what the port does under the `Original` model: `reproduced`, `declared, not reproduced` or `open`; a defect silently
   fixed is forbidden by the root's own taboo, so that value never appears;
 - `Differing cells` names the printed cells in which reference mode under the `Original`
   model and `Original` precision kind differs from the original because of that row,

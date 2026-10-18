@@ -100,8 +100,9 @@ has no external reference (root `BOOT.md`, "Model kind is an option of every run
       `Binary64` runs a small formulation to completion in both modes and both layouts.
 - [ ] The seam: `Corrections` set with `Model = Original`, or holding a bit outside
       `All`, throws `ArgumentException` before any work; `Corrections = None` with
-      `Corrected` gives the `Original` run's `SimulationResult`, `Diagnostics.Model`
-      normalised, bit for bit (negative control); a single-flag seam run differs from
+      `Corrected` gives the `Original` run's `SimulationResult` bit for bit, with
+      `Diagnostics.Model`, `Diagnostics.Elapsed` and `StoredSetup.Ak1`/`Ak2`/`Ak4`
+      normalised (negative control); a single-flag seam run differs from
       `Original` on a case where that flag is visible (positive control, the flag's
       evidence case in its owning node).
 - [ ] The degenerate batched configuration equals reference mode bit for bit under
@@ -112,5 +113,7 @@ has no external reference (root `BOOT.md`, "Model kind is an option of every run
       `StoredSetup.Ak1`/`Ak2`/`Ak4` equal its `ModelSetup`'s, and its `results.m` ends
       its footer with the model line of `BOOT.md`, "## Corrected model", verbatim.
 - [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
-      under `Corrected` on the five reference formulations, its maxima recorded there,
-      and no default below 100 times a `Corrected` maximum.
+      under `Corrected` on the five reference formulations, its maxima recorded here
+      with the run's place (`BOOT.md` stands at its §15 limit), and no default below
+      100 times a `Corrected` maximum; a default that rises changes its row of
+      `BOOT.md`'s defaults table in place, its basis naming the `Corrected` maximum.

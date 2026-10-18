@@ -392,8 +392,10 @@
   green.
 - [ ] Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is the `None`
   value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base, each to
-  1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the π and ⅓ literals
-  of the four line-map ranges at exactly 1704, 1716, 1014, 1016, red on a removed site.
+  1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the matches of
+  `3\.14\d*`, `12\.566\d*`, `0?\.333\d*` and the quotient `1/3.` (not after a letter,
+  digit or point) in the four line-map ranges at exactly 1704, 1716, 1014 and 1016
+  (twice), red on a removed site.
 - [ ] Corrected, `DoksdConsistent`: right: one `JZZ = 2` fraction gives the closed form
   `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance, to
   1e-12; P33 prints `Dok43sd` 112.66 µm, P2 8.07 µm; red: `None`'s 75.45 µm and `NaN`;
@@ -403,11 +405,14 @@
   and the flag equals it, under both laws; `b` at or below the bound: bit-identical; on
   one PSAN02 `--sfr`, `Dmin = 20 µm` total set, `None` minus the flag is 0.0119 (three
   digits).
-- [ ] Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`: on a constructed
-  `vdokstr` with mass in cell 1 and `gdokleft > 0`, `zdoksmall` is `GGG·z` under `None`,
-  `(GGG − gdokleft)·z` under the first flag, and `pdoksmall[0]` 0 under `None`, the 1061
-  formula under the second; `gdokleft = 0`, cell 1 empty: bit-identical. P312 at its
-  defaults and at `Dmin = 5 µm` moves `pdoksmall` (reported).
+- [ ] Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, seen through
+  `pdoksmall` (`zdoksmall` stays inside `Probability`): for a `vdokstr` whole in cell 1,
+  `AK2 = 2` and `gdokleft > 0`, where 1021–1056 give `zdoksmall` ½ in cell 1 and 1
+  beyond before the scaling and `ddoksmall` ¼ and `1/(2k)`, `pdoksmall` is the closed
+  form of 1047–1064 with the scaling by `GGG` under `None` and by `GGG − gdokleft` under
+  the first flag, `pdoksmall[0]` 0 under `None` and the 1061 formula under the second;
+  `gdokleft = 0`, cell 1 empty: bit-identical. P312 at its defaults and at `Dmin = 5 µm`
+  moves `pdoksmall` (reported).
 - [ ] Corrected, `VdokTotalOnCopy`: over two cycles of constructed totals `None` divides
   them in place twice, while under the flag they are byte-identical after both calls and
   `DolM2`, `DolM3` equal their closed form over the undivided totals; cycle 1

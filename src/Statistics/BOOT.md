@@ -411,7 +411,7 @@ The fixes, `Binary64` only; the expected effects are the arbiter's computations:
   `(b⁴ − l⁴)/(u⁴ − l⁴)` (`Math.Pow(x, 4)`) if `JZZ = 2`, `(b − l)/(u − l)` otherwise;
   1001, 1006 shared. Unchanged under both models, declared: pocket-forming mass in
   `[b, Dmin)`, counted nowhere when `Dmin` is no multiple of `Di`, a resolution limit of
-  a histogram read at cell edges (E6b, rejected). Null on the five references; PSAN02
+  a histogram read at cell edges (rejected). Null on the five references; PSAN02
   with `--sfr` at `Dmin = 20 µm`: 0.0175 of the oxidizer, 0.0119 of the propellant.
 - **`ZdoksmallCoarseShare`** (1047). `zdoksmall` is a share of `vdokstr`, the drawn
   coarse oxidizer, which is `GGG − gdokleft` of the propellant, as 1050 and 1053 count
@@ -427,8 +427,8 @@ The fixes, `Binary64` only; the expected effects are the arbiter's computations:
   stored. Bit-identical in cycle 1; null where `gdokleft = 0`; P312 with `KXX = 3`
   shows it in `DolM2`, `DolM3`.
 - **`CategoriesOnCopy`** (911–958, 825–829). Every cycle, cycle 0 included, copies rows
-  `1..DPRow` of the first `DPRow` (every row a pocket reaches, "## Categories") of
-  `Qdoks`, `Dokp41`, `Dokp31`; merge, shift and recomputation run on the copies, so no
+  `1..DPRow` of `Qdoks`, `Dokp41`, `Dokp31`, `DPRow` as line 825 first sets it (it bounds
+  every row a pocket reaches); merge, shift and recomputation run on the copies, so no
   total is written and no row counts twice.
 - **`CategoriesLastRowRecomputed`** (947–959). After a last-row merge `DPRow −= 1` and
   the loop returns to label 600, until no last-row check merges; `DPRow` falls by one
@@ -440,11 +440,11 @@ The fixes, `Binary64` only; the expected effects are the arbiter's computations:
   move the category rows of every formulation (`DPRow`, `Dkarmcat`, `dokkarm43`,
   `dokkarm10`, `fqdokkarm`).
 
-**Not fixed** (the verdict), unchanged under `Corrected`: `DOKM`, `DOKSD` from the
-shares as read (383–388, E8: exact when `ΣGDOK = 1`; an inconsistent input fires the
-warning of 817–818, and normalising it is input handling); the `[b, Dmin)` limit
-(E6b); `Epsydok`'s estimator; `pdoksmall` printed at `Ndok − 1` (1386); the REAL*4 and
-x87 rows.
+**Not fixed** (the arbiter's verdict of 2026-10-18), unchanged under `Corrected`: `DOKM`,
+`DOKSD` from the shares as read (383–388: exact when `ΣGDOK = 1`; an inconsistent input
+fires the warning of 817–818, and normalising it is input handling); the `[b, Dmin)`
+limit; `Epsydok`'s estimator; `pdoksmall` printed at `Ndok − 1` (1386). The REAL*4 and
+x87 rows are `not reachable` under `Corrected`, never fixed.
 
 ## Line map
 

@@ -99,7 +99,8 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
       Red once: writing the footer line under `Original` turns the guard red.
 - [ ] The footer line: under `Corrected` the line of `BOOT.md`, "## Corrected model",
       is written verbatim after the execution-mode line and holds no `=` and no digit;
-      two results identical but for `Diagnostics.Model`, at the default ratios and
+      two results identical but for `Diagnostics.Model` and `StoredSetup.Ak1`/`Ak2`/`Ak4`
+      (`null` under `Original`, the default ratios under `Corrected`), at
       `gdokleft = 0`, differ in exactly three lines: this one, the `fqmkm1` step comment
       and condition 5's label. Asserted by content; red once with the line's text
       altered.

@@ -8,7 +8,7 @@ came from, and the original text in full. Read only by following a dated pointer
 
 ## 2026-10-18 — from "## Invariants" — "The setup follows the precision kind", before the `Original` model qualified its `Binary64` half
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **The setup follows the precision kind** (decided 2026-09-23). Under `Original` it
@@ -23,7 +23,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "The per-cycle plane follows the precision kind", before the `Original` model qualified its `Binary64` half
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **The per-cycle plane follows the precision kind** (decided 2026-09-27, implemented
@@ -37,7 +37,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "In-place rewrites of the totals, as the original", stated for every run
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **In-place rewrites of the totals, as the original.** `Compute` rewrites, and later
@@ -51,7 +51,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "The merge loop of the original, literally", stated for every run
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **The merge loop of the original, literally.** After every pass that merged a pair,
@@ -63,7 +63,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "IEEE results where the original computes them", P2's negative `DOKSD` for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **IEEE results where the original computes them**, for example accuracies of streams
@@ -77,7 +77,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "Double precision, literals as written", its opening for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **Double precision, literals as written** under `Binary64`; under `Original` the
@@ -92,7 +92,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Invariants" — "The cell centre first" with its two notes of 2026-10-02, told in full
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **The cell centre first** (decided 2026-10-02). Every moment term over histogram
@@ -113,7 +113,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Constraints" — the size-law bullet, "`DOKSD` uses the same formula for both laws" for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - The size law is uniform in `D` when `JZZ = 2` and uniform in `1/D²` (mass-uniform) for
@@ -124,7 +124,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Setup plane" — "REAL*8 stays `double`", the order before and its ulp counts told in full
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - **REAL*8 stays `double`** — `Z`, `Z1` (`ZX`, `Z11`) and whatever else the declaration
@@ -138,7 +138,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Setup plane" — "`Dmin` rounds too; `Di`/`Dj` round too", the defect the rounding closed, told in full
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > **`Dmin` rounds too; `Di`/`Dj` round too, both found 2026-09-23.** Neither has a
@@ -159,7 +159,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Line map" — the notes of six rows before the `Corrected` model named its flags in them
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > | 1695–1734 | `FractionLaw.Build` | unnormalized `Z` by law, `ZSS`, normalized `ZX`, cumulative `Z11` with `Z11(NMM+1) = 1`; `Zerror` (1733) not ported |
@@ -173,7 +173,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Categories" — step 4 and the in-place paragraph, stated for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > 4. Last row (947–959): if `Epsydok(DPRow) > EpsDok` and `DPRow > 1`, rows `DPRow−1` and
@@ -187,7 +187,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Report" — "Decisions where the port departs from a transcription", `pdoksmall(1)` is 0 for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - `pdoksmall(1)`, never assigned by the original, is 0. The original's garbage
@@ -201,7 +201,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Taboos" — the third taboo, stated for every model
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > - No clearing or copying of the totals behind the caller's back: the in-place rewrites
@@ -211,7 +211,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from API.md, "## Setup" — "Setup under a precision kind", before the `Original` model qualified its `Binary64` half
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > **Setup under a precision kind** (decided and implemented 2026-09-23, BOOT.md, "## Setup
@@ -227,7 +227,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from API.md, "## Cycle" — "Cycle under a precision kind", before the `Original` model qualified its `Binary64` half
 
-The text as it stood at a3875ea, before the design pass for the `Corrected` model (root
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
 `BOOT.md`, "Model kind").
 
 > Cycle under a precision kind (2026-10-01, from the listing 2026-10-03): `Compute`
@@ -245,7 +245,7 @@ The text as it stood at a3875ea, before the design pass for the `Corrected` mode
 
 ## 2026-10-18 — from "## Acceptance criteria" — the stage 1 criterion, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-02: stage 1 of the plan above (W0 documents, W1 the excerpt, W2 the map,
@@ -263,7 +263,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A2, the listing oracle, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A2, the listing oracle (`tests/Fixtures/cycle_plane_oracle.py`, an x87
@@ -290,7 +290,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A3, C2, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A3, C2 (`PathIdenticalPairsReportTests`,
@@ -312,7 +312,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A6, the rate, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A6, the rate (`tests/Harness.Tests/RateCriterionTests`,
@@ -331,7 +331,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A7, the positive controls, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A7, one positive control per site kind the table leaves `unreached` in
@@ -351,7 +351,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A10, `PARAM` in the oracle, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A10 (F4), `PARAM` runs in the oracle: the excerpt holds its bytes
@@ -372,7 +372,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A11, with (c) before A14 and its note, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
@@ -394,7 +394,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — A12, the `JZZ = 2` loop, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-10-03: A12, the `JZZ = 2` setup loop is the executable's. From
@@ -416,7 +416,7 @@ model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 ## 2026-10-18 — from "## Acceptance criteria" — the four out-of-sample controls, with the note of 2026-10-01, told in full
 
-The text as it stood at a3875ea, moved by AGENTS.md §15 to make room for the `Corrected`
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
 model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
 
 > - [x] 2026-09-28: the arbiter's per-cycle-plane verdict of 2026-09-28 (amendment A3)
