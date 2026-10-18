@@ -246,4 +246,8 @@ beforehand.
       member's rows set back to `unchanged`; right on the real page. Committed with the
       fix that flips the last row: until then the two sets cannot be equal, and a check
       that cannot be green is not committed (AGENTS.md §13). `CorrectionSet` is
-      internal: `PublicSurface.approved.txt` does not move for it.
+      internal: `PublicSurface.approved.txt` does not move for it. Status 2026-10-18
+      (T4): the page names `fixed (BridgeFrustum)`, `fixed (Fmkarm2OnAcceptance)` and
+      `fixed (WindowLowerEdge)`; `ExactConstants` and the eight `Statistics` members
+      still read `unchanged`, so the two sets cannot be equal yet and the test is not
+      written.
