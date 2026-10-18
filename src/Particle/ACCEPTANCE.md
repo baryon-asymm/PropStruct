@@ -114,16 +114,19 @@ beforehand.
       (line 720's loop moved after 738 under `ireset == 0`) and `WindowLowerEdge`
       (`Build(…, true, …)` in `Attempt.Run`), which `Attempt.Run` does not read yet, as
       scratch emulations, 10 of 10 each: the flags' own implementations re-prove it.
-- [ ] One flag changes what its entry names and nothing else: on the same cycle-1
+- [x] One flag changes what its entry names and nothing else: on the same cycle-1
       sequence, `BridgeFrustum` alone leaves outcomes, streams, integer totals and
       every record field but `Vsmkm`, `VmkmTotal` and `VmkmTotal2` bit-identical and
       moves those three; `Fmkarm2OnAcceptance` alone leaves everything but `Fmkarm2`
       bit-identical and moves it. Red: a scratch mutation of `bb` under
-      `BridgeFrustum` turns the first red. Open for `Fmkarm2OnAcceptance`; for
-      `BridgeFrustum` 2026-10-18, `tests/Particle.Tests`,
+      `BridgeFrustum` turns the first red. 2026-10-18, `tests/Particle.Tests`,
       `CorrectionIsolationTests.BridgeFrustumMovesTheBridgeVolumeFieldsAndNothingElse`
-      (HPEPA3, inpt, P33, 10⁴ cycle-1 attempts, `Binary64`): green, and red under
-      `bb *= 1.1` in the flag's arm (3 of 3).
+      and `Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse` (HPEPA3, inpt, P33, 10⁴
+      cycle-1 attempts, `Binary64`; PSAN02n and HMX are not in the set, as for the
+      first half): green, and red, reverted, under `bb *= 1.1` in the frustum arm and
+      under `record[JammedTotal] += 1e-3` in the `Fmkarm2OnAcceptance` arm, 3 of 3 each.
+      `WindowLowerEdge` has no isolation case: its entry says it changes the draws that
+      follow, so a bit-identical remainder is not claimed.
 - [x] `BridgeFrustum`'s volume (`tests/Particle.Tests`, `BridgeGeometryTests`), at
       `r2/r1` of 0.6, 0.998 and 1 with `r1 = 50 µm`, `rk = 40 µm`, `a = 5 µm`
       (`Volume`'s own arguments; there `Original` is 69 times short at 0.998 and
@@ -212,9 +215,14 @@ beforehand.
       longer run's maximum is not bounded by it, and P33's tail (8 bridges of 20 draws or
       more, the largest 109) is the one to read first if a run ever fails
       `BridgeDrawBudgetExceeded` under the flag.
-- [ ] An attempt on the host thread and on the ILGPU CPU accelerator stays
+- [x] An attempt on the host thread and on the ILGPU CPU accelerator stays
       bit-identical with `Corrections = All` (`HostEqualsCpuAcceleratorTests`, its
-      cases with the field set).
+      cases with the field set). 2026-10-18, `tests/Particle.Tests`,
+      `HostEqualsCpuAcceleratorTests.RunMatchesOnHostAndTheCpuAccelerator`, the cases
+      `BridgeFrustum`, `All` (accepted, cycle 1) and `All` with `NnMax` 1e−9 (rejected by
+      line 735, `Fmkarm2` not committed), each against the host call, bit for bit in
+      outcome, streams, totals, record and scratch. Red, reverted: the kernel launched
+      with `Corrections` cleared turns the three cases red.
 - [ ] The members agree with the defect report: a test of `tests/Particle.Tests` reads
       `docs/ORIGINAL-DEFECTS.md`, collects the members named in `fixed (…)` values of
       the `Corrected` column, the reserved name `Model` (`src/Output`'s printing fixes,

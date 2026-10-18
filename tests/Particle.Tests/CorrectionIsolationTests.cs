@@ -39,21 +39,51 @@ public class CorrectionIsolationTests : IClassFixture<CpuHost>
     [MemberData(nameof(Formulations))]
     public void BridgeFrustumMovesTheBridgeVolumeFieldsAndNothingElse(string formulation)
     {
-        using var original = CycleOneRun.TakeToCycleOne(_host.Accelerator, formulation, PrecisionKind.Binary64);
-        using var frustum = CycleOneRun.TakeToCycleOne(
-            _host.Accelerator, formulation, PrecisionKind.Binary64, CorrectionSet.BridgeFrustum);
+        AssertOnlyTheNamedFieldsMove(formulation, CorrectionSet.BridgeFrustum, setup => new[]
+        {
+            (setup.Layout.Vsmkm, "Vsmkm", setup.Ndok),
+            (setup.Layout.VmkmTotal, "VmkmTotal", setup.Ndok),
+            (setup.Layout.VmkmTotal2, "VmkmTotal2", 1),
+        });
+    }
 
-        var layout = original.Setup.Layout;
-        var named = new List<int>();
-        AddRange(named, layout.Vsmkm, original.Setup.Ndok);
-        AddRange(named, layout.VmkmTotal, original.Setup.Ndok);
-        AddRange(named, layout.VmkmTotal2, 1);
+    /// <summary>
+    /// <c>Fmkarm2OnAcceptance</c> alone leaves outcomes, streams, integer totals and every
+    /// record field but <c>Fmkarm2</c> bit-identical and moves it.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Formulations))]
+    public void Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse(string formulation)
+    {
+        AssertOnlyTheNamedFieldsMove(formulation, CorrectionSet.Fmkarm2OnAcceptance, setup => new[]
+        {
+            (setup.Layout.Fmkarm2, "Fmkarm2", setup.Nkarm),
+        });
+    }
+
+    // The same cycle-1 sequence under None and under one flag, attempt by attempt. Each named
+    // field is a range of the record: (offset, name, length).
+    private void AssertOnlyTheNamedFieldsMove(
+        string formulation, CorrectionSet flag, Func<ModelSetup, (int Offset, string Name, int Length)[]> named)
+    {
+        using var original = CycleOneRun.TakeToCycleOne(_host.Accelerator, formulation, PrecisionKind.Binary64);
+        using var corrected = CycleOneRun.TakeToCycleOne(_host.Accelerator, formulation, PrecisionKind.Binary64, flag);
+
+        var fields = named(original.Setup);
+        var namedCells = new HashSet<int>();
+        foreach (var (offset, _, length) in fields)
+        {
+            for (var i = 0; i < length; i++)
+            {
+                _ = namedCells.Add(offset + i);
+            }
+        }
 
         var moved = new HashSet<int>();
         for (var attempt = 0; attempt < AttemptCount; attempt++)
         {
             var left = original.Step();
-            var right = frustum.Step();
+            var right = corrected.Step();
 
             Assert.Equal(left.Outcome, right.Outcome);
             AssertStreamsEqual(attempt, left.Streams, right.Streams);
@@ -62,7 +92,7 @@ public class CorrectionIsolationTests : IClassFixture<CpuHost>
             for (var field = 0; field < left.Record.Length; field++)
             {
                 var same = BitConverter.DoubleToInt64Bits(left.Record[field]) == BitConverter.DoubleToInt64Bits(right.Record[field]);
-                if (named.Contains(field))
+                if (namedCells.Contains(field))
                 {
                     if (!same)
                     {
@@ -71,21 +101,14 @@ public class CorrectionIsolationTests : IClassFixture<CpuHost>
                 }
                 else
                 {
-                    Assert.True(same, $"attempt {attempt}: record field {field} moved and is not named by BridgeFrustum.");
+                    Assert.True(same, $"attempt {attempt}: record field {field} moved and is not named by {flag}.");
                 }
             }
         }
 
-        Assert.Contains(moved, field => field >= layout.Vsmkm && field < layout.Vsmkm + original.Setup.Ndok);
-        Assert.Contains(moved, field => field >= layout.VmkmTotal && field < layout.VmkmTotal + original.Setup.Ndok);
-        Assert.Contains(layout.VmkmTotal2, moved);
-    }
-
-    private static void AddRange(List<int> fields, int offset, int length)
-    {
-        for (var i = 0; i < length; i++)
+        foreach (var (offset, name, length) in fields)
         {
-            fields.Add(offset + i);
+            Assert.True(moved.Any(cell => cell >= offset && cell < offset + length), $"{flag} did not move {name}.");
         }
     }
 
