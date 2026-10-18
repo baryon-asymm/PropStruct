@@ -79,39 +79,63 @@
 The statistical and link-3 rows above are the `Original` model's; the `Corrected` model
 has no external reference (root `BOOT.md`, "Model kind is an option of every run").
 
-- [ ] Surface: `ModelKind` has the explicit values `Original = 0` and `Corrected = 1`,
+- [x] Surface: `ModelKind` has the explicit values `Original = 0` and `Corrected = 1`,
       `SimulationOptions.Model` defaults to `Original`, `RunDiagnostics.Model` and
       `StoredSetup.Ak1`/`Ak2`/`Ak4` are body init properties and the 0.1.0 positional
       constructors are unchanged; `PublicSurface.approved.txt` moves in the same commit.
-- [ ] `Original` unchanged: the seed-zero guard of `tests/Simulation.Tests` (`results.m`
+      (2026-10-18, `ModelKindTests.TheSurfaceHasTheExplicitValuesTheDefaultAndBodyInitProperties`;
+      red with the default set to `Corrected`; the snapshot moved by exactly the five
+      lines of `ModelKind`, `Model` (twice) and `Ak1`/`Ak2`/`Ak4`, red before, right after.)
+- [x] `Original` unchanged: the seed-zero guard of `tests/Simulation.Tests` (`results.m`
       and full-precision JSON, every case) is green and unedited after every commit that
       adds `Corrected` code; an `Original` `results.m` holds no `% Model kind` line and
       its JSON no `Model`, `Ak1`, `Ak2` or `Ak4`. Red once: mapping `Original` to
       `CorrectionSet.All` in `Simulator.Run` turns the guard red.
-- [ ] The mapping, right once on a known answer: `Corrected` on P33 prints `Dok43sd`
+      (2026-10-18, `OriginalModelGuardTests` 34 of 34 and the `SeedZero` facts 59 of 59 green
+      with the approved files unedited; `ModelKindTests.AnOriginalRunsResultsAndJsonCarryNoModelLabel`;
+      red with `Original` mapped to `All`: the guard's cases, `OriginalPrintsTheArchivedDoksdOfP33`
+      and the seam's negative control; red with `Ak1` set under `Original`.)
+- [x] The mapping, right once on a known answer: `Corrected` on P33 prints `Dok43sd`
       112.66 µm where `Original` prints 75.45 µm (`DoksdConsistent`,
       `src/Statistics`); red once: mapping `Corrected` to `CorrectionSet.None` gives
-      75.45 µm.
-- [ ] The refusal: `Model = Corrected` with `Precision = PrecisionKind.Original`, in
+      75.45 µm. (2026-10-18, `ModelKindTests.CorrectedPrintsTheConsistentDoksdOfP33` and
+      `OriginalPrintsTheArchivedDoksdOfP33`, the latter reading the archive's
+      `tests/Fixtures/references/P33/results.m.txt`; red with the mapping `None`.)
+- [x] The refusal: `Model = Corrected` with `Precision = PrecisionKind.Original`, in
       either mode, throws `SimulationFailedException` with `RunStatus.InvalidSetup` from
       `Simulator.Create`, `SetupFailure` `null`, before any setup or accelerator work,
       the message naming both halves; the two batched refusals keep their messages word
       for word; removing the check turns the assertion red. `Corrected` with
       `Binary64` runs a small formulation to completion in both modes and both layouts.
-- [ ] The seam: `Corrections` set with `Model = Original`, or holding a bit outside
+      (2026-10-18, `ModelKindTests.CorrectedWithOriginalPrecisionIsRefusedInReferenceModeNamingBothHalves`,
+      `TheTwoBatchedRefusalsKeepTheirMessagesUnderCorrected` (the message of each
+      batched refusal equals the `Original` model's, word for word) and
+      `CorrectedWithBinary64RunsToCompletionInBothModesAndBothLayouts`; red with the
+      check removed. Batched mode with `Original` precision meets the precision refusal
+      first, so the model refusal is reached in reference mode.)
+- [x] The seam: `Corrections` set with `Model = Original`, or holding a bit outside
       `All`, throws `ArgumentException` before any work; `Corrections = None` with
       `Corrected` gives the `Original` run's `SimulationResult` bit for bit, with
       `Diagnostics.Model`, `Diagnostics.Elapsed` and `StoredSetup.Ak1`/`Ak2`/`Ak4`
       normalised (negative control); a single-flag seam run differs from
       `Original` on a case where that flag is visible (positive control, the flag's
-      evidence case in its owning node).
-- [ ] The degenerate batched configuration equals reference mode bit for bit under
+      evidence case in its owning node). (2026-10-18, `ModelKindTests.TheSeamIsRefusedUnderOriginal`,
+      `TheSeamIsRefusedForABitOutsideAll`, `CorrectedWithNoFlagSetEqualsTheOriginalRunNormalised`,
+      `ASingleFlagSeamRunDiffersFromOriginalWhereThatFlagIsVisible` (`DoksdConsistent`,
+      `Dok43sd` 112.66) and `ARunWithTheSeamedSetAllIsTheCorrectedRun`; red with each
+      refusal weakened, with `Corrected` mapped to `None` and with `Original` mapped to `All`.)
+- [x] The degenerate batched configuration equals reference mode bit for bit under
       `Corrected` too (`DegenerateConfigurationTests`' constructed case with
       `Model = Corrected`); a `Corrected` run repeated gives the same result, elapsed
-      time aside.
-- [ ] Labelling: a `Corrected` run's `RunDiagnostics.Model` is `Corrected`, its
-      `StoredSetup.Ak1`/`Ak2`/`Ak4` equal its `ModelSetup`'s, and its `results.m` ends
-      its footer with the model line of `BOOT.md`, "## Corrected model", verbatim.
+      time aside. (2026-10-18, `DegenerateConfigurationTests.BatchedDegenerateConfigurationEqualsReferenceModeBitForBitUnderCorrected`
+      and `ModelKindTests.ACorrectedRunRepeatedGivesTheSameResultElapsedTimeAside`; the
+      degenerate claim's own different-seed control is the existing one.)
+- [x] Labelling, without `results.m`: a `Corrected` run's `RunDiagnostics.Model` is
+      `Corrected` and its `StoredSetup.Ak1`/`Ak2`/`Ak4` equal its `ModelSetup`'s
+      (2026-10-18, `ModelKindTests.ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`;
+      red with the label not set).
+- [ ] Labelling, `results.m` (`Output`, a later task): a `Corrected` run's `results.m`
+      ends its footer with the model line of `BOOT.md`, "## Corrected model", verbatim.
 - [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
       under `Corrected` on the five reference formulations, its maxima recorded here
       with the run's place (`BOOT.md` stands at its §15 limit), and no default below

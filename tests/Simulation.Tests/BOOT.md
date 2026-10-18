@@ -238,7 +238,9 @@ makes, not a claim that CUDA agrees with the CPU accelerator cell for cell.
 
 - [Simulation](../../src/Simulation/API.md) — what is being checked.
 - [Input](../../src/Input/API.md) — reading the formulations.
-- [Statistics](../../src/Statistics/API.md) — `CycleReport`, for the reflection check.
+- [Statistics](../../src/Statistics/API.md) — `CycleReport`, for the reflection check;
+  `Setup.Prepare`, whose `ModelSetup` ratios `ModelKindTests` compares with the result's.
+- [Particle](../../src/Particle/API.md) — `CorrectionSet`, the seam's flags.
 - [Execution](../../src/Execution/API.md) — `AcceleratorKind`, `BatchStatus` for the
   status mapping check.
 - [Output](../../src/Output/API.md) — writes the port's `results.m` for the criterion
@@ -348,6 +350,21 @@ which record carries a field or its value.
 ⚠ 2026-09-24: the test names cited above were renamed for CA1707 (underscores removed
 from method names, no change of meaning); the old → new map is
 `tests/test-renames-2026-09-24.txt`. No criterion's date moved.
+
+### Model kind (2026-10-18)
+
+Each applied alone to `src/Simulation`, run against `ModelKindTests` (and the named
+guard), seen red, reverted:
+
+| Mutation | Red |
+|---|---|
+| the `Corrected` with `Original` precision refusal removed | `CorrectedWithOriginalPrecisionIsRefusedInReferenceModeNamingBothHalves` |
+| `Corrected` mapped to `CorrectionSet.None` | `CorrectedPrintsTheConsistentDoksdOfP33`, `ASingleFlagSeamRunDiffersFromOriginalWhereThatFlagIsVisible` |
+| `Original` mapped to `CorrectionSet.All` | `OriginalPrintsTheArchivedDoksdOfP33`, `CorrectedWithNoFlagSetEqualsTheOriginalRunNormalised`, the single-flag control, the guard's `ResultAndResultsMMatchApprovedHashes` |
+| the seam refused for `Original` no more; the seam's out-of-`All` test disabled | `TheSeamIsRefusedUnderOriginal`; both cases of `TheSeamIsRefusedForABitOutsideAll` |
+| `Ak1` copied under `Original` too | `AnOriginalRunsResultsAndJsonCarryNoModelLabel` |
+| `RunDiagnostics.Model` fixed at `Original` | `ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`, `CorrectedWithBinary64RunsToCompletionInBothModesAndBothLayouts`, the degenerate case under `Corrected` |
+| `SimulationOptions.Model` defaulting to `Corrected` | `TheSurfaceHasTheExplicitValuesTheDefaultAndBodyInitProperties` |
 
 ## Budget ladder (2026-10-01)
 
