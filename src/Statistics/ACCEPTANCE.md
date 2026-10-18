@@ -405,11 +405,11 @@
   also on every shipped `JZZ = 2` file, to 1e-12; P33 prints `Dok43sd` 112.66 µm, P2
   8.07 µm; red: `None`'s 75.45 µm and `NaN`; `JZZ ≠ 2` bit-identical to `None`
   (`DoksdConsistentTests`; red on `1/3` for `2/3` and on the flag read as another).
-- [ ] Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0` fraction across
-  `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by `GGG·GDOK·φ(b)`
-  and the flag equals it, under both laws; `b` at or below the bound: bit-identical; on
-  one PSAN02 `--sfr`, `Dmin = 20 µm` total set, `None` minus the flag is 0.0119 (three
-  digits).
+- [x] 2026-10-18: Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0`
+  fraction across `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by
+  `GGG·GDOK·φ(b)` and the flag equals it, under both laws; `b` at or below the bound:
+  bit-identical; PSAN02 `--sfr`, `Dmin` 20 µm, `Di` 10 µm: `None` minus the flag 0.0119,
+  0.0175 of the oxidizer (`GdokleftOnceTests`; red on law 2 read as 1 and the flag as another).
 - [ ] Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, seen through
   `pdoksmall` (`zdoksmall` stays inside `Probability`): for a `vdokstr` whole in cell 1,
   `AK2 = 2` and `gdokleft > 0`, where 1021–1056 give `zdoksmall` ½ in cell 1 and 1
@@ -431,4 +431,4 @@
   references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
   with its flag's code and these criteria's evidence, never before.
-  Landed 2026-10-18: `DoksdConsistent`, `ExactConstants`.
+  Landed 2026-10-18: `DoksdConsistent`, `ExactConstants`, `GdokleftOnce`.

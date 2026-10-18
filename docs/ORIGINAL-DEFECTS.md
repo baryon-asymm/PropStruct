@@ -9,7 +9,7 @@ This page lists what is wrong with the legacy Fortran program `PropStructV3` and
 
 44 defects from 5 nodes.
 
-By `Corrected`: 24 unchanged, 14 not reachable, 6 fixed.
+By `Corrected`: 23 unchanged, 14 not reachable, 7 fixed.
 
 ## algorithm
 
@@ -24,7 +24,7 @@ By `Corrected`: 24 unchanged, 14 not reachable, 6 fixed.
 | `src/Statistics` | 869–871, 915, 947 | A category row with QDOKSS = 0, or MDOK3 or MDOK4 ≤ 1e-30, gets Epsydok = 0 and so survives every merge test ("## Categories"; "## Corrected model", `CategoriesEmptyRowsMerged`). | not measured | reproduced | unchanged |
 | `src/Statistics` | 911–958 | The category merge and shift (`## Invariants`, "In-place rewrites of the totals, as the original") rewrites `Qdoks`, `Dokp41`, `Dokp31` without clearing the old last row after any merge, so its contents count twice once later cycles rebuild the rows (`## Categories`: "The original behaves so; it is reproduced."). | not measured | reproduced | unchanged |
 | `src/Statistics` | 947–959 | The last-row merge does not return to label 600: the new last row keeps the statistics of before the merge and is never checked again (## Invariants, "The merge loop of the original, literally"). | not measured | reproduced | unchanged |
-| `src/Statistics` | 1001–1006 | gdokleft = FMDOK(int(Dmin/Di)+1)·GGG + Σ_{SFR=0} GDOK·GGG counts an SFR = 0 fraction's mass below b = int(Dmin/Di)·Di twice; pocket-forming mass in [b, Dmin), when Dmin is no multiple of Di, is counted nowhere, a resolution limit both models keep ("## Corrected model", `GdokleftOnce`). | not measured | reproduced | unchanged |
+| `src/Statistics` | 1001–1006 | gdokleft = FMDOK(int(Dmin/Di)+1)·GGG + Σ_{SFR=0} GDOK·GGG counts an SFR = 0 fraction's mass below b = int(Dmin/Di)·Di twice; pocket-forming mass in [b, Dmin), when Dmin is no multiple of Di, is counted nowhere, a resolution limit both models keep ("## Corrected model", `GdokleftOnce`). | measured 2026-10-18 under `GdokleftOnce`: PSAN02 read with its pocket-forming flags at `Dmin` 20 µm, `Di` 10 µm: `gdokleft` 0.0119 lower, 0.0175 of the oxidizer (`tests/Statistics.Tests/GdokleftOnceTests`). | reproduced | fixed (GdokleftOnce) |
 | `src/Statistics` | 1047 | zdoksmall, a share of the drawn coarse oxidizer vdokstr, is scaled by GGG instead of GGG − gdokleft, the share 1050 and 1053 give that oxidizer ("## Corrected model", `ZdoksmallCoarseShare`). | not measured | reproduced | unchanged |
 | `src/Statistics` | 1145, 1150 | Every cycle ≥ 1 divides the stored Vdok_total cells and Vdok_total2 by 1 − gdokleft/GGG in place, so each later cycle divides the earlier cycles' particles again (## Invariants, "In-place rewrites of the totals, as the original"; "## Corrected model", `VdokTotalOnCopy`). | not measured | reproduced | unchanged |
 | `src/Particle` | 1616–1627 | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | not measured | reproduced | fixed (BridgeFrustum) |

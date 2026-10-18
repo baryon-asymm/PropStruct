@@ -419,11 +419,16 @@ internal static class CycleStatistics
 
         // 1004: the register sum is added unrounded into 1006.
         var gdoksfr = 0.0;
+        var below = fmdokIndex * di;
         for (var i = 0; i < setup.FractionCount; i++)
         {
             if (tables.PocketForming[i] == 0)
             {
-                gdoksfr += tables.MassShare[i] * ggg;
+                // GdokleftOnce: the mass of this fraction below b is already in FMDOK, so only the rest counts.
+                var countedInFmdok = corrections.HasFlag(CorrectionSet.GdokleftOnce)
+                    ? MassCumulative(setup.SizeLaw, tables.Bounds[2 * i], tables.Bounds[2 * i + 1], below)
+                    : 0.0;
+                gdoksfr += tables.MassShare[i] * (1.0 - countedInFmdok) * ggg;
             }
         }
 
@@ -454,6 +459,29 @@ internal static class CycleStatistics
         var mpRegister = rounding.Fold(rounding.Literal(3.14159) / 6.0) * plotsmdok * inputs.MetalMassFraction / s2; // Fortran 1014
         mpRegister *= t3; // 1015
         mp = rounding.Store(2.0 * Math.Pow(rounding.Fold(0.75 / rounding.Literal(3.14159)) * mpRegister * t4, rounding.Literal(0.3333))); // Fortran 1016
+    }
+
+    /// <summary>
+    /// The share of a fraction's mass below <paramref name="size"/> (<c>GdokleftOnce</c>, BOOT.md, "## Corrected model"):
+    /// 0 at or below the lower bound, 1 at or above the upper one, between them the mass CDF of the fraction's law,
+    /// <c>(b^4 - l^4)/(u^4 - l^4)</c> for the law uniform in <c>D</c> (<c>JZZ = 2</c>) and <c>(b - l)/(u - l)</c> for the
+    /// other.
+    /// </summary>
+    private static double MassCumulative(int sizeLaw, double lower, double upper, double size)
+    {
+        if (size <= lower)
+        {
+            return 0.0;
+        }
+
+        if (size >= upper)
+        {
+            return 1.0;
+        }
+
+        return sizeLaw == 2
+            ? (Math.Pow(size, 4) - Math.Pow(lower, 4)) / (Math.Pow(upper, 4) - Math.Pow(lower, 4))
+            : (size - lower) / (upper - lower);
     }
 
     /// <summary>Fortran lines 1087-1113 (cycles &gt;= 1 only).</summary>
