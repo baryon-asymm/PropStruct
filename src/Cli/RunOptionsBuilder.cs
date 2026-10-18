@@ -8,7 +8,7 @@ namespace PropStruct.Cli;
 /// Turns the flag values <see cref="CommandLine"/> collected (keyed by the <see cref="ModelParameters"/>
 /// or <see cref="SimulationOptions"/> property name they set) into the two records themselves, starting
 /// from each record's own default (BOOT.md, "Defaults are the original's"). Explicit per-property
-/// assignment, not reflection-based <c>SetValue</c>: fourteen and ten properties respectively are few
+/// assignment, not reflection-based <c>SetValue</c>: fourteen and eleven properties respectively are few
 /// enough that a typo here is a compiler error instead of a silent no-op.
 /// </summary>
 internal static class RunOptionsBuilder
@@ -112,6 +112,11 @@ internal static class RunOptionsBuilder
         if (values.TryGetValue(nameof(SimulationOptions.Precision), out var precision))
         {
             options = options with { Precision = (PrecisionKind)precision };
+        }
+
+        if (values.TryGetValue(nameof(SimulationOptions.Model), out var model))
+        {
+            options = options with { Model = (ModelKind)model };
         }
 
         if (values.TryGetValue(nameof(SimulationOptions.BatchSize), out var batchSize))
