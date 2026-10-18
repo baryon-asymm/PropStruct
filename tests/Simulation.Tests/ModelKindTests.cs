@@ -221,6 +221,25 @@ public class ModelKindTests
         Assert.NotNull(simulator);
     }
 
+    /// <summary>
+    /// The mapping itself, read where the simulator reads it: <c>Corrected</c> with no seam means every flag of
+    /// <see cref="CorrectionSet"/> (a flag dropped from the mapping would otherwise change no test), and
+    /// <c>Original</c> means none. <c>All</c> is the union the enum declares, so the comparison is against the
+    /// enum and not against a typed list; the flags are checked one by one as well, so that a failure names the
+    /// one that is missing.
+    /// </summary>
+    [Fact]
+    public void TheEffectiveCorrectionsAreEveryFlagUnderCorrectedWithNoSeamAndNoneUnderOriginal()
+    {
+        var corrected = new SimulationOptions { Model = ModelKind.Corrected }.EffectiveCorrections;
+        var original = new SimulationOptions { Model = ModelKind.Original }.EffectiveCorrections;
+
+        Assert.Equal(CorrectionSet.All, corrected);
+        Assert.Equal(CorrectionSet.None, original);
+        var missing = CorrectionArm.SingleFlags.Where(flag => !corrected.HasFlag(flag)).ToArray();
+        Assert.True(missing.Length == 0, $"Corrected without a seam lacks: {string.Join(", ", missing)}.");
+    }
+
     [Fact]
     public void ARunWithTheSeamedSetAllIsTheCorrectedRun()
     {
