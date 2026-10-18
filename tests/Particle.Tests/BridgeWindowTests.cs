@@ -94,11 +94,13 @@ public class BridgeWindowTests : IClassFixture<CpuHost>
     /// <summary>
     /// The <c>WindowLowerEdge</c> parameter of <see cref="BridgeWindow.Build(double, double, double, double, int, bool, ILGPU.ArrayView{double}, ILGPU.ArrayView{double}, ILGPU.ArrayView{double}, out int)"/>
     /// moves line 595's origin and nothing else: <c>DPOC(mindk)</c> is the cell's upper edge
-    /// <c>Di·mindk</c> with the flag unset (as the old overload, bit for bit) and its lower edge
-    /// <c>Di·(mindk − 1)</c> with it set, while <c>FQKS</c> and the window's length are the same
-    /// bits under both. Red: the parameter read as <c>true</c> in both arms (or ignored) fails the
-    /// origin of the arm it is wrong for; right: both origins are the ones named here, from a
-    /// <c>mindk</c> of 2 (<c>Dr = 3</c>, <c>AK3 = 0.2</c>, <c>Di = 0.5</c>).
+    /// <c>Di·mindk</c> with the flag unset and its lower edge <c>Di·(mindk − 1)</c> with it set,
+    /// while <c>FQKS</c> and the window's length are the same bits under both. The old overload
+    /// is not an arm: it forwards the unset flag, so a comparison with it cannot fail; the
+    /// <c>None</c> path is held by the fixture cases and the cycle-1 snapshots. Red: the
+    /// parameter read as <c>true</c> in both arms (or ignored) fails the origin of the arm it is
+    /// wrong for; right: both origins are the ones named here, from a <c>mindk</c> of 2
+    /// (<c>Dr = 3</c>, <c>AK3 = 0.2</c>, <c>Di = 0.5</c>).
     /// </summary>
     [Fact]
     public void WindowLowerEdgeMovesTheOriginAndNothingElse()
@@ -119,30 +121,22 @@ public class BridgeWindowTests : IClassFixture<CpuHost>
         using var dpocUpperBuffer = acc.Allocate1D<double>(nkarm + 1);
         using var fqksLowerBuffer = acc.Allocate1D<double>(nkarm + 1);
         using var dpocLowerBuffer = acc.Allocate1D<double>(nkarm + 1);
-        using var fqksOldBuffer = acc.Allocate1D<double>(nkarm + 1);
-        using var dpocOldBuffer = acc.Allocate1D<double>(nkarm + 1);
 
         var qks1 = qks1Buffer.View.BaseView;
         Assert.True(BridgeWindow.Build(dr, ak3, ak4, cellSize, nkarm, false, qks1, fqksUpperBuffer.View.BaseView, dpocUpperBuffer.View.BaseView, out var nnn1Upper));
         Assert.True(BridgeWindow.Build(dr, ak3, ak4, cellSize, nkarm, true, qks1, fqksLowerBuffer.View.BaseView, dpocLowerBuffer.View.BaseView, out var nnn1Lower));
-        Assert.True(BridgeWindow.Build(dr, ak3, ak4, cellSize, nkarm, qks1, fqksOldBuffer.View.BaseView, dpocOldBuffer.View.BaseView, out var nnn1Old));
 
         var dpocUpper = dpocUpperBuffer.GetAsArray1D();
         var dpocLower = dpocLowerBuffer.GetAsArray1D();
-        var dpocOld = dpocOldBuffer.GetAsArray1D();
         Assert.Equal(BitConverter.DoubleToInt64Bits(cellSize * mindk), BitConverter.DoubleToInt64Bits(dpocUpper[0]));
         Assert.Equal(BitConverter.DoubleToInt64Bits(cellSize * (mindk - 1)), BitConverter.DoubleToInt64Bits(dpocLower[0]));
 
         Assert.Equal(nnn1Upper, nnn1Lower);
-        Assert.Equal(nnn1Upper, nnn1Old);
         var fqksUpper = fqksUpperBuffer.GetAsArray1D();
         var fqksLower = fqksLowerBuffer.GetAsArray1D();
-        var fqksOld = fqksOldBuffer.GetAsArray1D();
         for (var i = 0; i < nnn1Upper; i++)
         {
             Assert.Equal(BitConverter.DoubleToInt64Bits(fqksUpper[i]), BitConverter.DoubleToInt64Bits(fqksLower[i]));
-            Assert.Equal(BitConverter.DoubleToInt64Bits(fqksUpper[i]), BitConverter.DoubleToInt64Bits(fqksOld[i]));
-            Assert.Equal(BitConverter.DoubleToInt64Bits(dpocUpper[i]), BitConverter.DoubleToInt64Bits(dpocOld[i]));
         }
     }
 

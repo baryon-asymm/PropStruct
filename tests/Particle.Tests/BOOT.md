@@ -302,9 +302,12 @@ Outside the tree: xunit.
   meet: a shorter list asks the map for less. Reformulated as above.
 
 - [x] The `Corrected` rows of the table: 2026-10-18, `CycleOneSnapshotTests` (10 cases),
-      `BridgeGeometryTests` (the four `BridgeFrustum` facts), `CorrectionIsolationTests` (3),
+      `BridgeGeometryTests` (the three `BridgeFrustum` facts; the fact comparing the old
+      overload with the flag unset was deleted 2026-10-18, it could not fail),
+      `CorrectionIsolationTests` (3),
       `ExactConstantsTests` (4), `ExactConstantSiteTests` (3 fast, 2 `Legacy`),
-      `BridgeWindowTests.WindowLowerEdgeMovesTheOriginAndNothingElse`,
+      `BridgeWindowTests.WindowLowerEdgeMovesTheOriginAndNothingElse` (its old-overload
+      arm deleted 2026-10-18, for the same reason),
       `HostEqualsCpuAcceleratorTests` with the flag set, `CorrectionMemberRowTests` (22,
       2026-10-18, the members against the page); each proven red by the
       mutations recorded in `src/Particle/ACCEPTANCE.md` (the `Corrected` items) and, for

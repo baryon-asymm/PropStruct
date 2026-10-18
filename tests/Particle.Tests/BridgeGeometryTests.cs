@@ -73,27 +73,33 @@ public class BridgeGeometryTests
 
     /// <summary>
     /// <c>BridgeFrustum</c>, right: the volume under the flag equals an independent numerical
-    /// quadrature of the same solid, within 1e-9 relative, at <c>R2/R1</c> of 0.6, 0.998 and 1.
-    /// The solid is the frustum between the two chord circles less the two caps; the quadrature
-    /// integrates its cross-section (an area, <c>π·ρ(z)²</c> less the caps' own discs) along the
-    /// axis of the two spheres, with the chord circles placed from the coordinates of the
-    /// triangle of the three centres, so it shares no formula with <see cref="BridgeGeometry"/>.
+    /// quadrature of the same solid, within 1e-9 relative, at <c>R2/R1</c> of 0.6, 0.998 and 1,
+    /// at the gap <c>a = 5 µm</c> and at the clamped gap <c>a = 0</c> that every jammed
+    /// neighbour reaches (Fortran lines 572-576, <c>AA &lt;= 0</c> gives <c>AA = 0</c>), where
+    /// the two caps meet at one point of the axis. The solid is the frustum between the two
+    /// chord circles less the two caps; the quadrature integrates its cross-section (an area,
+    /// <c>π·ρ(z)²</c> less the caps' own discs) along the axis of the two spheres, with the chord
+    /// circles placed from the coordinates of the triangle of the three centres, so it shares
+    /// no formula with <see cref="BridgeGeometry"/>.
     /// </summary>
     [Theory]
-    [InlineData(0.6)]
-    [InlineData(0.998)]
-    [InlineData(1.0)]
-    public void BridgeFrustumMatchesAnIndependentQuadratureOfTheSolid(double ratio)
+    [InlineData(0.6, A)]
+    [InlineData(0.998, A)]
+    [InlineData(1.0, A)]
+    [InlineData(0.6, 0.0)]
+    [InlineData(0.998, 0.0)]
+    [InlineData(1.0, 0.0)]
+    public void BridgeFrustumMatchesAnIndependentQuadratureOfTheSolid(double ratio, double gap)
     {
-        var quadrature = QuadratureOfTheBridge(R1, ratio * R1, Rk, A);
+        var quadrature = QuadratureOfTheBridge(R1, ratio * R1, Rk, gap);
 
-        var jj = BridgeGeometry.Volume(R1, ratio * R1, Rk, A, true, out var volume, out _);
+        var jj = BridgeGeometry.Volume(R1, ratio * R1, Rk, gap, true, out var volume, out _);
 
         Assert.True(jj);
-        Assert.True(quadrature > 0.0, $"ratio {ratio}: the quadrature is {quadrature}.");
+        Assert.True(quadrature > 0.0, $"ratio {ratio}, gap {gap}: the quadrature is {quadrature}.");
         Assert.True(
             Math.Abs(volume - quadrature) <= 1e-9 * quadrature,
-            $"ratio {ratio}: volume {volume} against the quadrature {quadrature}.");
+            $"ratio {ratio}, gap {gap}: volume {volume} against the quadrature {quadrature}.");
     }
 
     /// <summary>
@@ -118,7 +124,7 @@ public class BridgeGeometryTests
     /// <summary>
     /// <c>JJ</c> and <c>bb</c> are bit-equal with the flag set and unset on every case, the two
     /// <c>JJ = 0</c> returns included: every case of <c>bridge_geometry_volume.json</c> and the
-    /// three radius ratios above.
+    /// three radius ratios above, at the gap above and at the clamped gap 0.
     /// </summary>
     [Fact]
     public void JjAndBbAreBitEqualUnderBothVolumesOnEveryCase()
@@ -126,6 +132,7 @@ public class BridgeGeometryTests
         var cases = FormulaCaseFiles.ReadBridgeGeometryCases()
             .Select(c => (c.R1, c.R2, c.Rk, c.A))
             .Concat(Ratios.Select(ratio => (R1, ratio * R1, Rk, A)))
+            .Concat(Ratios.Select(ratio => (R1, ratio * R1, Rk, A: 0.0)))
             .ToArray();
 
         Assert.Contains(cases, c => c.A >= 2.0 * c.Rk);
@@ -136,24 +143,6 @@ public class BridgeGeometryTests
 
             Assert.Equal(jjOriginal, jjFrustum);
             Assert.Equal(BitConverter.DoubleToInt64Bits(bbOriginal), BitConverter.DoubleToInt64Bits(bbFrustum));
-        }
-    }
-
-    /// <summary>
-    /// The unset flag is the original, bit for bit: every case of the fixture, through the new
-    /// signature.
-    /// </summary>
-    [Fact]
-    public void TheFlagUnsetIsTheOldSignatureBitForBit()
-    {
-        foreach (var c in FormulaCaseFiles.ReadBridgeGeometryCases())
-        {
-            var jjOld = BridgeGeometry.Volume(c.R1, c.R2, c.Rk, c.A, out var volumeOld, out var bbOld);
-            var jjNew = BridgeGeometry.Volume(c.R1, c.R2, c.Rk, c.A, false, out var volumeNew, out var bbNew);
-
-            Assert.Equal(jjOld, jjNew);
-            Assert.Equal(BitConverter.DoubleToInt64Bits(volumeOld), BitConverter.DoubleToInt64Bits(volumeNew));
-            Assert.Equal(BitConverter.DoubleToInt64Bits(bbOld), BitConverter.DoubleToInt64Bits(bbNew));
         }
     }
 
