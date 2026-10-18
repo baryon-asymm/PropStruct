@@ -32,13 +32,23 @@ internal sealed class AnalyticCycle
         this.inputs = inputs;
     }
 
-    /// <summary>Prepares <paramref name="formulation"/> under <paramref name="parameters"/>, <paramref name="precision"/> and <paramref name="corrections"/>.</summary>
+    /// <summary>
+    /// Prepares <paramref name="formulation"/> under <paramref name="parameters"/>, <paramref name="precision"/> and
+    /// <paramref name="corrections"/>; with <paramref name="imposed"/> the stored set is replaced by it afterwards, as in a
+    /// setup built by hand.
+    /// </summary>
     public static AnalyticCycle Prepare(
-        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections)
+        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections,
+        CorrectionSet? imposed = null)
     {
         var status = Statistics.Setup.Prepare(formulation, parameters, precision, corrections, 1000, 1000,
             out var setup, out var tables, out _, out var pending, out var inputs);
         Assert.Equal(SetupStatus.Ok, status);
+        if (imposed is { } stored)
+        {
+            setup.Corrections = stored;
+        }
+
         var echoes = Statistics.Setup.CompleteEchoes(ref setup, pending, pending.Ddokmax);
         return new AnalyticCycle(formulation, setup, tables, echoes, inputs);
     }

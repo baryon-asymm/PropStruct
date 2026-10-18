@@ -391,7 +391,7 @@
   block a `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests`
   green. Met 2026-10-18 for `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files,
   both kinds; `CorrectionSeamTests`, `CorrectedStatementStructureTests`, each red on a
-  mutation), `Probability` (4 cases, both kinds); open for `MergeAndDescribe`.
+  mutation), `Probability` (4 cases), `Compute` (49 files); open for `MergeAndDescribe`.
 - [x] 2026-10-18: Corrected, `ExactConstants`: on the same inputs `ZSS` (so λ) is the
   `None` value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base,
   to 1e-12 relative on 49 files; red: ratio 1 under `None`, `mp` moving 8.6e-5 to
