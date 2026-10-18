@@ -141,6 +141,18 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig", errors="replace").replace("\r\n", "\n")
 
 
+def read_generated(path: Path) -> str:
+    """A generated file as its bytes say, decoded and nothing else: no BOM stripping and
+    no line-ending translation, so that a CR in the file stays visible to --check."""
+    return path.read_bytes().decode("utf-8", errors="replace")
+
+
+def write_generated(path: Path, content: str) -> None:
+    """Writes content as UTF-8 with its line feeds untouched on every platform, where
+    write_text would turn each into CRLF on Windows."""
+    path.write_bytes(content.encode("utf-8"))
+
+
 def relative(path: Path, root: Path) -> str:
     try:
         return path.relative_to(root).as_posix()
@@ -604,9 +616,12 @@ def _check_one(path: Path, label: str, content: str, normalize) -> bool:
         print("defect_report: {} does not exist; run without --check to create it".format(
             label), file=sys.stderr)
         return False
-    existing = read(path)
+    existing = read_generated(path)
     if normalize(existing) != normalize(content):
         print("defect_report: {} is stale; regenerate it".format(label), file=sys.stderr)
+        if "\r" in existing:
+            print("defect_report: {} holds CR bytes; the generated file is LF only".format(
+                label), file=sys.stderr)
         diff = difflib.unified_diff(
             normalize(existing).splitlines(keepends=True),
             normalize(content).splitlines(keepends=True),
@@ -665,9 +680,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 0
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(content, encoding="utf-8")
+    write_generated(output_path, content)
     declared_path.parent.mkdir(parents=True, exist_ok=True)
-    declared_path.write_text(declared_content, encoding="utf-8")
+    write_generated(declared_path, declared_content)
     print("defect_report: {} defects from {} nodes -> {}; {} declared rows -> {}".format(
         len(defects), len(nodes), output_label, declared_rows, declared_label))
     return 0

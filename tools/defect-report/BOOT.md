@@ -47,6 +47,14 @@ written").
   same reason: the check must run before anything is installed.
 - **Idempotent.** Running it twice writes the same bytes; `--check` writes nothing and
   fails when the file in the tree differs from what would be generated.
+- **LF bytes on every platform.** Both generated files are written as UTF-8 with `LF`
+  line ends and no BOM, by bytes, never through a text-mode write that translates the
+  line feed on Windows; `--check` compares the bytes of the file in the tree, the
+  page's date line aside, so a file holding a CR reads as stale and says so.
+
+  ⚠ 2026-10-18: was "writes the same bytes" over `write_text`, which on Windows wrote
+  CRLF, and `--check` read the file with its line ends normalised, so the CRLF page
+  passed; now LF written by bytes and compared by bytes.
 
 ## Dependencies
 
@@ -154,6 +162,16 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   until the orchestrator's kit audit found it, since nothing runs it automatically.
   Now the criterion names no count: "exactly" is checked against the list the parser
   generates (AGENTS.md section 6).
+- [x] 2026-10-18: the writer emits LF on every platform and `--check` reads a CR as
+      stale, in `tools/defect-report/test_defect_report.py`, `DefectReportTest`. Red:
+      `test_check_reads_a_crlf_page_as_stale` regenerates the page, turns it to CRLF
+      (the old writer's output) and then the twin alone, and `--check` fails each,
+      naming the CR bytes. Right:
+      `test_the_writer_emits_no_carriage_return_on_any_platform` regenerates over CRLF
+      files, finds no CR in either, and `--check` is green. Non-degenerate: with the
+      writer put back to `write_text` four cases failed on this Windows machine, with
+      the reader put back to the normalising `read` the red case failed, and with both
+      restored all 45 tests passed.
 
 ## Taboos
 
