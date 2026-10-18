@@ -447,8 +447,8 @@ The fixes, `Binary64` only; the expected effects are the arbiter's computations:
 **Not fixed** (the arbiter's verdict of 2026-10-18), unchanged under `Corrected`: `DOKM`,
 `DOKSD` from the shares as read (383–388: exact when `ΣGDOK = 1`; an inconsistent input
 fires the warning of 817–818, and normalising it is input handling); the `[b, Dmin)`
-limit; `Epsydok`'s estimator; `pdoksmall` printed at `Ndok − 1` (1386). The REAL*4 and
-x87 rows are `not reachable` under `Corrected`, never fixed.
+limit; `Epsydok`'s estimator; `pdoksmall` printed at `Ndok − 1` (1386). REAL*4 and x87
+rows are never fixed: `not reachable` where the port reproduces them, else `unchanged`.
 
 ## Line map
 
