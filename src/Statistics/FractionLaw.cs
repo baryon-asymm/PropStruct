@@ -41,13 +41,31 @@ internal static class FractionLaw
     public static void Build(
         int sizeLaw, int fractionCount, double[] massShare, double[] bounds, PrecisionKind precision,
         out double[] share, out double[] cumulative, out double sum)
+        => Build(sizeLaw, fractionCount, massShare, bounds, precision, CorrectionSet.None, out share, out cumulative, out sum);
+
+    /// <summary>
+    /// The overload of <see cref="Build(int, int, double[], double[], PrecisionKind, out double[], out double[], out double)"/>
+    /// that takes the model's <see cref="CorrectionSet"/> (BOOT.md, "## Corrected model"): under
+    /// <see cref="PrecisionKind.Original"/> it is replaced by <see cref="CorrectionSet.None"/> on entry, and under
+    /// <see cref="CorrectionSet.None"/> the result is the old overload's, bit for bit. With
+    /// <see cref="CorrectionSet.ExactConstants"/> the two size-law coefficients are <c>3/π</c> and <c>24/π</c>,
+    /// not <c>3/3.14</c> and <c>24/3.14</c>.
+    /// </summary>
+    public static void Build(
+        int sizeLaw, int fractionCount, double[] massShare, double[] bounds, PrecisionKind precision,
+        CorrectionSet corrections, out double[] share, out double[] cumulative, out double sum)
     {
+        if (precision == PrecisionKind.Original)
+        {
+            corrections = CorrectionSet.None;
+        }
+
         var nonUniformCoefficient = precision == PrecisionKind.Original
             ? Binary32.ToNearestRepresentable(3.0 / Binary32.ToNearestRepresentable(3.14))
-            : 3.0 / 3.14;
+            : corrections.HasFlag(CorrectionSet.ExactConstants) ? 3.0 / Math.PI : 3.0 / 3.14;
         var uniformCoefficient = precision == PrecisionKind.Original
             ? Binary32.ToNearestRepresentable(24.0 / Binary32.ToNearestRepresentable(3.14))
-            : 24.0 / 3.14;
+            : corrections.HasFlag(CorrectionSet.ExactConstants) ? 24.0 / Math.PI : 24.0 / 3.14;
 
         var z = new double[fractionCount];
         for (var j = 0; j < fractionCount; j++)
@@ -116,7 +134,7 @@ internal static class FractionLaw
     /// <see langword="false"/> when every fraction has been excluded and no active
     /// fraction remains to draw from. This is unreachable given the preconditions
     /// <see cref="Setup.Prepare(PropStruct.Input.Formulation, PropStruct.Input.ModelParameters, PropStruct.Particle.PrecisionKind, int, int, out PropStruct.Particle.ModelSetup, out SetupTables, out TailDraw, out PendingEchoes, out SetupInputs)"/> already checks (<c>0 &lt;= tailProbability &lt; 1</c>
-    /// and <see cref="Build"/>'s own <c>cumulative[fractionCount] == 1</c>): each
+    /// and <see cref="Build(int, int, double[], double[], PrecisionKind, CorrectionSet, out double[], out double[], out double)"/>'s own <c>cumulative[fractionCount] == 1</c>): each
     /// exclusion subtracts that fraction's own share
     /// (<c>cumulative[i+1] - cumulative[i]</c>) from the remaining probability, and the
     /// shares of every fraction sum to exactly 1, so once every fraction but the last

@@ -67,9 +67,10 @@ internal static class Setup
 
     /// <summary>
     /// Fortran lines 379-406: the analytical mass-medium oxidizer size and its standard
-    /// deviation. <c>DOKSD</c> uses the same formula for both size laws (lines 385-386,
-    /// 399-400); only <c>DOKM</c> differs, and the final <c>DOKSD -= DOKM^2</c> (line
-    /// 405) applies to both (BOOT.md, Invariants).
+    /// deviation. Under the <c>Original</c> model <c>DOKSD</c> uses the same formula for both size laws
+    /// (lines 385-386, 399-400); only <c>DOKM</c> differs, and the final <c>DOKSD -= DOKM^2</c> (line
+    /// 405) applies to both (BOOT.md, Invariants); <see cref="CorrectionSet.DoksdConsistent"/> gives the
+    /// size law 2 its own second moment (BOOT.md, "## Corrected model").
     /// </summary>
     /// <remarks>
     /// Under <see cref="PrecisionKind.Original"/> (BOOT.md, "## Setup plane", "Sums as the
@@ -99,7 +100,26 @@ internal static class Setup
     public static void AnalyticSizes(
         int sizeLaw, int fractionCount, double[] massShare, double[] share, double[] bounds, PrecisionKind precision,
         out double dokm, out double doksd)
+        => AnalyticSizes(sizeLaw, fractionCount, massShare, share, bounds, precision, CorrectionSet.None, out dokm, out doksd);
+
+    /// <summary>
+    /// The overload of <see cref="AnalyticSizes(int, int, double[], double[], double[], PrecisionKind, out double, out double)"/>
+    /// that takes the model's <see cref="CorrectionSet"/> (BOOT.md, "## Corrected model"): under
+    /// <see cref="PrecisionKind.Original"/> it is replaced by <see cref="CorrectionSet.None"/> on entry, and under
+    /// <see cref="CorrectionSet.None"/> the result is the old overload's, bit for bit. With
+    /// <see cref="CorrectionSet.DoksdConsistent"/>, under <paramref name="sizeLaw"/> = 2 the standard deviation is the
+    /// mass-weighted variance of the law that holds there, uniform in <c>D</c>:
+    /// <c>2/3 * DOK2 / DOK3 - DOKM^2</c>, <c>DOK2</c> summed in the loop of <c>DOK4</c> and <c>DOK3</c>.
+    /// </summary>
+    public static void AnalyticSizes(
+        int sizeLaw, int fractionCount, double[] massShare, double[] share, double[] bounds, PrecisionKind precision,
+        CorrectionSet corrections, out double dokm, out double doksd)
     {
+        if (precision == PrecisionKind.Original)
+        {
+            corrections = CorrectionSet.None;
+        }
+
         double Round(double value) => precision == PrecisionKind.Original ? Binary32.ToNearestRepresentable(value) : value;
 
         var original = precision == PrecisionKind.Original;
@@ -131,6 +151,7 @@ internal static class Setup
             // (a register, unrounded, in passes 2-4).
             var dok4 = 0.0;
             var dok3 = 0.0;
+            var dok2 = 0.0;
             for (var j = 0; j < fractionCount; j++)
             {
                 var lower = bounds[2 * j];
@@ -155,10 +176,21 @@ internal static class Setup
 
                 dok4 = Round(dok4 + term4);
                 dok3 = Round(dok3 + term3);
+                if (corrections.HasFlag(CorrectionSet.DoksdConsistent))
+                {
+                    // DoksdConsistent: the second moment of this law, beside DOK4 and DOK3, in j order.
+                    dok2 += (Math.Pow(upper, 6) - Math.Pow(lower, 6)) * share[j] / (upper - lower);
+                }
             }
 
             var massUniformCoefficient = original ? Binary32.ToNearestRepresentable(0.8) : 0.8;
             dokm = Round(massUniformCoefficient * dok4 / dok3);
+            if (corrections.HasFlag(CorrectionSet.DoksdConsistent))
+            {
+                // DoksdConsistent: the variance of the mass-weighted law uniform in D, not the other law's moment.
+                doksd = 2.0 / 3.0 * dok2 / dok3 - dokm * dokm;
+                return;
+            }
         }
         else
         {
@@ -187,9 +219,9 @@ internal static class Setup
     /// <summary>
     /// The setup preconditions (BOOT.md, Constraints: "the original hangs or indexes
     /// out of bounds without them"), checked in the order <see cref="SetupStatus"/>
-    /// declares them; the fraction-law tables (<see cref="FractionLaw.Build"/>), the
+    /// declares them; the fraction-law tables (<see cref="FractionLaw.Build(int, int, double[], double[], PrecisionKind, CorrectionSet, out double[], out double[], out double)"/>), the
     /// tail-probability draw (<see cref="FractionLaw.TryTailDraw"/>) and the analytical
-    /// oxidizer size (<see cref="AnalyticSizes"/>) only run once every precondition
+    /// oxidizer size (<see cref="AnalyticSizes(int, int, double[], double[], double[], PrecisionKind, CorrectionSet, out double, out double)"/>) only run once every precondition
     /// holds. <paramref name="setup"/>'s own <c>Dmax</c> is left at its default (0) and
     /// <paramref name="draw"/> carries what <c>Particle.SizeLaw.Sample</c> needs to
     /// produce it; the caller passes the sampled diameter to
@@ -248,6 +280,22 @@ internal static class Setup
         int neighbourBudget, int pocketRedrawBudget,
         out ModelSetup setup, out SetupTables tables, out TailDraw draw, out PendingEchoes pending,
         out SetupInputs inputs)
+        => Prepare(formulation, parameters, precision, CorrectionSet.None, neighbourBudget, pocketRedrawBudget,
+            out setup, out tables, out draw, out pending, out inputs);
+
+    /// <summary>
+    /// The overload of the five-out <c>Prepare</c> that takes the model's <see cref="CorrectionSet"/>
+    /// (BOOT.md, "## Corrected model", "The effective set"): the effective set is
+    /// <paramref name="corrections"/> under <see cref="PrecisionKind.Binary64"/> and
+    /// <see cref="CorrectionSet.None"/> under <see cref="PrecisionKind.Original"/>, which reproduces the
+    /// original and is never combined with a fix. It is stored in <see cref="ModelSetup.Corrections"/>.
+    /// Under <see cref="CorrectionSet.None"/> every result is the old overload's, bit for bit.
+    /// </summary>
+    public static SetupStatus Prepare(
+        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections,
+        int neighbourBudget, int pocketRedrawBudget,
+        out ModelSetup setup, out SetupTables tables, out TailDraw draw, out PendingEchoes pending,
+        out SetupInputs inputs)
     {
         setup = default;
         tables = null!;
@@ -256,6 +304,7 @@ internal static class Setup
         inputs = null!;
 
         var original = precision == PrecisionKind.Original;
+        var effective = original ? CorrectionSet.None : corrections;
 
         var ak1 = original ? Binary32.ToNearestRepresentable(formulation.Ak1) : formulation.Ak1;
         var ak2 = original ? Binary32.ToNearestRepresentable(formulation.Ak2) : formulation.Ak2;
@@ -379,7 +428,7 @@ internal static class Setup
             return SetupStatus.InvalidNnWindow;
         }
 
-        FractionLaw.Build(formulation.SizeLawCode, fractionCount, massShare, bounds, precision, out var share2, out var cumulative, out var zss);
+        FractionLaw.Build(formulation.SizeLawCode, fractionCount, massShare, bounds, precision, effective, out var share2, out var cumulative, out var zss);
         if (!FractionLaw.TryTailDraw(fractionCount, bounds, cumulative, tailProbability, out var x, out var x1, out var tailProbabilityModified))
         {
             return SetupStatus.NoActiveFraction;
@@ -392,7 +441,7 @@ internal static class Setup
         var rounding = new CyclePlaneRounding(precision);
         var g378 = rounding.Temporary(ggg / plot1); // Fortran 378
         var lambda = rounding.Store(g378 * zss * plot2); // Fortran 378
-        AnalyticSizes(formulation.SizeLawCode, fractionCount, massShare, share2, bounds, precision, out var dokm, out var doksd);
+        AnalyticSizes(formulation.SizeLawCode, fractionCount, massShare, share2, bounds, precision, effective, out var dokm, out var doksd);
 
         // k5 (Alpha), k7/k8 (PocketCoefficient/BridgeCoefficient), GM (MetalMassFraction),
         // eps_dok (EpsDok) and eta (AggregatedOxideFraction): every other generated
@@ -437,6 +486,7 @@ internal static class Setup
             NeighbourBudget = neighbourBudget,
             PocketRedrawBudget = pocketRedrawBudget,
             Layout = layout,
+            Corrections = effective,
             Kind = precision, // Setup.Prepare sets the run's kind itself (audit R2); Simulator no longer patches it.
         };
 

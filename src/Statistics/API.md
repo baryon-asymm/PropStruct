@@ -205,13 +205,16 @@ listing").
 source-read table, now the listing's →
 HISTORY.md#per-cycle-plane-source-read-rules-2026-10-03
 
-## Corrected model ⏳
+## Corrected model ✅
 
-Planned 2026-10-18 (BOOT.md, "## Corrected model"); nothing below exists yet.
-`CorrectionSet` and `ModelSetup.Corrections` are `Particle`'s (`../Particle/API.md`).
-Each new overload is the member above plus `CorrectionSet corrections` after its
-`PrecisionKind`; the old overloads stay and forward `CorrectionSet.None`, and under
-`PrecisionKind.Original` every new one replaces `corrections` by `None` on entry.
+Decided 2026-10-18 (BOOT.md, "## Corrected model"). `CorrectionSet` and
+`ModelSetup.Corrections` are `Particle`'s (`../Particle/API.md`). Each new overload is the
+member of "## Setup" plus `CorrectionSet corrections` after its `PrecisionKind`; the old
+overloads stay and forward `CorrectionSet.None`, and under `PrecisionKind.Original` every
+new one replaces `corrections` by `None` on entry. Implemented 2026-10-18 (T5): the setup's
+three, with `DoksdConsistent` in `AnalyticSizes` and `ExactConstants` in `Build` (the
+`Categories` and `SmallParticles` overloads below wait for the flags that read them: an
+unused parameter is an analyzer error, IDE0060).
 
 ```csharp
 internal static class Setup
@@ -236,7 +239,13 @@ internal static class FractionLaw
         CorrectionSet corrections,
         out double[] share, out double[] cumulative, out double sum);
 }
+```
 
+## Corrected model, per-cycle overloads ⏳
+
+Planned 2026-10-18; nothing below exists yet. Same rule as "## Corrected model" above.
+
+```csharp
 internal static class Categories
 {
     public static CategoriesStatus MergeAndDescribe(
@@ -257,11 +266,11 @@ internal static class SmallParticles
 
 `CycleStatistics.Compute` keeps its signature ("## Cycle"): it reads
 `setup.Corrections`, passes it to `MergeAndDescribe` and `Probability`, and applies
-`ExactConstants`, `GdokleftOnce` and `VdokTotalOnCopy` in its own private members. It
-writes `Qdoks`, `Dokp41` and `Dokp31` only without `CategoriesOnCopy`, and `VdokTotal`
-and `VdokTotal2` only without `VdokTotalOnCopy`: under the `Corrected` model, no total.
-`Sizes`, `CompleteEchoes`, `TryTailDraw` and `MaxSize` take no set, no fix touching
-them. No public type changes, so the surface snapshot does not move for this node.
+`ExactConstants` (lines 1014 and 1016), `GdokleftOnce` and `VdokTotalOnCopy` in its own
+private members. It writes `Qdoks`, `Dokp41` and `Dokp31` only without `CategoriesOnCopy`,
+and `VdokTotal` and `VdokTotal2` only without `VdokTotalOnCopy`: under the `Corrected`
+model, no total. `Sizes`, `CompleteEchoes`, `TryTailDraw` and `MaxSize` take no set, no fix
+touching them. No public type changes, so the surface snapshot does not move for this node.
 
 ## Cycle listing map and table ✅
 

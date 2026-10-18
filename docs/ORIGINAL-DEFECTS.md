@@ -9,14 +9,14 @@ This page lists what is wrong with the legacy Fortran program `PropStructV3` and
 
 44 defects from 5 nodes.
 
-By `Corrected`: 27 unchanged, 14 not reachable, 3 fixed.
+By `Corrected`: 26 unchanged, 14 not reachable, 4 fixed.
 
 ## algorithm
 
 | Node | Fortran | What the original does | Consequence | The port | Corrected |
 |---|---|---|---|---|---|
 | `src/Input` | 136–143 | `KXX < 1` becomes 1 (`## Invariants`, "Normalizations of the original"). | not measured | reproduced | unchanged |
-| `src/Statistics` | 399–400, 405 | Under JZZ = 2 the DOKSD loop sums the mass-uniform law's second moment, Σ GDOK·(l² + lu + u²)/3, and line 405 subtracts this law's DOKM², so DOKSD is neither law's variance ("## Constraints", the size-law bullet; "## Corrected model", `DoksdConsistent`). | not measured | reproduced | unchanged |
+| `src/Statistics` | 399–400, 405 | Under JZZ = 2 the DOKSD loop sums the mass-uniform law's second moment, Σ GDOK·(l² + lu + u²)/3, and line 405 subtracts this law's DOKM², so DOKSD is neither law's variance ("## Constraints", the size-law bullet; "## Corrected model", `DoksdConsistent`). | measured 2026-10-18 under `DoksdConsistent`: P33's `Dok43sd` 75.45 → 112.66 µm and P2's from `NaN` (−5.71e-10 m²) to 8.07 µm (`tests/Statistics.Tests/DoksdConsistentTests`). | reproduced | fixed (DoksdConsistent) |
 | `src/Particle` | 425–719, 721–756 | An attempt later ended as `RestartedAfterLoop` by the acceptance tests of lines 723–738 keeps every histogram, bridge and pocket accumulator update it made before those tests fired: nothing is undone on rejection (`## Invariants`, "Every side effect of the original, in the same place"). The staged `fmkarm2_loc` sum of line 720 is its own row. | not measured | reproduced | unchanged |
 | `src/Particle` | 425–767 | No accumulator is reset at a cycle boundary beyond the two in-place rewrites `Statistics` makes: a per-cycle quantity printed for cycle `k ≥ 1` already carries every accepted particle of cycles `1..k` ("Totals between cycles"). | not measured | reproduced | unchanged |
 | `src/Particle` | 595 | `DPOC(mindk)=Di*mindk` anchors the bridge-window's diameter CDF one cell (`Di`) above the QKS1 cell whose probability mass it pairs with, so `DM` draws every bridge pocket diameter one histogram cell too high (`## Attempt structure`, "Bridge window once per attempt"). | measured (fidelity audit 2026-09-24, U-P1; eight seeds `k·2¹⁷`, all five reference formulations, `Independent` layout, `--precision double`, a throwaway variant with the origin at the cell's lower edge, discarded and never committed): `Dqmkm2` moves −2.8% to −7.0% and `Zkarm` +4.9% to +13.5%, both far beyond the seeds' own spread; 75–95 of 1513–6643 compared cells differ per formulation; a cell-centre origin gives about half the shift on every formulation, a dose-proportional response; `Dqmkm1`/`qmkm1` and the bridge count are bit-identical (`src/Particle/HISTORY.md#bridge-window-origin-audit-2026-09-24`). | reproduced | fixed (WindowLowerEdge) |
