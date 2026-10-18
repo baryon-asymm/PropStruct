@@ -15,6 +15,7 @@ The definition of what "`Simulation` is ready" means.
 | L0/L1 | `RunDiagnostics.AttemptsPerLaunch` is the effective budget (1 in reference mode, the option otherwise), not the option unconditionally; a smaller budget forces more launches on a formulation needing more than one attempt | `SmallFormulation`/HPEPA3 at budgets 1, 1024 and reference mode | ✅ 2026-09-28: `AttemptsPerLaunchDiagnosticsTests` |
 | L2 | reference mode on HPEPA3 reproduces the reference's printed counters | `tests/Fixtures/references/HPEPA3/results.m.txt` through `tests/Harness` | ✅ 2026-09-19: `Hpepa3CounterTests` (figures in `src/Simulation/BOOT.md`, "## Counter check") |
 | L2 | the statistical criterion on the five reference formulations, realigned again 2026-09-24 to root's rate-based pass condition (root BOOT.md, "the pass condition compares failure rates, not single runs") | link 1 no longer lives here at all — it is a *rate* over sixteen seeds, owned by `tests/Harness.Tests/RateCriterionTests` over the pregenerated `tests/Fixtures/rate-table.json`; this node keeps only an exact seed-0 snapshot (a change detector, not a reproduction claim) and link 3: batched `Binary64` against sequential `Binary64`, statistically, on the port's own replicas, CPU accelerator and CUDA (`StatisticalCriterion.TwoSampleBiasOfSets`, `tests/Harness/API.md`) | ✅ 2026-10-01: `StatisticalCriterionTests`, 40 cases (30 `Category=Long`: 20 seed-0 snapshot, 10 link 3), all pass — see "## Statistical criterion measurement (2026-09-24)" below. The 2026-09-23 ratchet-based measurement (link 1 as a per-run comparison against the original's own replicas, retired the same day audit D5 named it) is superseded, `HISTORY.md#statistical-criterion-measurement-2026-09-23-link-1`. |
+| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 33 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-18: `OriginalModelGuardTests`, 34 cases (33 `Category=Long`), "## The Original-model guard" |
 
 ⚠ 2026-09-19: the ✅ marks of this table were first dated 2026-09-18 by a session that
 ended at a usage limit, and two of them did not hold when this session started. The
@@ -321,6 +322,14 @@ Outside the tree: xunit.
       machine where CUDA is refused: 6 facts of this node, 1 of them in the fast set, red
       with `PROPSTRUCT_NO_CUDA=1` and the variable set, green without it (stage S4).
 
+- [x] 2026-10-18: the `Original` model is guarded by hashes of the full result
+      (`OriginalModelGuardTests`): 33 cases, green in Debug against a Release-written file.
+      Red once: one ulp added to `Pockets.Dp43` in `ReferenceModeRunner.Execute` turned the
+      four `seed0/inpt` cases red on the JSON hash, their `results.m` hashes equal to the
+      approved ones and `SeedZeroResultsMMatchesApprovedSnapshot` green; one character of
+      `extra/P33-defaults`' JSON hash edited, red; reverted. Right once: regenerated three
+      times from scratch, identical; its `results.m` column equals the untouched snapshot's.
+
 ## Mutations
 
 Recorded per AGENTS.md §13, 2026-09-19. Each is a change of product code (or, for the
@@ -428,6 +437,26 @@ F3), so this record, not the GREEN rows, bounds the staleness of the coarser QKS
 refresh. The null-budget red of the echo assertion is the test author's record, not re-run.
 The ladder theory was deleted when the default moved (C5); it stays reproducible at
 3ea6471.
+
+## The Original-model guard
+
+Added 2026-10-18 before any `Corrected` model code, so that every merge proves `Original`
+unchanged: the seed-0 snapshot's mechanism in a file of its own, since
+`SeedZeroResultsM.approved.txt` is digested into `rate-table.json` (`SnapshotSha256`).
+`OriginalModelGuardTests` reads `Snapshots/OriginalModelGuard.approved.txt`, written by
+`dotnet run --project tests/RateTableTool -- original-model-guard`: per case the id, the
+SHA-256 of `results.m` (time line cut) and of the `ResultsJson` text of the whole
+`SimulationResult` (`Elapsed`, `Accelerator` constants): every double round-tripped, where
+`results.m` prints four to eight digits.
+
+Cases (`OriginalModelGuard.Cases`, `tests/RateTableTool`), seed 0, CPU: the twenty seed-0
+cases (`seed0/...`); the five references batched, `Independent`, `Binary64` (`batched/...`);
+eight reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5 µm, 3 cycles,
+`HomogenizedOxidizerFraction` 0.1), `PSAN02` (SFR read, `Dmin` 20 µm, then 3 cycles), `P33`,
+`P2` (`extra/...`), the paths the references leave dark (`Gdokleft` is 0 there), at
+`ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print `NaN`, which
+`ResultsMFile` does not parse, so the runner does not. 34 cases: 17 m 49 s in Debug.
+
 
 ## Taboos
 

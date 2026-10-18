@@ -3,11 +3,14 @@
 ## Purpose
 
 The one place that runs a reference-mode simulation, seed by seed, and turns its
-`results.m` into a hash and a criterion verdict — and the two generators built on that
+`results.m` into a hash and a criterion verdict — and the three generators built on that
 one implementation: `tests/Fixtures/rate-table.json` (root BOOT.md, "the pass condition
-compares failure rates, not single runs") and
+compares failure rates, not single runs"),
 `tests/Simulation.Tests/Snapshots/SeedZeroResultsM.approved.txt` (that node's own
-change-detector test, `SeedZeroResultsMMatchesApprovedSnapshot`).
+change-detector test, `SeedZeroResultsMMatchesApprovedSnapshot`) and
+`tests/Simulation.Tests/Snapshots/OriginalModelGuard.approved.txt` (`OriginalModelGuardTests`).
+
+⚠ 2026-10-18: was two generators, now three: `original-model-guard` (`## The Original-model guard`).
 
 Both files used to be written by `[Fact(Skip = "manual regeneration only")]` tests
 inside `tests/Simulation.Tests` (`RateTableGenerator.Regenerate` and
@@ -29,10 +32,10 @@ measurement (2026-09-24)"). `ReferenceModeRunner` stays `internal`, as it was th
 
 ## Invariants
 
-- **One runner.** `ReferenceModeRunner.RunSeed` is the only place that constructs a
-  `Simulator`, runs one reference-mode seed and parses its `results.m`; both
-  generators and the neighbour's own snapshot test call it, never a second copy (root
-  BOOT.md Taboos).
+- **One runner.** `ReferenceModeRunner` (`RunSeed`, `Fingerprint`, one private core) is the
+  only place that constructs a `Simulator`, runs it and writes and hashes its `results.m`;
+  the generators and the neighbours' own tests call it, never a second copy (root BOOT.md
+  Taboos).
 - **Nothing here is asserted.** Like `tests/Benchmarks`, this node writes fixtures;
   the assertions that read them live in `tests/Harness.Tests` (the rate criterion) and
   `tests/Simulation.Tests` (the seed-0 snapshot).
@@ -53,9 +56,9 @@ measurement (2026-09-24)"). `ReferenceModeRunner` stays `internal`, as it was th
 
 - [Simulation](../../src/Simulation/API.md) — `Simulator`, `SimulationOptions`,
   `ExecutionMode`, `StreamLayout`, `PrecisionKind`.
-- [Input](../../src/Input/API.md) — `Formulation`, `DatFile`.
+- [Input](../../src/Input/API.md) — `Formulation`, `DatFile`, `ModelParameters`, `Length`.
 - [Execution](../../src/Execution/API.md) — `AcceleratorKind`.
-- [Output](../../src/Output/API.md) — `ResultsMWriter`, `ModelParameters`.
+- [Output](../../src/Output/API.md) — `ResultsMWriter`, `ResultsJson`.
 - [Harness](../Harness/API.md) — `RepositoryPaths`, `ResultsMFile`, `StatisticalCriterion`,
   `ReplicaKind`.
 - [Fixtures](../Fixtures/API.md) — the reference formulations (read directly by file
@@ -74,7 +77,7 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   not exported as a type, exactly as it was when these types lived in
   `tests/Simulation.Tests` — moving them does not turn a documented-schema file into a
   shared-type contract.
-- Two subcommands, one process: `rate-table` and `seed-zero-snapshot` share
+- Three subcommands, one process: `rate-table`, `seed-zero-snapshot` and `original-model-guard` share
   `ReferenceModeRunner` rather than existing as two separate tools, since a second
   console entry point would still need the same runner and duplicating the project
   scaffolding around it buys nothing.
@@ -93,6 +96,10 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
       per (formulation, layout, precision, seed index), and the regeneration that added
       it moves no verdict: zero `FailingCells`/`FailingNames`/`ResultSha256` differences
       against the pre-run table (`## Regeneration runs` below).
+- [x] 2026-10-18: `original-model-guard` writes `OriginalModelGuard.approved.txt`, 33 lines,
+      byte-identical on three regenerations from scratch (Release); its `results.m` column
+      equals `SeedZeroResultsM.approved.txt` on the twenty seed-0 cases, a file this task did
+      not touch, so `RunSeed`'s `results.m` is what it was (`## The Original-model guard`).
 
 ## Taboos
 
@@ -300,3 +307,20 @@ files of `rate-runs/` are byte-identical (SHA-256 of each against the commit bef
 `git status` lists no `Binary64` file). `CriterionSha256` and `FixturesSha256` did not
 move; `SnapshotSha256` did, with the snapshot. `RateCriterionTests` and
 `SetCriterionTests`, 59 cases, pass, the tie included.
+
+## The Original-model guard
+
+Task T2, 2026-10-18 (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard", owns the
+why). `OriginalModelGuard.Cases` is the one list of the 33 cases (twenty seed-0, five batched
+CPU, eight `extra/...`), `OriginalModelGuard.Line` the one line format, `ApprovedPath` the one
+path; the generator writes and the neighbour's test reads through them. A case runs through
+`ReferenceModeRunner.Fingerprint`, which hashes the `results.m` text and the `ResultsJson`
+text of the result with `Diagnostics.Elapsed` and `Diagnostics.Accelerator` replaced by
+constants and the line endings made LF; it does not parse the `results.m`, since an extra
+case prints `NaN`, which `ResultsMFile` does not read. The file is written with LF line endings.
+
+**2026-10-18, `original-model-guard`.** Release build, `PROPSTRUCT_NO_CUDA=1`, 16 logical CPUs:
+33 cases in 6 m 7 s (twice) and 9 m 45 s (the machine busy); the three files are identical.
+Per case: seed-0 HMX 43 s each, HPEPA3 19 s, PSAN02n 6-11 s, `inpt` and `P33` 1-2 s; batched
+HMX 7.6 s, HPEPA3 3.8 s; `extra/P312-defaults` 13.9 s, `-cycles3` 28.3 s, `-homogenized0.1`
+13.7 s, the other five under a second.
