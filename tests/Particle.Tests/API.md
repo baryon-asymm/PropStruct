@@ -6,6 +6,7 @@ A test project; it exposes nothing but its tests and its approved snapshots.
 
 ```text
 tests/Particle.Tests/Snapshots/<formulation>.attempts.approved.txt   hashes of the first 1000 attempts
+tests/Particle.Tests/Snapshots/<formulation>.cycle1.approved.txt     hashes of the first 10000 cycle-1 attempts, both kinds
 ```
 
 ## Categories after the delivery ✅
@@ -17,6 +18,7 @@ original's program out of the repository on 2026-10-04; since then:
 |---|---|---|
 | `LineMapCoverageTests` | fast | `tests/Fixtures/cases/source/executable_lines.json`; its failure message names line numbers, never a source line |
 | `RealFourClassificationGeneratorTests.ClassificationReproducesByteForByteOnRegeneration` | `Legacy` | the source, through `classify-real4-accumulators.py` |
+| `ExactConstantSiteTests.ScanReproducesTheCommittedListOnRegeneration`, `.AScratchCopyWithALiteralAddedIsReportedAndAnUntouchedCopyIsNot` | `Legacy` | the source, through `legacy.py` and `scan-exact-constants.py` |
 
 ## Out of scope
 

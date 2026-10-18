@@ -1,0 +1,37 @@
+# Hand-written, one row per literal ExactConstantLiterals.generated.txt lists
+# (this node's BOOT.md, "## Corrected model", "ExactConstants"). Checked both ways by
+# tests/Particle.Tests/ExactConstantSiteTests.cs: every generated row has a row here and
+# every row here names a generated row.
+#
+# `exact: <identifier>` names the C# local of Attempt.Run that is pi under the flag
+# (`spherePiOver6` or `fourPi`); every use of it in Attempt.cs must stand on a line citing
+# a Fortran line mapped to it, and every such Fortran line must be cited on a line using it.
+# `not ported: <pointer>` is a line the port does not carry; `unchanged: <reason>` a literal
+# that stays as written under the Corrected model; `BridgeFrustum` a literal of the lines
+# 1616-1627 that the flag replaces whole.
+#
+# fortran line | literal | disposition
+430 | 12.56636 | unchanged: the solid-angle closure of TU, a modelling choice (BOOT.md, "ExactConstants"; Attempt.FullSolidAngle)
+466 | 3.14159 | not ported: ALLVDOK_FR, its print at 1282 is commented out (BOOT.md, "Decisions where the port departs from a transcription")
+469 | 3.14159 | exact: spherePiOver6
+484 | 3.14159 | exact: spherePiOver6
+501 | 1/3. | unchanged: already the double 1.0 / 3.0, the constant itself (BOOT.md, "ExactConstants")
+501 | 3.14159 | exact: fourPi
+521 | 3.14159 | not ported: ALLVDOK_FR, its print at 1282 is commented out (BOOT.md, "Decisions where the port departs from a transcription")
+524 | 3.14159 | exact: spherePiOver6
+542 | 3.14159 | exact: spherePiOver6
+643 | 3.14159 | exact: spherePiOver6
+648 | 3.14159 | exact: spherePiOver6
+665 | 3.14159 | exact: spherePiOver6
+677 | 3.14159 | exact: spherePiOver6
+685 | 3.14159 | exact: spherePiOver6
+702 | 3.14159 | exact: spherePiOver6
+710 | 3.14159 | not ported: VDOKS feeds only VDOKSO and DOKP432, which nothing prints (BOOT.md, "Decisions where the port departs from a transcription")
+716 | 12.56636 | unchanged: the solid-angle closure of the loop exit, a modelling choice (BOOT.md, "ExactConstants"; Attempt.FullSolidAngle)
+747 | 3.14159 | exact: spherePiOver6
+750 | 3.14159 | exact: spherePiOver6
+754 | 3.14159 | exact: spherePiOver6
+1616 | 3.14 | BridgeFrustum
+1624 | 3.14 | BridgeFrustum
+1625 | 3.14 | BridgeFrustum
+1626 | 3.14 | BridgeFrustum

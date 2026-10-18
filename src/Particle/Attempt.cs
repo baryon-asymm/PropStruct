@@ -14,7 +14,7 @@ internal static class Attempt
 {
     // Fortran literal 3.14159 (sphere volume pi/6*D^3, and the cube root of the Poisson
     // volume at line 501), lines 466, 469, 484, 501, 521, 524, 542, 643, 648, 665, 677,
-    // 685, 702, 710, 747, 750, 754 (BOOT.md, Constraints).
+    // 685, 702, 710, 747, 750, 754 (BOOT.md, Constraints); pi itself under ExactConstants.
     private const double SpherePi = 3.14159;
 
     // Fortran literal 12.56636 (full solid angle), lines 430, 716 (BOOT.md, Constraints).
@@ -57,6 +57,15 @@ internal static class Attempt
         var layout = setup.Layout;
         var nkarm = setup.Nkarm;
         var roundToReal4 = setup.Kind == PrecisionKind.Original; // AddReal4, computed once (BOOT.md, "Precision kind").
+        var exactConstants = (setup.Corrections & CorrectionSet.ExactConstants) != 0; // each flag read once, by & (BOOT.md, "## Corrected model")
+        var bridgeFrustum = (setup.Corrections & CorrectionSet.BridgeFrustum) != 0;
+
+        // The two constants of "ExactConstants", chosen once, each operand a compile-time constant
+        // so the Original arm is the folded value the code always used: the sphere volume's
+        // pi/6 (lines 469, 484, 524, 542, 643, 648, 665, 677, 685, 702, 747, 750, 754) and the
+        // 4*pi of rrL (line 501).
+        var spherePiOver6 = exactConstants ? Math.PI / 6.0 : SpherePi / 6.0;
+        var fourPi = exactConstants ? 4.0 * Math.PI : 4.0 * SpherePi;
 
         var fmkarm2Loc = scratch.SubView(0, nkarm);
         var fqks = scratch.SubView(nkarm, nkarm + 1);
@@ -98,7 +107,7 @@ internal static class Attempt
         // ALLVDOK_FR not accumulated: its print is commented out (root BOOT.md, exclusion list).
         var iksBase = (int)(dr / setup.CellSize); // 0-based (467)
         _ = Atomic.Add(ref integerTotals[layout.Alldok + iksBase], 1L); // ALLDOK (468)
-        record[layout.Allvdok + iksBase] = AddReal4(record[layout.Allvdok + iksBase], SpherePi / 6.0 * dr * dr * dr, roundToReal4); // ALLVDOK (469), REAL*4
+        record[layout.Allvdok + iksBase] = AddReal4(record[layout.Allvdok + iksBase], spherePiOver6 * dr * dr * dr, roundToReal4); // ALLVDOK (469), REAL*4
 
         record[layout.DokBase41] += dr * dr * dr * dr; // DOK_base41 (470)
         record[layout.DokBase31] += dr * dr * dr;      // DOK_base31 (471)
@@ -122,7 +131,7 @@ internal static class Attempt
 
         record[layout.Sd4] += dr * dr * dr * dr; // Sd4 (482)
         record[layout.Sd3] += dr * dr * dr;      // Sd3 (483)
-        var vp = SpherePi / 6.0 * dr * dr * dr;  // VP (484)
+        var vp = spherePiOver6 * dr * dr * dr;  // VP (484)
 
         var neighbourDraws = 0;
 
@@ -148,7 +157,7 @@ internal static class Attempt
 
         var kcil = -(Math.Log(1.0 - x1) * (1.0 / setup.Lambda)) + vp; // KCIL (499)
         vp = kcil; // VP = KCIL (500)
-        var rrl = Math.Pow(3.0 * kcil / (4.0 * SpherePi), 1.0 / 3.0); // rrL (501)
+        var rrl = Math.Pow(3.0 * kcil / fourPi, 1.0 / 3.0); // rrL (501)
 
         // 345 (503-543)
         var x2 = Mcg128.Next(ref streams.S4);  // (504)
@@ -162,7 +171,7 @@ internal static class Attempt
         _ = Atomic.Add(ref integerTotals[layout.AlldokFract + fractionNeighbour], 1L); // (520)
         var iksNeighbour = (int)(db / setup.CellSize); // 0-based (522)
         _ = Atomic.Add(ref integerTotals[layout.Alldok + iksNeighbour], 1L); // (523)
-        record[layout.Allvdok + iksNeighbour] = AddReal4(record[layout.Allvdok + iksNeighbour], SpherePi / 6.0 * db * db * db, roundToReal4); // (524), REAL*4
+        record[layout.Allvdok + iksNeighbour] = AddReal4(record[layout.Allvdok + iksNeighbour], spherePiOver6 * db * db * db, roundToReal4); // (524), REAL*4
 
         record[layout.DokSur41] += db * db * db * db; // (525)
         record[layout.DokSur31] += db * db * db;      // (526)
@@ -187,7 +196,7 @@ internal static class Attempt
         var aa = rrl - dr / 2.0 - db / 2.0; // AA (539)
 
         // idok_local_all (541) and qdokstr (543) never read, not ported (BOOT.md, Line map).
-        record[layout.Vdokstr + iksNeighbour] = AddReal4(record[layout.Vdokstr + iksNeighbour], SpherePi / 6.0 * db * db * db, roundToReal4); // vdokstr (542), REAL*4
+        record[layout.Vdokstr + iksNeighbour] = AddReal4(record[layout.Vdokstr + iksNeighbour], spherePiOver6 * db * db * db, roundToReal4); // vdokstr (542), REAL*4
 
         var maxDrDb = Math.Max(dr, db);
 
@@ -273,7 +282,7 @@ internal static class Attempt
                 return AttemptOutcome.IndexOutOfRange;
             }
 
-            jj = BridgeGeometry.Volume(dr / 2.0, db / 2.0, dkarm / 2.0, aa, out vmkm, out bb); // VM (624)
+            jj = BridgeGeometry.Volume(dr / 2.0, db / 2.0, dkarm / 2.0, aa, bridgeFrustum, out vmkm, out bb); // VM (624)
         }
 
         if (aa > 0.0) // (627)
@@ -292,12 +301,12 @@ internal static class Attempt
         }
 
         vsmkm1 = AddReal4(vsmkm1, vmkm, roundToReal4); // VSMKM1 (642), REAL*4
-        svd1 = AddReal4(svd1, SpherePi / 6.0 * db * db * db, roundToReal4); // SVD1 (643), REAL*4
+        svd1 = AddReal4(svd1, spherePiOver6 * db * db * db, roundToReal4); // SVD1 (643), REAL*4
 
         if (maxDrDb <= cycle.Dmaxxx) // (646)
         {
             ibridgeLocCor++;                             // (647)
-            vdokLoc = AddReal4(vdokLoc, SpherePi / 6.0 * db * db * db, roundToReal4); // Vdok_loc (648), REAL*4
+            vdokLoc = AddReal4(vdokLoc, spherePiOver6 * db * db * db, roundToReal4); // Vdok_loc (648), REAL*4
             vmkmLoc = AddReal4(vmkmLoc, vmkm, roundToReal4); // Vmkm_loc (649), REAL*4
         }
 
@@ -312,7 +321,7 @@ internal static class Attempt
         }
 
         ibridgeLocCor2++;                            // (664)
-        vdokLoc2 = AddReal4(vdokLoc2, SpherePi / 6.0 * db * db * db, roundToReal4); // Vdok_loc2 (665), REAL*4
+        vdokLoc2 = AddReal4(vdokLoc2, spherePiOver6 * db * db * db, roundToReal4); // Vdok_loc2 (665), REAL*4
         vmkmLoc2 = AddReal4(vmkmLoc2, vmkm, roundToReal4); // Vmkm_loc2 (666), REAL*4
         goto Label550; // (667)
 
@@ -332,7 +341,7 @@ internal static class Attempt
 
         var pocketIndex = (int)(rk / setup.CellSize); // 0-based (675)
         _ = Atomic.Add(ref integerTotals[layout.Qks + pocketIndex], 1L); // QKS (676)
-        record[layout.Vks + pocketIndex] += SpherePi / 6.0 * rk * rk * rk; // VKS (677)
+        record[layout.Vks + pocketIndex] += spherePiOver6 * rk * rk * rk; // VKS (677)
         record[layout.Dp31] += rk * rk * rk;         // (678)
         record[layout.Dp41] += rk * rk * rk * rk;    // (679)
 
@@ -352,7 +361,7 @@ internal static class Attempt
             record[layout.DpMaxCor] = rk;
         }
 
-        record[layout.FmkarmCor + pocketIndex] = AddReal4(record[layout.FmkarmCor + pocketIndex], SpherePi / 6.0 * rk * rk * rk, roundToReal4); // (685), REAL*4
+        record[layout.FmkarmCor + pocketIndex] = AddReal4(record[layout.FmkarmCor + pocketIndex], spherePiOver6 * rk * rk * rk, roundToReal4); // (685), REAL*4
         _ = Atomic.Add(ref integerTotals[layout.FqkarmCor + pocketIndex], 1L);       // (686)
 
         var x4Pocket = Mcg128.Next(ref streams.S6); // (689)
@@ -370,7 +379,7 @@ internal static class Attempt
         }
 
         // ipocket_loc_cor (701) is never read anywhere in the original, not ported (BOOT.md, Line map).
-        fmkarm2Loc[pocketIndex] = AddReal4(fmkarm2Loc[pocketIndex], SpherePi / 6.0 * rk * rk * rk, roundToReal4); // (702), REAL*4
+        fmkarm2Loc[pocketIndex] = AddReal4(fmkarm2Loc[pocketIndex], spherePiOver6 * rk * rk * rk, roundToReal4); // (702), REAL*4
 
     Label333:
         var dpRow = (int)(rk / setup.CategoryStep) + 1; // DPRow, 1-based (705)
@@ -441,18 +450,18 @@ internal static class Attempt
 
         var drIndex = (int)(dr / setup.CellSize); // 0-based (745)
         record[layout.Vsmkm + drIndex] = AddReal4(record[layout.Vsmkm + drIndex], vsmkm1, roundToReal4); // (746), REAL*4
-        record[layout.Svd + drIndex] = AddReal4(record[layout.Svd + drIndex], setup.Alpha * svd1 + SpherePi / 6.0 * dr * dr * dr, roundToReal4); // (747), REAL*4
+        record[layout.Svd + drIndex] = AddReal4(record[layout.Svd + drIndex], setup.Alpha * svd1 + spherePiOver6 * dr * dr * dr, roundToReal4); // (747), REAL*4
 
         if (ibridgeLocCor > 0) // (748)
         {
             record[layout.VmkmTotal + drIndex] = AddReal4(record[layout.VmkmTotal + drIndex], vmkmLoc, roundToReal4); // (749), REAL*4
-            record[layout.VdokTotal + drIndex] = AddReal4(record[layout.VdokTotal + drIndex], setup.Alpha * vdokLoc + SpherePi / 6.0 * dr * dr * dr, roundToReal4); // (750), REAL*4
+            record[layout.VdokTotal + drIndex] = AddReal4(record[layout.VdokTotal + drIndex], setup.Alpha * vdokLoc + spherePiOver6 * dr * dr * dr, roundToReal4); // (750), REAL*4
         }
 
         if (ibridgeLocCor2 > 0) // (752)
         {
             record[layout.VmkmTotal2] = AddReal4(record[layout.VmkmTotal2], vmkmLoc2, roundToReal4); // (753), REAL*4
-            record[layout.VdokTotal2] = AddReal4(record[layout.VdokTotal2], setup.Alpha * vdokLoc2 + SpherePi / 6.0 * dr * dr * dr, roundToReal4); // (754), REAL*4
+            record[layout.VdokTotal2] = AddReal4(record[layout.VdokTotal2], setup.Alpha * vdokLoc2 + spherePiOver6 * dr * dr * dr, roundToReal4); // (754), REAL*4
         }
 
         return AttemptOutcome.Accepted;

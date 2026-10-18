@@ -44,7 +44,7 @@ internal struct CycleInputs
 `ModelSetup` is produced by `Statistics.Setup.Prepare`. The driver builds the views of
 `FractionTable` and `CycleInputs` from the host arrays that `Statistics` returns
 (`SetupTables`, the next `pdoksmall` and `Dmaxxx`) and from `PocketHistogram.Normalize`
-(Qks1). `ModelSetup` gains one planned field, `Corrections` (`## Corrected model ⏳`).
+(Qks1). `ModelSetup` gained one field, `Corrections` (`## Corrected model`).
 
 ## Accumulator layout ✅
 
@@ -157,7 +157,7 @@ node that owns run configuration (batch size, thread count) is the one that can 
 whether a call is sequential and is the one root BOOT.md asks to refuse it with a
 status.
 
-## Corrected model ⏳
+## Corrected model ✅
 
 ```csharp
 [Flags]
@@ -172,7 +172,7 @@ internal enum CorrectionSet : uint
     ZdoksmallCoarseShare = 32,           // Statistics, Fortran 1047
     GdokleftOnce = 64,                   // Statistics, Fortran 1001–1006
     DoksdConsistent = 128,               // Statistics, Fortran 399–400, 405
-    CategoriesOnCopy = 256,              // Statistics, Fortran 911–959
+    CategoriesOnCopy = 256,              // Statistics, Fortran 911–958, 825–829
     CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
     CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
     PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
@@ -185,6 +185,29 @@ internal struct ModelSetup
     public CorrectionSet Corrections;    // root BOOT.md, "Model kind"; unset = None
 }
 ```
+
+The two members `Attempt.Run` passes on to the pure functions below take an explicit flag, the
+present signatures staying as overloads that pass `false`:
+
+```csharp
+internal static class BridgeWindow
+{
+    public static bool Build(
+        double dr, double ak3, double ak4, double cellSize, int nkarm, bool windowLowerEdge,
+        ArrayView<double> qks1, ArrayView<double> fqks, ArrayView<double> dpoc, out int nnn1);
+}
+
+internal static class BridgeGeometry
+{
+    public static bool Volume(
+        double r1, double r2, double rk, double a, bool bridgeFrustum, out double volume, out double bb);
+}
+```
+
+⚠ 2026-10-18: `Attempt.Run` reads `ExactConstants` and `BridgeFrustum` (implemented, the
+latter through `Volume`'s parameter); it does not yet read `Fmkarm2OnAcceptance` and
+`WindowLowerEdge`, whose statements are not written (`Build`'s parameter is, and is passed
+`false` by `Run`). The paragraph below states the whole contract.
 
 The values are explicit powers of two and are never renumbered; `All` is their sum. The
 `Corrected` model (root `BOOT.md`, "Model kind") is `All`, and the node that maps the
@@ -202,8 +225,9 @@ on `Accepted` in cycles ≥ 1, instead of a sum at loop end; every other field k
 row of "Accumulator layout", and no layout, length or offset changes under any member.
 
 The member names are the values of the `Corrected` column of the defect report
-(`fixed (<Member>)`, `tools/defect-report/API.md`); a test of this node checks the two
-against each other. The type is internal and adds nothing to the public surface.
+(`fixed (<Member>)`, `tools/defect-report/API.md`), but for the reserved `Model` of
+`src/Output`'s printing fixes, which no flag carries; a test of this node checks the
+two against each other. The type is internal and adds nothing to the public surface.
 
 ## Size law ✅
 
@@ -267,7 +291,7 @@ Semantics:
 - `Run` advances `streams` by exactly the draws the attempt made; the record and the
   totals receive the attempt's side effects whatever the outcome, except that under
   `Fmkarm2OnAcceptance` `Fmkarm2` receives the staged `fmkarm2_loc` on `Accepted` only
-  (`## Corrected model ⏳`); on a failure outcome the state of totals and record is that
+  (`## Corrected model`); on a failure outcome the state of totals and record is that
   of the moment of failure.
 
   ⚠ 2026-10-18: was every side effect whatever the outcome under every model, now `Fmkarm2` on acceptance only under `Fmkarm2OnAcceptance` → HISTORY.md#api-run-semantics-corrected-2026-10-18

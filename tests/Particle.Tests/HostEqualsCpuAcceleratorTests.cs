@@ -27,21 +27,23 @@ public class HostEqualsCpuAcceleratorTests : IClassFixture<CpuHost>
     }
 
     [Theory]
-    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1)]   // accepted, cycle 1, pockets and bridges
-    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 0)]   // accepted, cycle 0
-    [InlineData(2.0, 0.2, 1.0, 0.1, 10.0, 1)]   // restarted after loop (no pocket)
-    public void RunMatchesOnHostAndTheCpuAccelerator(double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag)
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, 0u)]   // accepted, cycle 1, pockets and bridges
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 0, 0u)]   // accepted, cycle 0
+    [InlineData(2.0, 0.2, 1.0, 0.1, 10.0, 1, 0u)]   // restarted after loop (no pocket)
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.BridgeFrustum)] // the frustum volume on the kernel path
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.All)]           // the Corrected model on the kernel path
+    public void RunMatchesOnHostAndTheCpuAccelerator(double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag, uint corrections)
     {
         var acc = _host.Accelerator;
 
-        using var hostScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag);
+        using var hostScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag, corrections: (CorrectionSet)corrections);
         var hostStreams = OriginalSeeds.Streams;
         var hostOutcome = hostScenario.Run(ref hostStreams);
         var hostIntegerTotals = hostScenario.AllIntegerTotals();
         var hostRecord = hostScenario.AllRecords();
         var hostScratch = hostScenario.AllScratch();
 
-        using var kernelScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag);
+        using var kernelScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag, corrections: (CorrectionSet)corrections);
         using var streamsBuffer = acc.Allocate1D(new[] { OriginalSeeds.Streams });
         using var outcomeBuffer = acc.Allocate1D<byte>(1);
 
