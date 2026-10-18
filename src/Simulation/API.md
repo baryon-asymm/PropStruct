@@ -313,6 +313,7 @@ upper bound in turn (decided 2026-10-02 at the root, with "## Result").
 | `Streams == StreamLayout.Original` with `Mode == ExecutionMode.Batched`, by any route to batched execution (a plain batch or the degenerate `BatchSize == 1`/`ContinuedStreams` configuration) | as above, `Simulator.Create` throws the same way and for the same reason (decided with the root, 2026-09-21, root BOOT.md "Two stream layouts": the message names both halves of the conflict); `SetupFailure` is `null` |
 | invalid options (non-positive budgets, batch size, the `ContinuedStreams` combination) | `ArgumentException` before any work, from `Simulator.Create`'s own `SimulationOptionsValidator` |
 | `Model == ModelKind.Corrected` with `Precision == PrecisionKind.Original`, in either mode | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup` before any setup or accelerator work, checked after the two batched refusals above, which keep their messages; the message names the requested model and the requested precision kind; `SetupFailure` is `null` (2026-10-18, "## Model kind") |
+| `Model` not a defined `ModelKind` member (a cast integer) | `ArgumentException` naming the value (`Model <n> is not a ModelKind member.`) before any work, from the same validator, checked before the seam rule (2026-10-18, T13) |
 | the internal `Corrections` set while `Model == ModelKind.Original`, or holding a bit outside `CorrectionSet.All` | `ArgumentException` before any work, from the same validator |
 
 ## Side effects

@@ -138,6 +138,11 @@ has no external reference (root `BOOT.md`, "Model kind is an option of every run
       model line of `BOOT.md`, "## Corrected model", verbatim (2026-10-18,
       `tests/Output.Tests`' `CorrectedResultsMTests.ACorrectedResultWritesTheFooterLineOfBootMdVerbatimAfterTheExecutionModeLine`
       and, end to end, `tests/Cli.Tests`' `ModelFlagTests.ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal`).
+- [x] An undefined `ModelKind` value (a cast integer) is an `ArgumentException` naming the value
+      from `Simulator.Create`, before the seam check; both defined members are accepted.
+      (2026-10-18, `ModelKindTests.AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck`
+      and `EveryDefinedModelValueIsAcceptedByTheValidator`; red with the `Enum.IsDefined` check
+      removed: the three cases of the first.)
 - [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
       under `Corrected` on the five reference formulations, its maxima recorded here
       with the run's place (`BOOT.md` stands at its §15 limit), and no default below

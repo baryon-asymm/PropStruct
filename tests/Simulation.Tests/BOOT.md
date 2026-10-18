@@ -365,6 +365,7 @@ guard), seen red, reverted:
 | `Ak1` copied under `Original` too | `AnOriginalRunsResultsAndJsonCarryNoModelLabel` |
 | `RunDiagnostics.Model` fixed at `Original` | `ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`, `CorrectedWithBinary64RunsToCompletionInBothModesAndBothLayouts`, the degenerate case under `Corrected` |
 | `SimulationOptions.Model` defaulting to `Corrected` | `TheSurfaceHasTheExplicitValuesTheDefaultAndBodyInitProperties` |
+| the `Enum.IsDefined` check of the validator removed (T13) | the three cases of `AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck` |
 | each `CorrectionSet` flag applied under `Original`, one at a time (T13) | the cases of `ACCEPTANCE.md`'s per-flag table |
 
 ## Budget ladder (2026-10-01)

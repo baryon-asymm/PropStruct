@@ -68,6 +68,11 @@ internal static class SimulationOptionsValidator
             throw new ArgumentException("PocketRedrawBudget must be positive.", nameof(options));
         }
 
+        if (!Enum.IsDefined(options.Model))
+        {
+            throw new ArgumentException($"Model {(int)options.Model} is not a {nameof(ModelKind)} member.", nameof(options));
+        }
+
         if (options.Corrections is { } corrections
             && (options.Model == ModelKind.Original || (corrections & ~CorrectionSet.All) != CorrectionSet.None))
         {
