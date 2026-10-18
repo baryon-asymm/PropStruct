@@ -130,20 +130,26 @@ beforehand.
 - [x] `BridgeFrustum`'s volume (`tests/Particle.Tests`, `BridgeGeometryTests`), at
       `r2/r1` of 0.6, 0.998 and 1 with `r1 = 50 µm`, `rk = 40 µm`, `a = 5 µm`
       (`Volume`'s own arguments; there `Original` is 69 times short at 0.998 and
-      −1.17e−13 m³ at 1, computed 2026-10-18). Right: the
+      −1.17e−13 m³ at 1, computed 2026-10-18) and at the clamped gap `a = 0` of every
+      jammed neighbour (lines 572–576). Right: the
       volume under the flag matches an independent numerical quadrature of the same
       solid, the frustum between the chord circles less the two caps, within 1e−9
-      relative at all three. Red: the `Original` volume is negative at 1 and more than
+      relative at all six. Red: the `Original` volume is negative at 1 and more than
       ten times short at 0.998 against the same quadrature. `JJ` and `bb` are
       bit-equal under both on every case, the `JJ = 0` returns included. 2026-10-18,
-      `BridgeGeometryTests`: `BridgeFrustumMatchesAnIndependentQuadratureOfTheSolid` (three
+      `BridgeGeometryTests`: `BridgeFrustumMatchesAnIndependentQuadratureOfTheSolid` (six
       cases; composite Simpson of the cross-section along the axis, the chord circles
       placed from the triangle's coordinates),
       `TheOriginalVolumeIsNegativeAtEqualRadiiAndMoreThanTenTimesShortNearThem`,
       `JjAndBbAreBitEqualUnderBothVolumesOnEveryCase` (the fixture's cases and the three
-      ratios), `TheFlagUnsetIsTheOldSignatureBitForBit`. Red, reverted: the second cap's
-      sign flipped in the flag's arm turns the three quadrature cases red (volume 1.03e−13
+      ratios, each at both gaps). The fact comparing the old overload with the flag unset
+      was deleted 2026-10-18 (review C1): the old overload forwards that very call, so it
+      could not fail; the `None` path is held by the snapshots and the cycle-1 guard.
+      Red, reverted: the second cap's
+      sign flipped in the flag's arm turns the quadrature cases red (volume 1.03e−13
       against 5.81e−14 at ratio 1); `bb *= 1.000001` there turns the JJ/bb case red alone.
+      The clamped gap, 2026-10-18 (review R7): `l += 1e−6·r1` when `a == 0` in the flag's
+      arm turns the three `a = 0` cases red (relative error 2.5e−6 to 2.9e−6) and no other.
 - [x] `ExactConstants` at this node's sites. Right: on a constructed attempt the
       sphere-volume terms the record receives are π/6 times their cubes, `Allvdok` and
       `Svd` equal the `None` term times π/3.14159 and `Vks` equals π/6 times the recorded
