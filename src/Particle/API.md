@@ -166,7 +166,7 @@ internal enum CorrectionSet : uint
     None = 0,                            // the Original model; an unset ModelSetup.Corrections is this
     ExactConstants = 1,                  // a literal approximating π or 1/3 is that constant (this node, Statistics)
     BridgeFrustum = 2,                   // Fortran 1616–1627: the bridge volume as frustum less caps
-    Fmkarm2OnAcceptance = 4,             // Fortran 720: fmkarm2 added on acceptance only
+                                         // 4 is retired (2026-10-18) and never reused
     WindowLowerEdge = 8,                 // Fortran 595: the window's origin at the cell's lower edge
     VdokTotalOnCopy = 16,                // Statistics, Fortran 1145, 1150
     ZdoksmallCoarseShare = 32,           // Statistics, Fortran 1047
@@ -176,7 +176,7 @@ internal enum CorrectionSet : uint
     CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
     CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
     PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
-    All = 4095,                          // the Corrected model: every member above
+    All = 4091,                          // the Corrected model: every member above
 }
 
 internal struct ModelSetup
@@ -208,20 +208,24 @@ internal static class BridgeGeometry
 (`Build` was passed `false`), now reading all four members the next paragraph names, the
 statements written (T4).
 
-The values are explicit powers of two and are never renumbered; `All` is their sum. The
+⚠ 2026-10-18: was reading all four members the next paragraph names, now three, `Fmkarm2OnAcceptance` withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
+
+The values are explicit powers of two and are never renumbered or reused (the value 4 is
+retired, 2026-10-18); `All` is their sum. The
 `Corrected` model (root `BOOT.md`, "Model kind") is `All`, and the node that maps the
 public model kind to this set (`Simulation`) passes nothing else outside a measurement.
 `Statistics.Setup.Prepare` stores the set it is given into `ModelSetup.Corrections`,
 `None` under `PrecisionKind.Original` (`Statistics`' API; Simulation refuses that pair).
 `Attempt.Run` reads the field once per call, as it reads `Kind`, and acts on
-`ExactConstants`, `BridgeFrustum`, `Fmkarm2OnAcceptance` and `WindowLowerEdge` only
+`ExactConstants`, `BridgeFrustum` and `WindowLowerEdge` only
 (`BOOT.md`, "## Corrected model"); the other members carry fixes of `Statistics` and
 mean nothing here. Under `None`, every member of this node returns the bits it
 returned before the field existed.
 
-Under `Fmkarm2OnAcceptance` the record's `Fmkarm2` is a committed field, written only
-on `Accepted` in cycles ≥ 1, instead of a sum at loop end; every other field keeps its
-row of "Accumulator layout", and no layout, length or offset changes under any member.
+No layout, length or offset of the record changes under any member; `Fmkarm2` is added
+at line 720, before the tests of 723–738, under every model.
+
+⚠ 2026-10-18: was `Fmkarm2` a committed field under `Fmkarm2OnAcceptance`, now added at line 720 under every model, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
 The member names are the values of the `Corrected` column of the defect report
 (`fixed (<Member>)`, `tools/defect-report/API.md`), but for the reserved `Model` of
@@ -288,12 +292,12 @@ internal static class Fold
 Semantics:
 
 - `Run` advances `streams` by exactly the draws the attempt made; the record and the
-  totals receive the attempt's side effects whatever the outcome, except that under
-  `Fmkarm2OnAcceptance` `Fmkarm2` receives the staged `fmkarm2_loc` on `Accepted` only
-  (`## Corrected model`); on a failure outcome the state of totals and record is that
-  of the moment of failure.
+  totals receive the attempt's side effects whatever the outcome; on a failure outcome
+  the state of totals and record is that of the moment of failure.
 
   ⚠ 2026-10-18: was every side effect whatever the outcome under every model, now `Fmkarm2` on acceptance only under `Fmkarm2OnAcceptance` → HISTORY.md#api-run-semantics-corrected-2026-10-18
+
+  ⚠ 2026-10-18: was `Fmkarm2` on acceptance only under `Fmkarm2OnAcceptance`, now every side effect whatever the outcome under every model, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 - The driver refreshes QKS1 with `Normalize` after `Accepted` and `RestartedAfterLoop`
   in reference mode.
 - `Add` is order-fixed: particle 0 first; sums add, `DpMax` and `DpMaxCor` take the

@@ -113,12 +113,13 @@ public class CorrectionMemberRowTests
     [Fact]
     public void AnAllThatIsNotTheSumInTheApiIsReported()
     {
-        var scratch = Replaced(ApiText(), "All = 4095,", "All = 4094,");
+        var all = (uint)CorrectionSet.All;
+        var scratch = Replaced(ApiText(), $"All = {all},", $"All = {all - 1},");
 
         var problems = CorrectionMemberRowCheck.Discrepancies(Page(), scratch);
 
-        Assert.Contains("CorrectionSet.All is 4095 and API.md lists 4094", problems);
-        Assert.Contains("API.md: All = 4094 is not the sum 4095 of the members", problems);
+        Assert.Contains($"CorrectionSet.All is {all} and API.md lists {all - 1}", problems);
+        Assert.Contains($"API.md: All = {all - 1} is not the sum {all} of the members", problems);
     }
 
     [Fact]

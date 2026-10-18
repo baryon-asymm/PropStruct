@@ -85,9 +85,11 @@
       decision, since `SetCriterionTests` gates every declared entry.
 
 The `Corrected` model (`BOOT.md`, "## Corrected model"; designed 2026-10-18;
-the four flags this node reads implemented 2026-10-18). Each fix is
+the three flags this node reads implemented 2026-10-18). Each fix is
 proven twice (root `BOOT.md`, Taboos): red on the defect, right on an answer known
 beforehand.
+
+⚠ 2026-10-18: was "the four flags this node reads", now three, `Fmkarm2OnAcceptance` withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
 - [x] `None` reproduces the original bit for bit beyond cycle 0: a snapshot of the
       first 10⁴ cycle-1 attempts of each reference formulation (outcome, streams,
@@ -98,7 +100,7 @@ beforehand.
       every completed loop, `pdoksmall` zero and `Dmaxxx` 1e30, so the window, `VM`,
       both Var#2 branches and the tests of 723–738 all run; the driver of
       `tests/Execution.Tests` is outside this node). Red:
-      each of the four flags' branches forced on under `None` (scratch, reverted)
+      each of the three flags' branches forced on under `None` (scratch, reverted)
       turns it red. The run-level guard is the root's seed-zero snapshot
       (`tests/Simulation.Tests`). 2026-10-18, `tests/Particle.Tests`,
       `CycleOneSnapshotTests.FirstTenThousandCycleOneAttemptsMatchTheApprovedSnapshot`
@@ -109,22 +111,20 @@ beforehand.
       was accepted and one restarted by 723–738, the window drew, a Var#1 pocket was counted
       and a Var#2 pocket (`Fmkarm2`) and bridge (`VmkmTotal2`) reached the record. Red,
       each branch forced on under `None` (scratch, reverted): `BridgeFrustum` and
-      `ExactConstants` (the bool read `|| true`), 10 of 10 cases each; `Fmkarm2OnAcceptance`
-      (line 720's loop moved after 738 under `ireset == 0`) and `WindowLowerEdge`
-      (`Build(…, true, …)` in `Attempt.Run`) were first scratch emulations, 10 of 10 each;
-      re-proved on their own implementations 2026-10-18 (the flag's bool read `|| true`
-      under `None`, scratch, reverted): 10 of 10 cases each.
+      `ExactConstants` (the bool read `|| true`), 10 of 10 cases each; `WindowLowerEdge`
+      (`Build(…, true, …)` in `Attempt.Run`) was first a scratch emulation, 10 of 10;
+      re-proved on its own implementation 2026-10-18 (the flag's bool read `|| true`
+      under `None`, scratch, reverted): 10 of 10 cases.
+
+  ⚠ 2026-10-18: was the red of four flags, `Fmkarm2OnAcceptance`'s among them, now three, the flag withdrawn; the cycle-1 snapshots, their files untouched, matched again after line 720's write went back before 722's division → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 - [x] One flag changes what its entry names and nothing else: on the same cycle-1
       sequence, `BridgeFrustum` alone leaves outcomes, streams, integer totals and
       every record field but `Vsmkm`, `VmkmTotal` and `VmkmTotal2` bit-identical and
-      moves those three; `Fmkarm2OnAcceptance` alone leaves everything but `Fmkarm2`
-      bit-identical and moves it. Red: a scratch mutation of `bb` under
-      `BridgeFrustum` turns the first red. 2026-10-18, `tests/Particle.Tests`,
+      moves those three. Red: a scratch mutation of `bb` under `BridgeFrustum` turns it
+      red. 2026-10-18, `tests/Particle.Tests`,
       `CorrectionIsolationTests.BridgeFrustumMovesTheBridgeVolumeFieldsAndNothingElse`
-      and `Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse` (HPEPA3, inpt, P33, 10⁴
-      cycle-1 attempts, `Binary64`; PSAN02n and HMX are not in the set, as for the
-      first half): green, and red, reverted, under `bb *= 1.1` in the frustum arm and
-      under `record[JammedTotal] += 1e-3` in the `Fmkarm2OnAcceptance` arm, 3 of 3 each.
+      (HPEPA3, inpt, P33, 10⁴ cycle-1 attempts, `Binary64`; PSAN02n and HMX are not in
+      the set): green, and red, reverted, under `bb *= 1.1` in the frustum arm, 3 of 3.
       `WindowLowerEdge` has no isolation case: its entry says it changes the draws that
       follow, so a bit-identical remainder is not claimed.
 - [x] `BridgeFrustum`'s volume (`tests/Particle.Tests`, `BridgeGeometryTests`), at
@@ -189,18 +189,21 @@ beforehand.
   `rk = rrL − (Dr + Db)/2` moves with `rrL` under the same flag, so its term is not the
   `None` term scaled. Found by T3's coder; reworded to what `ExactConstantsTests` tests,
   `Vks` against π/6 of the recorded pocket cubes, under both models.
-- [x] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
-      fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
-      staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,
-      and an `Accepted` attempt adds the same bits under both. 2026-10-18,
-      `tests/Particle.Tests`, `Fmkarm2OnAcceptanceTests` (each under both precision
-      kinds): `UnderNoneARejectedAttemptStillAddsTheStagedSum` (`NnMax` 1e−9, outcome
-      `RestartedAfterLoop`, `conditions(9)` = 1, `Fmkarm2` equal to the accepted run's
-      cells, which the same seed gives with `NnMax` 1e9), `UnderTheFlagARejectedAttemptAddsNothing`
-      (every cell 0), `AnAcceptedAttemptAddsTheSameBitsUnderBoth` (record, `Fmkarm2` and
-      integer totals bit-equal). Red, reverted: the flag read forced off turns the second
-      red (both kinds); the `None` cycle-1 and cycle-0 snapshots stay green with the write
-      moved after line 738.
+- [x] Line 720 commits `Fmkarm2` before the tests of 723–738 under every model,
+      `Corrected` included (reformulated 2026-10-18, the criterion having been about
+      the withdrawn flag): a constructed case, `NnMax` low enough that line 735 fires
+      after a Var#2 pocket is staged. Right: a rejected attempt adds exactly the
+      accepted attempt's bits to `Fmkarm2`, whatever `NnMax` is, since the same seed
+      gives the same draws. 2026-10-18, `tests/Particle.Tests`,
+      `Line720CommitTests.ARejectedAttemptStillAddsTheStagedSum` (`None` and `All` under
+      `Binary64`, `None` under `Original`; outcome `RestartedAfterLoop`, `conditions(9)`
+      = 1, the accepted run's cells non-zero): green. Red, reverted, in scratch: the
+      write and the enum of c32821e, where the flag was part of `All`, restored turns
+      the `All` case red (the rejected run's cells all 0, 1 of 3) and leaves the two
+      `None` cases green.
+
+  ⚠ 2026-10-18: was a criterion for `Fmkarm2OnAcceptance`, red on `None` and right under the flag, now the commit point kept under every model, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
+
 - [x] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
       built from a constructed QKS1 with `mindk ≥ 2`. Right: under the flag
       `dpoc[0] = Di·(mindk − 1)` and the draws per QKS1 cell match the cell masses
@@ -244,7 +247,7 @@ beforehand.
       cases with the field set). 2026-10-18, `tests/Particle.Tests`,
       `HostEqualsCpuAcceleratorTests.RunMatchesOnHostAndTheCpuAccelerator`, the cases
       `BridgeFrustum`, `All` (accepted, cycle 1) and `All` with `NnMax` 1e−9 (rejected by
-      line 735, `Fmkarm2` not committed), each against the host call, bit for bit in
+      line 735), each against the host call, bit for bit in
       outcome, streams, totals, record and scratch. Red, reverted: the kernel launched
       with `Corrections` cleared turns the three cases red.
 - [x] The members agree with the defect report: a test of `tests/Particle.Tests` reads
@@ -253,7 +256,7 @@ beforehand.
       no flag) excepted, and asserts that set equals `CorrectionSet`'s members other
       than `None` and `All`, that each member has the value `API.md` lists and that
       `All` is their sum. 2026-10-18, `tests/Particle.Tests`, `CorrectionMemberRowTests`
-      (22 cases, `CorrectionMemberRowCheck`): right on the real page, whose
+      (21 cases, `CorrectionMemberRowCheck`): right on the real page, whose
       members (`ExactConstants` in two rows, `Model` absent) equal the enum's, and on
       the real `API.md`. Red on scratch pages through the same path: a member's only
       row set back to `unchanged` (each but that one; `ExactConstants`, which has two
@@ -264,10 +267,11 @@ beforehand.
       on the real files: `WindowLowerEdge = 16` in `API.md`, and a `Phantom = 4096`
       member in `CorrectionSet.cs`. Committed with the criterion's own condition met:
       the last row flipped on the target branch (Particle: `BridgeFrustum`,
-      `Fmkarm2OnAcceptance`, `WindowLowerEdge`, `ExactConstants`; `Statistics`: the
-      other eight). `CorrectionSet` is internal: `PublicSurface.approved.txt` does not
-      move for it.
+      `WindowLowerEdge`, `ExactConstants`; `Statistics`: the other eight).
+      `CorrectionSet` is internal: `PublicSurface.approved.txt` does not move for it.
 
   ⚠ 2026-10-18: was "not written" with `ExactConstants` and the eight `Statistics`
   members still `unchanged` (T4), now written once every one of the twelve flags has its
   `fixed (<Flag>)` row (T13a).
+
+  ⚠ 2026-10-18: was twelve flags, `Fmkarm2OnAcceptance` among them, now eleven, the member's value 4 retired and `All` 4091; the criterion's case count 22, now 21, `AMemberWhoseOnlyRowReadsUnchangedIsReported` having one member less → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
