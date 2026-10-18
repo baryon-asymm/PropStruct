@@ -437,8 +437,8 @@ The fixes, `Binary64` only; the expected effects are the arbiter's computations:
   `Epsydok = 0` (`QDOKSS = 0`, `MDOK3` or `MDOK4 ≤ 1e-30`) never merges. Corrected: it
   is insufficient in both tests (`empty || Epsydok > EpsDok`), `Epsydok` stays 0; a row
   of `QDOKSS = 1`, legitimately without variance, is not. The three category flags
-  move the category rows of every formulation (`DPRow`, `Dkarmcat`, `dokkarm43`,
-  `dokkarm10`, `fqdokkarm`).
+  move the category rows (`DPRow`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `fqdokkarm`)
+  where a merge or an empty row occurs, measured on drawn totals only (`ACCEPTANCE.md`).
 
   ⚠ 2026-10-18: was "move the category rows of every formulation", now the expectation
   measured on drawn totals only → HISTORY.md#corrected-category-flags-every-formulation-2026-10-18

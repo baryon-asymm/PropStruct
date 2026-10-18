@@ -419,7 +419,7 @@ bits on any accelerator whose `double` addition is IEEE.
 ## Corrected model
 
 Root `BOOT.md`, "Model kind". This node owns the internal `[Flags] enum CorrectionSet :
-uint`, its members and their explicit values (API.md, "## Corrected model ⏳", the
+uint`, its members and their explicit values (API.md, "## Corrected model ✅", the
 contract; never renumbered). The `Corrected` model is `All`; a subset exists
 in-process only, for measurement. This node reads the four members whose entries
 follow; the others fix `Statistics`' lines and are read there. A member is named in

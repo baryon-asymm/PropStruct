@@ -140,3 +140,7 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       `ReferenceModeEqualsContinuedBatchTests.ReferenceModeEqualsContinuedBatchBitForBitUnderTheCorrectedModel`,
       both in the fast set; red, the second engine of each loaded with
       `Corrections = None` (`tests/Execution.Tests/BOOT.md`, "## Mutations").
+      Both run cycle 0, where of the attempt's four flags only `ExactConstants` acts
+      (Fortran 581 skips the window, 719 line 720); the cycle-1 kernel coverage under
+      `All` is `tests/Particle.Tests`' `HostEqualsCpuAcceleratorTests` and the `Long`
+      determinism and tier facts (final review, 2026-10-18).

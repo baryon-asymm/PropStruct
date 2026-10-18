@@ -94,9 +94,9 @@ That combination has been refused with a status since 2026-09-21 (root `BOOT.md`
 stream layouts"), so the example failed on every run. It now shows the defaults, and the
 reproduction switches separately. Found by the architecture audit of 2026-09-24.
 
-### Model kind ⏳
+### Model kind ✅
 
-Designed 2026-10-18, not implemented yet (root `BOOT.md`, "Model kind is an option of
+Designed and implemented 2026-10-18 (root `BOOT.md`, "Model kind is an option of
 every run"; [Simulation](./src/Simulation/API.md), "## Model kind"): `options with {
 Model = ModelKind.Corrected }` runs the model with the original's explicit errors fixed,
 each marked fixed in `docs/ORIGINAL-DEFECTS.md`, under `Binary64` only, in either mode;

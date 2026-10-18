@@ -134,8 +134,10 @@ has no external reference (root `BOOT.md`, "Model kind is an option of every run
       `Corrected` and its `StoredSetup.Ak1`/`Ak2`/`Ak4` equal its `ModelSetup`'s
       (2026-10-18, `ModelKindTests.ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`;
       red with the label not set).
-- [ ] Labelling, `results.m` (`Output`, a later task): a `Corrected` run's `results.m`
-      ends its footer with the model line of `BOOT.md`, "## Corrected model", verbatim.
+- [x] Labelling, `results.m`: a `Corrected` run's `results.m` ends its footer with the
+      model line of `BOOT.md`, "## Corrected model", verbatim (2026-10-18,
+      `tests/Output.Tests`' `CorrectedResultsMTests.ACorrectedResultWritesTheFooterLineOfBootMdVerbatimAfterTheExecutionModeLine`
+      and, end to end, `tests/Cli.Tests`' `ModelFlagTests.ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal`).
 - [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
       under `Corrected` on the five reference formulations, its maxima recorded here
       with the run's place (`BOOT.md` stands at its §15 limit), and no default below
