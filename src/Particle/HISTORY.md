@@ -8,6 +8,36 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="window-lower-edge-redraw-rate-2026-10-18"></a>
+
+## 2026-10-18 — from `ACCEPTANCE.md`, "The redraw rate of label 451 under `WindowLowerEdge`" — the run table
+
+A scratch counter in `Attempt.Run` after the bridge's redraw loop (`bridgeDraws` of
+each bridge; reverted, nothing committed; measured on f72cde0, Release, reference mode,
+`Binary64`, host thread), on `AccumulatorSweep`'s sequence through `CycleOneRun`: 4000
+cycle-0 attempts, then 10⁵ cycle-1 attempts per reference formulation, `Corrections`
+`None` and `WindowLowerEdge` on the same streams. A bridge's draws are 1 + its redraws.
+The outcome counts and the bridge counts are identical under both models on these
+sequences.
+
+| Formulation | Model | Bridges | Mean draws | Max draws | Bridges with 2 / 3 / ≥ 4 draws |
+|---|---|---|---|---|---|
+| HPEPA3 | None | 191,765 | 1.000172 | 4 | 26 / 2 / 1 |
+| HPEPA3 | WindowLowerEdge | 191,765 | 1.020254 | 14 | 3439 / 167 / 27 |
+| inpt | None | 949,837 | 1.000982 | 4 | 876 / 27 / 1 |
+| inpt | WindowLowerEdge | 949,837 | 1.005033 | 5 | 4167 / 257 / 32 |
+| P33 | None | 239,692 | 1.000976 | 27 | 35 / 18 / 26 |
+| P33 | WindowLowerEdge | 239,692 | 1.006241 | 109 | 631 / 29 / 85 |
+| PSAN02n | None | 1,009,015 | 1.001674 | 5 | 1493 / 76 / 14 |
+| PSAN02n | WindowLowerEdge | 1,009,015 | 1.008688 | 7 | 6955 / 703 / 126 |
+| HMX | None | 28,177 | 1.011747 | 17 | 93 / 30 / 34 |
+| HMX | WindowLowerEdge | 28,177 | 1.030131 | 40 | 321 / 72 / 77 |
+
+P33's tail under the flag, the 8 bridges that took 20 or more draws: 20, 20, 32, 37, 37,
+47, 61 and 109.
+
+---
+
 <a id="api-run-semantics-corrected-2026-10-18"></a>
 
 ## 2026-10-18 — from `API.md`, "## Attempt" — the semantics of `Run` under the `Corrected` model

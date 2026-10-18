@@ -196,11 +196,22 @@ beforehand.
       `Independent`, `Binary64`, seeds `k·2¹⁷`, `k = 0..7`, the five references)
       reproduces `Dqmkm2` −2.8 % to −7.0 % and `Zkarm` +4.9 % to +13.5 % within their
       standard errors (`tests/Simulation.Tests`, hand-run category).
-- [ ] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
+- [x] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
       task with a scratch counter in `Attempt.Run` (reverted): the largest count and the
       mean per bridge, against `None`, on `AccumulatorSweep`'s sequence with 10⁵ cycle-1
       attempts per reference formulation, recorded with the place. Closed below a tenth
       of `PocketRedrawBudget`, or by the proposal to `Simulation` `BOOT.md` asks for.
+      2026-10-18, a scratch measurement on f72cde0, nothing committed, the full table in
+      `HISTORY.md#window-lower-edge-redraw-rate-2026-10-18` (Release, reference mode,
+      `Binary64`, host thread, one run per cell: a count of bridges, no spread). Largest
+      number of draws of one bridge, `None` against the flag: HPEPA3 4 against 14, inpt 4
+      against 5, P33 27 against 109, PSAN02n 5 against 7, HMX 17 against 40; mean draws per
+      bridge, 1.0002–1.0117 against 1.0050–1.0301. The largest, 109 draws (108 redraws) on
+      P33, is below the 1,280 a tenth of `PocketRedrawBudget` (12,800) asks, by a factor
+      of 11.7: closed, no proposal. The figure bounds the 2.4·10⁵ bridges measured; a
+      longer run's maximum is not bounded by it, and P33's tail (8 bridges of 20 draws or
+      more, the largest 109) is the one to read first if a run ever fails
+      `BridgeDrawBudgetExceeded` under the flag.
 - [ ] An attempt on the host thread and on the ILGPU CPU accelerator stays
       bit-identical with `Corrections = All` (`HostEqualsCpuAcceleratorTests`, its
       cases with the field set).
