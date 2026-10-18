@@ -18,6 +18,7 @@ original's program out of the repository on 2026-10-04; since then:
 |---|---|---|
 | `LineMapCoverageTests` | fast | `tests/Fixtures/cases/source/executable_lines.json`; its failure message names line numbers, never a source line |
 | `RealFourClassificationGeneratorTests.ClassificationReproducesByteForByteOnRegeneration` | `Legacy` | the source, through `classify-real4-accumulators.py` |
+| `ExactConstantSiteTests.ScanReproducesTheCommittedListOnRegeneration`, `.AScratchCopyWithALiteralAddedIsReportedAndAnUntouchedCopyIsNot` | `Legacy` | the source, through `legacy.py` and `scan-exact-constants.py` |
 
 ## Out of scope
 
