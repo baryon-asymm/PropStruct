@@ -111,6 +111,48 @@ public class VdokTotalOnCopyTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// Right, an identity that restates none of 1146/1151 from the report: where the totals of the first variant are the
+    /// all-bridge totals (<c>VmkmTotal = Vsmkm</c> and <c>VdokTotal = Svd</c> cell by cell, <c>VmkmTotal2</c> and
+    /// <c>VdokTotal2</c> their sums), 1137's <c>DolM1</c>, which divides nothing, is what 1146 and 1151 give once each
+    /// total is divided exactly once. Constant totals, P312 (<c>gdokleft</c> 0.122 &gt; 0), three cycles: under the flag
+    /// <c>DolM2</c> and <c>DolM3</c> equal <c>DolM1</c> in every cycle. The three sides are the same product evaluated in
+    /// different orders over sums of <c>Ndok</c> terms, so they agree to a few units of the last place; the tolerance is
+    /// <c>1e-12</c>, three orders above that and as tight as the other closed forms of this class.
+    /// </summary>
+    [Fact]
+    public void UnderTheFlagTheOnceDividedMassFractionsEqualDolM1WhereTheTotalsAreTheAllBridgeTotals()
+    {
+        var run = Cycles(CorrectionSet.VdokTotalOnCopy, 3, allBridge: true);
+
+        Assert.True(run.Reports[0].Gdokleft > 0.0);
+        foreach (var report in run.Reports)
+        {
+            Assert.True(report.DolM1 > 0.0);
+            AssertRelative(report.DolM1, report.DolM2);
+            AssertRelative(report.DolM1, report.DolM3);
+        }
+    }
+
+    /// <summary>
+    /// Red: on the same totals, without the flag the identity holds in cycle 1, where the division is the first and
+    /// only, and breaks from cycle 2, where the stored quotients are divided again: <c>DolM2</c> and <c>DolM3</c> have
+    /// moved from <c>DolM1</c> by far more than the tolerance of the right side.
+    /// </summary>
+    [Fact]
+    public void WithoutTheFlagTheIdentityHoldsInCycleOneAndBreaksFromCycleTwo()
+    {
+        var run = Cycles(CorrectionSet.None, 3, allBridge: true);
+
+        AssertRelative(run.Reports[0].DolM1, run.Reports[0].DolM2);
+        AssertRelative(run.Reports[0].DolM1, run.Reports[0].DolM3);
+        foreach (var report in run.Reports.Skip(1))
+        {
+            Assert.True(Math.Abs(report.DolM2 - report.DolM1) > 1e-3 * Math.Abs(report.DolM1));
+            Assert.True(Math.Abs(report.DolM3 - report.DolM1) > 1e-3 * Math.Abs(report.DolM1));
+        }
+    }
+
     private static double ClosedDolM2(Run run, CycleReport report) =>
         run.VmkmTotalSum * (1.0 - report.Vdokleft) * report.Ggg * report.Plotsm
         / ((1.0 - report.Ggg) * (run.VdokTotalSum / Divisor(report)) * run.OxidizerDensity);
@@ -127,7 +169,7 @@ public class VdokTotalOnCopyTests(ITestOutputHelper output)
         AssertRelative(ClosedDolM3(run, report), report.DolM3);
     }
 
-    private static Run Cycles(CorrectionSet corrections, int cycles, ModelParameters? parameters = null)
+    private static Run Cycles(CorrectionSet corrections, int cycles, ModelParameters? parameters = null, bool allBridge = false)
     {
         var analytic = AnalyticCycle.Prepare(
             ShippedFormulations.Read("P312"), parameters ?? ModelParameters.Default, PrecisionKind.Binary64, corrections);
@@ -142,6 +184,19 @@ public class VdokTotalOnCopyTests(ITestOutputHelper output)
 
         realTotals[layout.VdokTotal2] = 7.0;
         realTotals[layout.VmkmTotal2] = 3.0;
+        if (allBridge)
+        {
+            // The totals of the first variant are the all-bridge totals, cell by cell, and the scalars their sums.
+            for (var i = 0; i < analytic.Ndok; i++)
+            {
+                realTotals[layout.Svd + i] = realTotals[layout.VdokTotal + i];
+                realTotals[layout.Vsmkm + i] = realTotals[layout.VmkmTotal + i];
+            }
+
+            realTotals[layout.VdokTotal2] = Enumerable.Range(0, analytic.Ndok).Sum(i => realTotals[layout.VdokTotal + i]);
+            realTotals[layout.VmkmTotal2] = Enumerable.Range(0, analytic.Ndok).Sum(i => realTotals[layout.VmkmTotal + i]);
+        }
+
         var initial = realTotals.ToArray();
 
         var reports = new List<CycleReport>();
