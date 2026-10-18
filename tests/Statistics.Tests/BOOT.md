@@ -19,7 +19,7 @@ The definition of what "Statistics is ready" means.
 | L1 | the address map of the per-cycle plane and the table generated from it (`src/Statistics`, "## Cycle listing map and table") | the excerpt: six map checks, the generator's `verify` byte for byte, its archive-confirmed rules, red on a broken map and a broken listing | ✅ |
 | L1 | `Compute` and `Setup.Prepare` under `Original` over constructed totals, and `Setup.Prepare` over the 49 shipped formulations | the listing oracle (`tests/Fixtures`, "## Listing oracle"): the executable's own bytes executed, bit for bit; every approved ratchet is empty since 2026-10-03, the survey's (`PreloopSurveyTests`) included | ✅ |
 | L1 | the `Corrected` model's setup half (`src/Statistics`, "## Corrected model"): each new overload against its old member over the 49 shipped formulations under both kinds, `Probability` over the case files, and `Compute` under `Original` against a stored set; `DoksdConsistent` by its closed form and a quadrature; `ExactConstants` by the `ZSS` ratio, the `mp` power and, `Legacy`, its four literal sites by pattern in the original; `GdokleftOnce` by the analytic `GGG·[FMDOK + GDOK(1 − φ)]` under both laws and PSAN02's 0.0119; `ZdoksmallCoarseShare` and `PdoksmallFirstCell` by the closed form of 1047–1064 and, reported, on P312's own mass CDF; `VdokTotalOnCopy` by the closed form of `DolM2`, `DolM3` over two cycles and the totals byte for byte; the structure of a flag-guarded statement | the old overloads, bit for bit; closed forms and a Gauss-Legendre quadrature written in the test beside, not through, the sums the code makes; the node's own source text; each red on a mutation | ✅ |
-| L1 | the `Corrected` model's category half (`src/Statistics`, "## Corrected model"): `MergeAndDescribe` under `None` and under `Original` against its old member on the four case files, totals included; `CategoriesOnCopy` by the totals byte for byte, a second call equal to the first and the report of `None` on fresh totals, through `Compute` too; `CategoriesLastRowRecomputed` by the merged rows' quotient of sums and a second call that merges nothing; both, reported, on the oracle's drawn totals | the old overload, bit for bit; the case files' own expected values, never typed in a test; each red on a mutation | ✅ |
+| L1 | the `Corrected` model's category half (`src/Statistics`, "## Corrected model"): `MergeAndDescribe` under `None` and under `Original` against its old member on the four case files, totals included; `CategoriesOnCopy` by the totals byte for byte, a second call equal to the first and the report of `None` on fresh totals, through `Compute` too; `CategoriesLastRowRecomputed` by the merged rows' quotient of sums and a second call that merges nothing; `CategoriesEmptyRowsMerged` by constructed empty middle, last and all rows and a row of one particle; each, reported, on the oracle's drawn totals | the old overload, bit for bit; the case files' own expected values, never typed in a test; each red on a mutation | ✅ |
 | L2 | `Compute` over the totals of a reference-mode run of HPEPA3 | the reference `results.m`, statistical criterion | ⏳ |
 
 ⚠ 2026-09-18: was one L1 row for `Compute` on constructed totals against a script, now split in two
@@ -325,6 +325,10 @@ tests in each family stay recorded as coverage, not as independently mutation-pr
 - `CategoriesLastRowRecomputed` (2026-10-18): `lastRowReturns` made `&& false`: five reds in
   `CategoriesLastRowRecomputedTests` (the two quotient facts, the two stale-row facts, the
   four-row count); reverted, green.
+- `CategoriesEmptyRowsMerged` (2026-10-18): the empty-row term of `Insufficient` made `false`:
+  four reds in `CategoriesEmptyRowsMergedTests`, and with `empty[r]` and `r > 0` the case file's
+  row 0 alone (one red); the empty flag read as `QDOKSS <= 1` turns the one-particle fact red;
+  each reverted, green.
 
 ## Taboos
 

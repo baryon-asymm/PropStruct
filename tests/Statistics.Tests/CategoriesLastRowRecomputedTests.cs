@@ -31,20 +31,6 @@ public class CategoriesLastRowRecomputedTests
 
     private static CategoryRun RunNamed(string name) => name == "four rows" ? FourRows() : Cascade();
 
-    private static double[] Dokp41(string name) => name == "four rows" ? [5.0, 7.0, 9.0, 11.0] : [.. FormulaCaseFiles.FindCategoriesCase(FixtureCascade).Dokp41];
-
-    private static double[] Dokp31(string name) => name == "four rows" ? [1.0, 2.0, 3.0, 4.0] : [.. FormulaCaseFiles.FindCategoriesCase(FixtureCascade).Dokp31];
-
-    /// <summary>The reported <c>DOKP43</c> of row <c>r</c>: the sums of <c>Dokp41</c> and <c>Dokp31</c> over the rows merged into it, which its <c>Dpockets</c> and the one before it name.</summary>
-    private static double MergedDokp43(string name, CategoryOutcome outcome, int r)
-    {
-        var first = r == 0 ? 0 : (int)Math.Round(outcome.Dpockets[r - 1]);
-        var last = (int)Math.Round(outcome.Dpockets[r]);
-        var dokp41 = Dokp41(name);
-        var dokp31 = Dokp31(name);
-        return Enumerable.Range(first, last - first).Sum(i => dokp41[i]) / Enumerable.Range(first, last - first).Sum(i => dokp31[i]);
-    }
-
     /// <summary>
     /// Right: under the flag every reported row's <c>DOKP43</c> is the quotient of the sums over its member rows, and a second
     /// call from the final rows, on the totals the first call rewrote, merges nothing and reports the same row count and quotients: no row is
@@ -60,7 +46,7 @@ public class CategoriesLastRowRecomputedTests
 
         for (var r = 0; r < outcome.DpRow; r++)
         {
-            AssertRelative(MergedDokp43(name, outcome, r), outcome.Dokp43[r]);
+            AssertRelative(run.MergedDokp43(outcome, r), outcome.Dokp43[r]);
         }
 
         var again = run.WithDpMax(run.DpMaxForRows(outcome.DpRow)).Merge(PrecisionKind.Binary64, CorrectionSet.CategoriesLastRowRecomputed);
@@ -76,15 +62,15 @@ public class CategoriesLastRowRecomputedTests
     [MemberData(nameof(Runs))]
     public void WithoutTheFlagTheMergedLastRowKeepsTheStatisticsOfBeforeTheMerge(string name)
     {
+        var run = RunNamed(name);
         var flagged = RunNamed(name).Merge(PrecisionKind.Binary64, CorrectionSet.CategoriesLastRowRecomputed);
         var none = RunNamed(name).Merge(PrecisionKind.Binary64, CorrectionSet.None);
 
         Assert.True(none.DpRow > flagged.DpRow, $"None keeps {none.DpRow} rows, the flag {flagged.DpRow}");
         var last = none.DpRow - 1;
-        var dokp41 = Dokp41(name);
-        var dokp31 = Dokp31(name);
-        Assert.Equal(dokp41[last] / dokp31[last], none.Dokp43[last]);
-        Assert.NotEqual(MergedDokp43(name, none, last), none.Dokp43[last]);
+        var stale = run.FirstMemberDokp43(none, last);
+        Assert.Equal(stale, none.Dokp43[last]);
+        Assert.NotEqual(run.MergedDokp43(none, last), none.Dokp43[last]);
     }
 
     /// <summary>

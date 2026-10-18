@@ -4,9 +4,24 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="corrected-category-flags-every-formulation-2026-10-18"></a>
+
+## 2026-10-18 — from "## Corrected model" — "The three category flags move the category rows of every formulation"
+
+The sentence as the design pass of 2026-10-18 wrote it, an expectation of the arbiter's computations stated as a fact. Measured
+by the coding session of the same day on the totals the listing oracle draws (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`,
+26 formulations, 61 cycle draws; not a Monte Carlo run of the port): `CategoriesEmptyRowsMerged` moves 13 draws, among the
+references HPEPA3 only; `CategoriesLastRowRecomputed` moves 10, no reference; `CategoriesOnCopy` moves the second cycle's rows of
+22 of 26 chains, among the references PSAN02n and HMX. The effect on a reference formulation's own seed-zero run is `Simulation`'s
+to measure once it carries the model kind.
+
+> The three category flags
+> move the category rows of every formulation (`DPRow`, `Dkarmcat`, `dokkarm43`,
+> `dokkarm10`, `fqdokkarm`).
+
 <a id="a8-costing-2026-10-03"></a>
 
-## 2026-10-03 — from "## Acceptance criteria" — A8, the costing
+## 2026-10-18 — from "## Acceptance criteria" — A8, the costing (written 2026-10-03)
 
 Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
@@ -27,7 +42,7 @@ Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
 <a id="per-cycle-sites-reformulated-2026-10-03"></a>
 
-## 2026-10-03 — from "## Acceptance criteria" — "every site of the per-cycle plane is generated", the reformulation sentence
+## 2026-10-18 — from "## Acceptance criteria" — "every site of the per-cycle plane is generated", the reformulation sentence (written 2026-10-03)
 
 Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
@@ -38,7 +53,7 @@ Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
 <a id="rate-criterion-dating-2026-10-02"></a>
 
-## 2026-10-02 — from "## Acceptance criteria" — the rate criterion's dating, two corrections
+## 2026-10-18 — from "## Acceptance criteria" — the rate criterion's dating, two corrections (written 2026-10-02)
 
 Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
@@ -48,7 +63,7 @@ Moved 2026-10-18 for the line limit (AGENTS.md §15).
 
 <a id="doksd-rule-l-2026-10-03"></a>
 
-## 2026-10-03 — from "## Acceptance criteria" — A2, `DOKM`/`DOKSD` under rule L
+## 2026-10-18 — from "## Acceptance criteria" — A2, `DOKM`/`DOKSD` under rule L (written 2026-10-01)
 
 Moved 2026-10-18 for the line limit (AGENTS.md §15).
 

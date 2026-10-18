@@ -96,6 +96,14 @@ public class CategoryFlagsOnOracleTotalsTests(ITestOutputHelper output)
     public void CategoriesLastRowRecomputedMovesTheRowsOfTheDraws() =>
         ReportSingleCycleFlag(CorrectionSet.CategoriesLastRowRecomputed);
 
+    /// <summary>
+    /// Reported, per case and cycle, as for <c>CategoriesLastRowRecomputed</c>: <c>CategoriesEmptyRowsMerged</c> against <c>None</c>
+    /// on the same drawn totals.
+    /// </summary>
+    [Fact]
+    public void CategoriesEmptyRowsMergedMovesTheRowsOfTheDraws() =>
+        ReportSingleCycleFlag(CorrectionSet.CategoriesEmptyRowsMerged);
+
     private void ReportSingleCycleFlag(CorrectionSet flag)
     {
         var moved = 0;

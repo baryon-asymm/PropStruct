@@ -422,13 +422,14 @@
   Reported (`CategoryFlagsOnOracleTotalsTests`, a synthetic two-cycle chain on the oracle's
   drawn totals): `DPRow` of cycle 1 moves in 4 of 22 cases; HPEPA3 unmoved, HMX −0.06 %,
   PSAN02n +5.6 % on `Qdokkarm`'s first row (`BOOT.md`, the row 911–958).
-- [x] 2026-10-18: Corrected, `CategoriesLastRowRecomputed`: each reported row's `DOKP43` is
-  the quotient of the sums over its merged rows and a second call from the final rows merges
-  nothing, on the case file's cascade and a four-row one; `None` keeps the stale quotient
-  (`CategoriesLastRowRecomputedTests`, red with the return removed: 5 of 8). Reported
-  (`CategoryFlagsOnOracleTotalsTests`): 10 of 61 drawn cycles move, no reference.
-- [ ] Corrected, `CategoriesEmptyRowsMerged` merges an empty middle row `None` keeps, a
-  `QDOKSS = 1` row under neither; the five references move by mutation (`tests/Simulation.Tests`).
-- [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
-  with its flag's code and these criteria's evidence, never before. Landed 2026-10-18:
-  every flag but `CategoriesEmptyRowsMerged`.
+- [x] 2026-10-18: Corrected, `CategoriesLastRowRecomputed`: each reported row's `DOKP43` is the
+  quotient of the sums over its merged rows and a second call from the final rows merges
+  nothing, on the case file's cascade and a four-row one, `None` keeping the stale quotient
+  (`CategoriesLastRowRecomputedTests`, red without the return, 5 of 8); 10 of 61 draws move, no reference.
+- [x] 2026-10-18: Corrected, `CategoriesEmptyRowsMerged`: an empty middle or last row merges
+  where `None` keeps it, all rows empty end at one, a `QDOKSS = 1` row is left alone
+  (`CategoriesEmptyRowsMergedTests`, red on the read removed, 4 of 7, and on `QDOKSS <= 1`, 1).
+  Reported (`CategoryFlagsOnOracleTotalsTests`): 13 of 61 draws move; HPEPA3 yes, PSAN02n, HMX no.
+- [x] 2026-10-18: Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` landed
+  with its flag's code and these criteria's evidence; a reference's seed-zero effect is
+  `Simulation`'s (`HISTORY.md#corrected-category-flags-every-formulation-2026-10-18`).
