@@ -248,6 +248,22 @@ internal static class Setup
         int neighbourBudget, int pocketRedrawBudget,
         out ModelSetup setup, out SetupTables tables, out TailDraw draw, out PendingEchoes pending,
         out SetupInputs inputs)
+        => Prepare(formulation, parameters, precision, CorrectionSet.None, neighbourBudget, pocketRedrawBudget,
+            out setup, out tables, out draw, out pending, out inputs);
+
+    /// <summary>
+    /// The overload of the five-out <c>Prepare</c> that takes the model's <see cref="CorrectionSet"/>
+    /// (BOOT.md, "## Corrected model", "The effective set"): the effective set is
+    /// <paramref name="corrections"/> under <see cref="PrecisionKind.Binary64"/> and
+    /// <see cref="CorrectionSet.None"/> under <see cref="PrecisionKind.Original"/>, which reproduces the
+    /// original and is never combined with a fix. It is stored in <see cref="ModelSetup.Corrections"/>.
+    /// Under <see cref="CorrectionSet.None"/> every result is the old overload's, bit for bit.
+    /// </summary>
+    public static SetupStatus Prepare(
+        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections,
+        int neighbourBudget, int pocketRedrawBudget,
+        out ModelSetup setup, out SetupTables tables, out TailDraw draw, out PendingEchoes pending,
+        out SetupInputs inputs)
     {
         setup = default;
         tables = null!;
@@ -256,6 +272,7 @@ internal static class Setup
         inputs = null!;
 
         var original = precision == PrecisionKind.Original;
+        var effective = original ? CorrectionSet.None : corrections;
 
         var ak1 = original ? Binary32.ToNearestRepresentable(formulation.Ak1) : formulation.Ak1;
         var ak2 = original ? Binary32.ToNearestRepresentable(formulation.Ak2) : formulation.Ak2;
@@ -437,6 +454,7 @@ internal static class Setup
             NeighbourBudget = neighbourBudget,
             PocketRedrawBudget = pocketRedrawBudget,
             Layout = layout,
+            Corrections = effective,
             Kind = precision, // Setup.Prepare sets the run's kind itself (audit R2); Simulator no longer patches it.
         };
 
