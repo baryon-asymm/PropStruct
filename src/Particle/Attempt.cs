@@ -59,6 +59,7 @@ internal static class Attempt
         var roundToReal4 = setup.Kind == PrecisionKind.Original; // AddReal4, computed once (BOOT.md, "Precision kind").
         var exactConstants = (setup.Corrections & CorrectionSet.ExactConstants) != 0; // each flag read once, by & (BOOT.md, "## Corrected model")
         var bridgeFrustum = (setup.Corrections & CorrectionSet.BridgeFrustum) != 0;
+        var fmkarm2OnAcceptance = (setup.Corrections & CorrectionSet.Fmkarm2OnAcceptance) != 0;
 
         // The two constants of "ExactConstants", chosen once, each operand a compile-time constant
         // so the Original arm is the folded value the code always used: the sphere volume's
@@ -407,11 +408,6 @@ internal static class Attempt
             return AttemptOutcome.Accepted;
         }
 
-        for (var i = 0; i < nkarm; i++)
-        {
-            record[layout.Fmkarm2 + i] = AddReal4(record[layout.Fmkarm2 + i], fmkarm2Loc[i], roundToReal4); // fmkarm2 += fmkarm2_loc (720), REAL*4
-        }
-
         var nn = (double)ipocketLoc / ibridgeLoc; // (722): IEEE division, may be +Inf or NaN
         var ireset = 0;
 
@@ -437,6 +433,18 @@ internal static class Attempt
         {
             _ = Atomic.Add(ref integerTotals[layout.Conditions + 8], 1L); // conditions(9) (736)
             ireset++; // (737)
+        }
+
+        // Line 720's write, its one site: after the four tests, which neither read nor change
+        // Fmkarm2 or fmkarm2_loc, so for None it is the original's write, merely later. Under
+        // Fmkarm2OnAcceptance only an attempt that no test rejected commits it (BOOT.md,
+        // "## Corrected model").
+        if (!fmkarm2OnAcceptance || ireset == 0)
+        {
+            for (var i = 0; i < nkarm; i++)
+            {
+                record[layout.Fmkarm2 + i] = AddReal4(record[layout.Fmkarm2 + i], fmkarm2Loc[i], roundToReal4); // fmkarm2 += fmkarm2_loc (720), REAL*4
+            }
         }
 
         if (ireset > 0) // (739)

@@ -166,10 +166,18 @@ beforehand.
       ten cycle-1 cases and the five cycle-0 snapshots red; a row removed from the
       mapping, a row added to the list and a use added to `Attempt.cs` each name their
       line.
-- [ ] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
+- [x] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
       fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
       staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,
-      and an `Accepted` attempt adds the same bits under both.
+      and an `Accepted` attempt adds the same bits under both. 2026-10-18,
+      `tests/Particle.Tests`, `Fmkarm2OnAcceptanceTests` (each under both precision
+      kinds): `UnderNoneARejectedAttemptStillAddsTheStagedSum` (`NnMax` 1e−9, outcome
+      `RestartedAfterLoop`, `conditions(9)` = 1, `Fmkarm2` equal to the accepted run's
+      cells, which the same seed gives with `NnMax` 1e9), `UnderTheFlagARejectedAttemptAddsNothing`
+      (every cell 0), `AnAcceptedAttemptAddsTheSameBitsUnderBoth` (record, `Fmkarm2` and
+      integer totals bit-equal). Red, reverted: the flag read forced off turns the second
+      red (both kinds); the `None` cycle-1 and cycle-0 snapshots stay green with the write
+      moved after line 738.
 - [ ] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
       built from a constructed QKS1 with `mindk ≥ 2`. Right: under the flag
       `dpoc[0] = Di·(mindk − 1)` and the draws per QKS1 cell match the cell masses
