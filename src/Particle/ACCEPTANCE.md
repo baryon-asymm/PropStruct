@@ -85,8 +85,7 @@
       decision, since `SetCriterionTests` gates every declared entry.
 
 The `Corrected` model (`BOOT.md`, "## Corrected model"; designed 2026-10-18;
-`BridgeFrustum` and `ExactConstants` at this node's sites implemented 2026-10-18,
-`Fmkarm2OnAcceptance` and `WindowLowerEdge` not yet read by `Attempt.Run`). Each fix is
+the four flags this node reads implemented 2026-10-18). Each fix is
 proven twice (root `BOOT.md`, Taboos): red on the defect, right on an answer known
 beforehand.
 
@@ -112,8 +111,9 @@ beforehand.
       each branch forced on under `None` (scratch, reverted): `BridgeFrustum` and
       `ExactConstants` (the bool read `|| true`), 10 of 10 cases each; `Fmkarm2OnAcceptance`
       (line 720's loop moved after 738 under `ireset == 0`) and `WindowLowerEdge`
-      (`Build(…, true, …)` in `Attempt.Run`), which `Attempt.Run` does not read yet, as
-      scratch emulations, 10 of 10 each: the flags' own implementations re-prove it.
+      (`Build(…, true, …)` in `Attempt.Run`) were first scratch emulations, 10 of 10 each;
+      re-proved on their own implementations 2026-10-18 (the flag's bool read `|| true`
+      under `None`, scratch, reverted): 10 of 10 cases each.
 - [x] One flag changes what its entry names and nothing else: on the same cycle-1
       sequence, `BridgeFrustum` alone leaves outcomes, streams, integer totals and
       every record field but `Vsmkm`, `VmkmTotal` and `VmkmTotal2` bit-identical and
@@ -144,10 +144,13 @@ beforehand.
       ratios), `TheFlagUnsetIsTheOldSignatureBitForBit`. Red, reverted: the second cap's
       sign flipped in the flag's arm turns the three quadrature cases red (volume 1.03e−13
       against 5.81e−14 at ratio 1); `bb *= 1.000001` there turns the JJ/bb case red alone.
-- [x] `ExactConstants` at this node's sites. Right: on a constructed attempt each
-      sphere-volume term the record receives (`Allvdok`, `Vks`, `Svd`) equals the
-      `None` term times π/3.14159 to 1e−14 relative (the effect is 8.45e−7). Red: under
-      `None` the ratio is 1. The site list is generated (`Category=Legacy`): a test
+- [x] `ExactConstants` at this node's sites. Right: on a constructed attempt the
+      sphere-volume terms the record receives are π/6 times their cubes, `Allvdok` and
+      `Svd` equal the `None` term times π/3.14159 and `Vks` equals π/6 times the recorded
+      pocket cubes `Dp31`, each to 1e−14 relative (the effect is 8.45e−7), and the first
+      pocket's radius, `rrL − (Dr + Db)/2`, equals the oracle with π at both `rrL` and
+      `VP` to 1e−14. Red: under `None` the ratio is 1, and the radius is 1e−8 or more
+      from the π oracle. The site list is generated (`Category=Legacy`): a test
       scans the four line-map ranges of the Fortran for every match of `3\.14\d*`,
       `12\.566\d*`, `0?\.333\d*` and of the quotient `1/3.` not preceded by a letter,
       digit or point, one mapping row per line and literal, and checks them both
@@ -168,7 +171,18 @@ beforehand.
       `Vks` test and the site check red; both constants forced on under `None` turn the
       ten cycle-1 cases and the five cycle-0 snapshots red; a row removed from the
       mapping, a row added to the list and a use added to `Attempt.cs` each name their
-      line.
+      line. 2026-10-18, the `rrL` site by value: `ExactConstantsTests.
+      TheFirstPocketRadiusCarriesTheExactFourPiOfRrlUnderTheFlag` (one neighbour of a
+      single fraction, `DpMax` against `ConstructedModel.PeekFirstNeighbour` given π at
+      both sites; the oracle with the literal at `rrL` only is 1e−8 or more away):
+      red, reverted, when the flag's arm of `fourPi` is the literal (1.06e−6 from the π
+      oracle), and no other check of this item turns red then.
+
+  ⚠ 2026-10-18: this item first said each of `Allvdok`, `Vks` and `Svd` "equals the
+  `None` term times π/3.14159", which cannot hold for `Vks`: its radius
+  `rk = rrL − (Dr + Db)/2` moves with `rrL` under the same flag, so its term is not the
+  `None` term scaled. Found by T3's coder; reworded to what `ExactConstantsTests` tests,
+  `Vks` against π/6 of the recorded pocket cubes, under both models.
 - [x] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
       fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
       staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,

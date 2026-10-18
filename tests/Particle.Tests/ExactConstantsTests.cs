@@ -100,6 +100,54 @@ public class ExactConstantsTests : IClassFixture<CpuHost>
         Assert.True(worst > 1e-7, $"under None the cells are {worst} from the scaled ones; the check would not see the missing flag.");
     }
 
+    /// <summary>
+    /// The 4π of <c>rrL</c> (line 501) by value: the first neighbour's pocket radius, which
+    /// <c>DpMax</c> keeps (line 673, <c>RK = rrL - Dr/2 - Db/2</c>), against the oracle of
+    /// <see cref="ConstructedModel.PeekFirstNeighbour"/> given π at both sites, and under
+    /// <c>None</c> given the literal at both. The neighbour budget of one ends the attempt
+    /// right after that first pocket, so <c>DpMax</c> is that radius alone. Red: the oracle
+    /// with the literal at <c>rrL</c> only, the state a site left behind would produce, is
+    /// 1e-8 away from the flagged run (the effect is 2.8e-7 of <c>rrL</c>), and so is the
+    /// <c>None</c> run from the π oracle.
+    /// </summary>
+    [Fact]
+    public void TheFirstPocketRadiusCarriesTheExactFourPiOfRrlUnderTheFlag()
+    {
+        var geometry = ConstructedModel.Permissive(1.0, 0.1, 0.1, ak3: 0.01, ak4: 1.0);
+        double[] bounds = [1.0, 1.0];
+        double[] cumulative = [0.0, 1.0];
+        var streams = OriginalSeeds.Streams;
+
+        var (_, _, _, literalAa, maxDrDb) = ConstructedModel.PeekFirstNeighbour(_host.Accelerator, geometry, bounds, cumulative, streams);
+        var (_, _, _, exactAa, _) = ConstructedModel.PeekFirstNeighbour(
+            _host.Accelerator, geometry, bounds, cumulative, streams, spherePi: Math.PI, radiusPi: Math.PI);
+        var (_, _, _, radiusOnlyLiteralAa, _) = ConstructedModel.PeekFirstNeighbour(
+            _host.Accelerator, geometry, bounds, cumulative, streams, spherePi: Math.PI, radiusPi: SphereLiteral);
+
+        // The first neighbour is a pocket: AK3 and AK4 bracket its gap ratio.
+        var ratio = literalAa / maxDrDb;
+        Assert.True(ratio > 0.0, "this seed's first neighbour must not be jammed.");
+
+        var none = FirstPocketRadius(CorrectionSet.None, ratio / 2.0, ratio * 2.0);
+        var exact = FirstPocketRadius(CorrectionSet.ExactConstants, ratio / 2.0, ratio * 2.0);
+
+        Assert.True(RelativeError(exactAa, exact) <= RelativeTolerance, $"under the flag the radius is {RelativeError(exactAa, exact)} from the pi oracle.");
+        Assert.True(RelativeError(literalAa, none) <= RelativeTolerance, $"under None the radius is {RelativeError(literalAa, none)} from the literal oracle.");
+        Assert.True(RelativeError(radiusOnlyLiteralAa, exact) > 1e-8, "the check does not see the 4 pi of rrL left at the literal.");
+        Assert.True(RelativeError(exactAa, none) > 1e-8, "the check does not tell None from the flag.");
+    }
+
+    private double FirstPocketRadius(CorrectionSet corrections, double ak3, double ak4)
+    {
+        using var scenario = Scenario.Build(_host.Accelerator, size: 1.0, cellSize: 0.1, lambda: 0.1,
+            ak3: ak3, ak4: ak4, cycleFlag: 0, neighbourBudget: 1, corrections: corrections);
+
+        var streams = OriginalSeeds.Streams;
+        Assert.Equal(AttemptOutcome.NeighbourBudgetExceeded, scenario.Run(ref streams));
+        Assert.Equal(1L, scenario.IntegerTotal(scenario.Setup.Layout.Nfy));
+        return scenario.Record(scenario.Setup.Layout.DpMax);
+    }
+
     private static double Sum(long[] totals, int offset, int length)
     {
         var sum = 0L;
