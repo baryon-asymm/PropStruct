@@ -35,10 +35,10 @@ written").
 - **A malformed table is an error, not a silent skip.** A missing column, an unknown
   `Kind`, an unknown value in `The port`, a `Consequence` that is neither a measurement
   with a place nor the words `not measured`, an unknown value in `Corrected`, a
-  `not reachable` on a row whose `Kind` is not `numeric`, a `fixed (...)` that does not
-  name distinct C# identifiers, a header of the old six columns: each fails the run,
-  naming file and line. A defect quietly dropped from the report is worse than no
-  report.
+  `not reachable` on a row whose `Kind` is not `numeric` or whose `The port` is not
+  `reproduced`, a `fixed (...)` that does not name distinct C# identifiers, a header of
+  the old six columns: each fails the run, naming file and line. A defect quietly
+  dropped from the report is worse than no report.
 - **The order is by consequence, not by file.** `algorithm` first, then `statistics`,
   `numeric`, `dead`, `cosmetic`; inside a kind, by the first Fortran line number. The
   reader's question is "what changes the answer", and the page answers it in its first
@@ -74,13 +74,20 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   holding one Markdown table with the columns **Fortran | Kind | What the original
   does | Consequence | The port | Differing cells | Corrected**, and nothing else. The
   seventh column says what the `Corrected` model kind does with the
-  defect: `unchanged`, `not reachable` (a `numeric` row only) or `fixed (<Member>[,
-  <Member>]…)`, the members being `CorrectionSet` flags of `src/Particle`; this node
-  checks their shape, not their existence. The JSON twin does not carry the column.
+  defect: `unchanged`, `not reachable` (a `numeric` row the port reproduces, only) or
+  `fixed (<Member>[, <Member>]…)`, the members being `CorrectionSet` flags of
+  `src/Particle`; this node checks their shape, not their existence. The JSON twin does
+  not carry the column.
 
   ⚠ 2026-10-18: was six columns, ending at `Differing cells`; the old header is now a
   format error, with no back-compatibility (owner, 2026-10-18; every table migrated in
   the same commit).
+
+  ⚠ 2026-10-18: was `not reachable` allowed on any `numeric` row, now on a `numeric` row
+  whose `The port` is `reproduced` only: the value says the defect exists only under
+  `PrecisionKind.Original`, which is false of a row the port declares without
+  reproducing; four such rows read `not reachable` and are `unchanged` now (final
+  review, C5).
 - The node never reads the Fortran source. It has no opinion on whether a row is true;
   that is the transcribing node's own claim, and the protocol's answer to "is the
   document true about the code" is a human and the periodic reconciliation
@@ -162,6 +169,14 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   until the orchestrator's kit audit found it, since nothing runs it automatically.
   Now the criterion names no count: "exactly" is checked against the list the parser
   generates (AGENTS.md section 6).
+- [x] 2026-10-18: `not reachable` is rejected unless `The port` is `reproduced`, in
+      `tools/defect-report/test_defect_report.py`, `DefectReportTest`. Red:
+      `test_not_reachable_on_a_row_the_port_does_not_reproduce_is_an_error` (both
+      `declared, not reproduced` and `open`) failed with the port check disabled, and
+      on the real tree `--check` named `src/Output/BOOT.md:110` before the four rows
+      were relabelled. Right:
+      `test_unchanged_is_accepted_on_a_numeric_row_the_port_does_not_reproduce` and
+      `test_not_reachable_on_a_numeric_row_is_accepted`; the real tree passes.
 - [x] 2026-10-18: the writer emits LF on every platform and `--check` reads a CR as
       stale, in `tools/defect-report/test_defect_report.py`, `DefectReportTest`. Red:
       `test_check_reads_a_crlf_page_as_stale` regenerates the page, turns it to CRLF
