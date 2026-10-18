@@ -47,20 +47,6 @@ public class CorrectionIsolationTests : IClassFixture<CpuHost>
         });
     }
 
-    /// <summary>
-    /// <c>Fmkarm2OnAcceptance</c> alone leaves outcomes, streams, integer totals and every
-    /// record field but <c>Fmkarm2</c> bit-identical and moves it.
-    /// </summary>
-    [Theory]
-    [MemberData(nameof(Formulations))]
-    public void Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse(string formulation)
-    {
-        AssertOnlyTheNamedFieldsMove(formulation, CorrectionSet.Fmkarm2OnAcceptance, setup => new[]
-        {
-            (setup.Layout.Fmkarm2, "Fmkarm2", setup.Nkarm),
-        });
-    }
-
     // The same cycle-1 sequence under None and under one flag, attempt by attempt. Each named
     // field is a range of the record: (offset, name, length).
     private void AssertOnlyTheNamedFieldsMove(

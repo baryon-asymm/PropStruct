@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Known limitations
 - The `Corrected` model has no external reference: the statistical agreement with the
   original is a claim about the `Original` model.
+- The `Corrected` model keeps the model's matching coefficients (AK1–AK4, `Dmin`,
+  `karmcoef`, `mkmcoef`), which the original's authors fitted to experiment under the
+  original program; none is refitted for `Corrected`.
 
 ## [0.1.0] - 2026-10-06
 

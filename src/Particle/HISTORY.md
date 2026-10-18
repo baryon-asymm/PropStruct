@@ -8,6 +8,271 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="real4-membership-design-2026-10-18"></a>
+
+## 2026-10-18 — from "## Accumulators" and "## Corrected model" — the design decision of 2026-09-24 on the generated membership, and the paragraph of line 720, in full
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15), to make room for the declared
+notes of `BridgeFrustum` and `WindowLowerEdge`; each leaves its decision and its deciding
+figure in `BOOT.md`. The two texts as they stood.
+
+"## Accumulators", the design decision:
+
+```text
+  **Design decision, 2026-09-24 (owner and orchestrator): the membership of the rounded
+  set is generated too, not only its kind.** Until then the script generated each
+  name's kind, but the list of names was typed by hand (`FIELD_FORTRAN_NAMES`), which
+  could not hold a scalar local: six REAL*4 sums at lines 642–666 (`VSMKM1`, `SVD1`,
+  `Vdok_loc`, `Vmkm_loc`, `Vdok_loc2`, `Vmkm_loc2`) were missed and stayed `double`
+  under `Original` (fidelity audit of 2026-09-24, P-1). Implemented the same day: the
+  script now scans this node's own `## Line map` ranges directly, keyed by Fortran
+  name; the only hand-written part is `RealFourWriteSites.txt`, mapping each Fortran
+  name to its C# write site, "not ported", or "not rounded"; and
+  `tests/Particle.Tests/RealFourAccumulatorMappingTests.cs` guards the mapping both
+  ways, proven red on a synthetic fixture and, once, on the real files. Measured the
+  same day: `Binary64` bit-identical, `Original` moves `Zkarm_cor` alone (≤ 8.6e-7
+  relative) → `HISTORY.md#measurements-condensed-2026-10-18`.
+```
+
+"## Corrected model", the paragraph of line 720:
+
+```text
+**Line 720 — withdrawn 2026-10-18** (the flag `Fmkarm2OnAcceptance`, value 4, is
+retired and never reused). The original adds the staged `fmkarm2_loc` to `fmkarm2`
+before the tests of 723–738, so a rejected attempt's Var#2 pocket volumes enter it;
+the `Corrected` model keeps that commit point. `fmkarm_cor` (Var#1, 685–686) and every
+other pocket statistic (QKS, VKS, DP31/41 676–679, QDOKS 711) count rejected attempts
+too: under the flag Var#2 alone counted accepted ones, so the two variants of one
+correction parted on their population, not on their exclusion rule. Where `pdoksmall`
+is 0 in every cell (inpt, PSAN02n) both must equal the uncorrected set: under `Original`
+they do (214.81/214.81 µm, 162.93/162.93 µm at seed 0), under `All` `Dkarm43_cor(2)`
+went to 246.36 µm (+14.7 %) and 189.13 µm (+16.1 %). Staging `fmkarm2_loc` like the
+bridge sums (741–755) is no explicit error against that evidence, and only explicit
+errors are fixed. Paired shifts of the audit: `HISTORY.md#fmkarm2-audit-2026-10-18`.
+```
+
+<a id="corrections-page-rerun-2026-10-18"></a>
+
+## 2026-10-18 — from "## Defects of the original" — the program-run figures of the rows 1616–1627 and 469…, and the row 595 before them, before the re-run of the correction-effects page (U4)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+8b29342: the first run took its "sixteen seeds" as `k << 17`, which are eight distinct
+phases (the streams jump by `seed · 2^80` in a period of 2^100, so seed k equals seed
+k + 8) and understated its standard errors; the re-run uses `k · 2¹⁶`. The two
+Consequence cells that quoted it stood as follows; the row 595 held no program-run
+figure before (its sentence of the audit is unchanged and stays in the row).
+
+Row 1616–1627, `BridgeFrustum`:
+
+> measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation, shift ± its standard error): the fix alone moves `Zkarm` by −3.4 % (HPEPA3), −12.4 % (inpt), −7.0 % (P33), −12.8 % (PSAN02n), −2.7 % (HMX); `Dqmkm2` unmoved
+
+Row 469, 484, 501, …, `ExactConstants`:
+
+> measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`): with Statistics' sites, `da_coef` −0.0086 % (HMX) to −0.0100 % (HPEPA3), a seed-independent setup shift; `Dkarm43`, `Dkarm10`, `Dagg43` +0.04 % to +0.09 %, seen only by the same-seed paired t
+
+The old page's own figures for the same shifts, for the record: `BridgeFrustum` alone,
+`Zkarm` −3.406 ± 0.323 % (HPEPA3), −12.424 ± 0.050 % (inpt), −7.033 ± 0.560 % (P33),
+−12.823 ± 0.069 % (PSAN02n), −2.722 ± 0.199 % (HMX); `ExactConstants` alone, `Dagg43`
++0.080 ± 0.931 %, +0.037 ± 0.047 %, +0.111 ± 1.714 %, +0.040 ± 0.019 %, +0.077 ± 0.240 %
+in the same order; `WindowLowerEdge` alone, `Dqmkm2` −6.951 ± 3.9e-3 %, −2.805 ± 0.011 %,
+−4.377 ± 0.024 %, −3.642 ± 6.8e-3 %, −4.824 ± 0.015 %.
+
+<a id="fmkarm2-on-acceptance-withdrawn-2026-10-18"></a>
+
+## 2026-10-18 — `Fmkarm2OnAcceptance` withdrawn from the `Corrected` model, the full text of every claim about it
+
+Owner decision of 2026-10-18 after the four-auditor audit of the same day (option A):
+line 720 is no longer fixed under `Corrected`; the original's commit point, before the
+tests of 723–738, stands under both models. The member's value 4 is retired and never
+reused, `All` is 4091. The claims that named the flag stood as follows, each with the
+place it came from; the reasons and the audit's figures are in the entry below
+(`HISTORY.md#fmkarm2-audit-2026-10-18`).
+
+**BOOT.md, "## Invariants", "Every side effect of the original, in the same place" (the sentence end)**
+
+>   the exceptions listed under "Decisions where the port departs from a transcription"
+>   and, under `Fmkarm2OnAcceptance`, the one moved write of line 720 (`## Corrected
+>   model`). This is itself a defect of the original, declared for `## Defects of the
+>   original` (2026-09-20): an attempt later ended as `RestartedAfterLoop` by the
+>   acceptance tests of lines 723–738 keeps every histogram, bridge and pocket
+>   contribution it made before those tests fired — nothing is undone on rejection;
+>   under the `Corrected` model it keeps all of them but the staged `fmkarm2_loc` sum.
+
+**BOOT.md, "## Line map", the row of 719–756**
+
+> | 719–756 | `Attempt.Run` (`Label550`, the post-loop acceptance tests and commit) | line 720's write after line 738, just before 739's test, run only when `ireset == 0` under `Fmkarm2OnAcceptance` (`## Corrected model`) |
+
+**BOOT.md, "## Accumulators", the table row of `Fmkarm2`**
+
+> | `Fmkarm2` | 720 (after 738, on `ireset = 0`, under `Fmkarm2OnAcceptance`) |
+
+**BOOT.md, "## Accumulators", the end of the paragraph on "Committed" updates**
+
+> only if it counted a Var#2 bridge (line 752). Under `Fmkarm2OnAcceptance` `Fmkarm2`
+> joins them, added from `fmkarm2_loc` on `Accepted` only; under the `Original` model
+> line 720 adds it whatever the tests of 723–738 decide. Every other update happens
+> where the original makes it.
+
+**BOOT.md, "## Corrected model", the opening paragraph ("four members")**
+
+> in-process only, for measurement. This node reads the four members whose entries
+> follow;
+
+**BOOT.md, "## Corrected model", the first bullet ("four `bool` locals")**
+
+> read once at the top of `Attempt.Run`, beside `roundToReal4`, into four `bool`
+>   locals
+
+**BOOT.md, "## Corrected model", the entry of `Fmkarm2OnAcceptance`**
+
+> **`Fmkarm2OnAcceptance` — line 720.** The original adds the staged `fmkarm2_loc` to
+> `fmkarm2` after the loop but before the tests of 723–738, so a rejected attempt's Var#2
+> pocket volumes enter it, while every other staged sum is committed after the tests
+> (741–755). One write site, after the four tests and before line 739's `ireset > 0`:
+> the loop runs when `ireset == 0` under the flag, always without it; `fmkarm2_loc`, the
+> loop's order and its `AddReal4` call are unchanged. Nothing in 722–738 reads
+> `Fmkarm2` or `fmkarm2_loc` and nothing there can fail, so the move is bit-identical
+> without the flag. Effect: `Fmkarm2` alone (`fmkarm_cor2`, `Dkarm43_cor(2)`,
+> `Dkarm43sd_cor(2)`, `Dagg43_cor(2)`); draws, QKS, QKS1 and cycle 0 are untouched.
+
+**BOOT.md, "## Corrected model", the closing paragraph (rejected attempts keep their "other" side effects)**
+
+> Unchanged under `Corrected`, none an explicit error: rejected attempts keep their other
+> side effects;
+
+**BOOT.md, "## Defects of the original", the row of line 720**
+
+> | 720 | algorithm | Line 720 adds the attempt's staged `fmkarm2_loc` to `fmkarm2` after the neighbour loop but before the acceptance tests of 723–738, while every other staged sum is committed after them (741–755): a rejected attempt's Var#2 pocket volumes enter `fmkarm2` (`## Corrected model`, "`Fmkarm2OnAcceptance`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation): the fix alone moves only `fmkarm_cor2` and a few `Dagg43_cor`/`Dkarm43_cor` cells, no headline quantity | reproduced | none | fixed (Fmkarm2OnAcceptance) |
+
+**API.md, "## Corrected model", the enum member of value 4**
+
+>     Fmkarm2OnAcceptance = 4,             // Fortran 720: fmkarm2 added on acceptance only
+
+**API.md, "## Corrected model", the value of `All`**
+
+>     All = 4095,                          // the Corrected model: every member above
+
+**API.md, "## Corrected model", the sentence on the values**
+
+> The values are explicit powers of two and are never renumbered; `All` is their sum.
+
+**API.md, "## Corrected model", the members `Attempt.Run` acts on**
+
+> `ExactConstants`, `BridgeFrustum`, `Fmkarm2OnAcceptance` and `WindowLowerEdge` only
+> (`BOOT.md`, "## Corrected model");
+
+**API.md, "## Corrected model", the paragraph on the record's `Fmkarm2`**
+
+> Under `Fmkarm2OnAcceptance` the record's `Fmkarm2` is a committed field, written only
+> on `Accepted` in cycles ≥ 1, instead of a sum at loop end; every other field keeps its
+> row of "Accumulator layout", and no layout, length or offset changes under any member.
+
+**API.md, "## Attempt", the semantics of `Run`**
+
+>   totals receive the attempt's side effects whatever the outcome, except that under
+>   `Fmkarm2OnAcceptance` `Fmkarm2` receives the staged `fmkarm2_loc` on `Accepted` only
+>   (`## Corrected model`); on a failure outcome the state of totals and record is that
+>   of the moment of failure.
+
+**ACCEPTANCE.md, the introduction of the `Corrected` criteria ("the four flags")**
+
+> the four flags this node reads implemented 2026-10-18). Each fix is
+> proven twice (root `BOOT.md`, Taboos): red on the defect, right on an answer known
+> beforehand.
+
+**ACCEPTANCE.md, "`None` reproduces the original bit for bit beyond cycle 0" (the criterion's first red)**
+
+> each of the four flags' branches forced on
+
+**ACCEPTANCE.md, "`None` reproduces the original bit for bit beyond cycle 0" (the red of each branch)**
+
+>       `ExactConstants` (the bool read `|| true`), 10 of 10 cases each; `Fmkarm2OnAcceptance`
+>       (line 720's loop moved after 738 under `ireset == 0`) and `WindowLowerEdge`
+>       (`Build(…, true, …)` in `Attempt.Run`) were first scratch emulations, 10 of 10 each;
+>       re-proved on their own implementations 2026-10-18 (the flag's bool read `|| true`
+>       under `None`, scratch, reverted): 10 of 10 cases each.
+
+**ACCEPTANCE.md, "One flag changes what its entry names and nothing else" (the `Fmkarm2OnAcceptance` half)**
+
+>       moves those three; `Fmkarm2OnAcceptance` alone leaves everything but `Fmkarm2`
+>       bit-identical and moves it. Red: a scratch mutation of `bb` under
+>       `BridgeFrustum` turns the first red. 2026-10-18, `tests/Particle.Tests`,
+>       `CorrectionIsolationTests.BridgeFrustumMovesTheBridgeVolumeFieldsAndNothingElse`
+>       and `Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse` (HPEPA3, inpt, P33, 10⁴
+>       cycle-1 attempts, `Binary64`; PSAN02n and HMX are not in the set, as for the
+>       first half): green, and red, reverted, under `bb *= 1.1` in the frustum arm and
+>       under `record[JammedTotal] += 1e-3` in the `Fmkarm2OnAcceptance` arm, 3 of 3 each.
+
+**ACCEPTANCE.md, the criterion of `Fmkarm2OnAcceptance` on a constructed case**
+
+> - [x] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
+>       fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
+>       staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,
+>       and an `Accepted` attempt adds the same bits under both. 2026-10-18,
+>       `tests/Particle.Tests`, `Fmkarm2OnAcceptanceTests` (each under both precision
+>       kinds): `UnderNoneARejectedAttemptStillAddsTheStagedSum` (`NnMax` 1e−9, outcome
+>       `RestartedAfterLoop`, `conditions(9)` = 1, `Fmkarm2` equal to the accepted run's
+>       cells, which the same seed gives with `NnMax` 1e9), `UnderTheFlagARejectedAttemptAddsNothing`
+>       (every cell 0), `AnAcceptedAttemptAddsTheSameBitsUnderBoth` (record, `Fmkarm2` and
+>       integer totals bit-equal). Red, reverted: the flag read forced off turns the second
+>       red (both kinds); the `None` cycle-1 and cycle-0 snapshots stay green with the write
+>       moved after line 738.
+
+**ACCEPTANCE.md, "An attempt on the host thread and on the ILGPU CPU accelerator" (the `All` rejected case)**
+
+>       line 735, `Fmkarm2` not committed), each against the host call, bit for bit in
+
+**ACCEPTANCE.md, "The members agree with the defect report" (the case count)**
+
+> (22 cases, `CorrectionMemberRowCheck`)
+
+**ACCEPTANCE.md, "The members agree with the defect report" (the members of this node)**
+
+>       the last row flipped on the target branch (Particle: `BridgeFrustum`,
+>       `Fmkarm2OnAcceptance`, `WindowLowerEdge`, `ExactConstants`; `Statistics`: the
+>       other eight).
+
+**tests/Particle.Tests/BOOT.md, the L0/L1 row of the `Corrected` flags (the flag named twice)**
+
+> one flag moving only the fields its entry names (`BridgeFrustum`, `Fmkarm2OnAcceptance`), `ExactConstants` at `Attempt.Run`'s sites (the `rrL` site by value) and its generated site list, `Fmkarm2OnAcceptance` on a constructed rejected attempt, `WindowLowerEdge`
+
+---
+
+<a id="fmkarm2-audit-2026-10-18"></a>
+
+## 2026-10-18 — the audit behind the withdrawal of `Fmkarm2OnAcceptance`
+
+The four-auditor audit of 2026-10-18, at c32821e, of the `Corrected` model's fixes.
+
+Why. `fmkarm_cor` (Var#1, Fortran 685–686) and every other pocket statistic (QKS,
+VKS, DP31/41 at 676–679, QDOKS at 711) count rejected attempts; under the flag Var#2
+alone counted accepted ones. The two variants of one pocket-in-pocket correction
+therefore parted on their population, not on their exclusion rule. Where `pdoksmall`
+is 0 in every cell (inpt, PSAN02n) both variants must equal the uncorrected set, and
+under `Original` they do: seed 0, 214.81 and 214.81 µm (inpt), 162.93 and 162.93 µm
+(PSAN02n). Under `All` `Dkarm43_cor(2)` went to 246.36 µm (+14.7 %) and 189.13 µm
+(+16.1 %), and `All` minus the flag was equal again. Staging `fmkarm2_loc` like the
+bridge sums (741–755) does not make line 720 an explicit error against that sibling
+evidence (the rule: fix only explicit errors); it joins the rest of the E2 family,
+which the arbiter rejected on the same ground.
+
+Figures. Paired shifts of `Dkarm43_cor(2)` and `Dagg43_cor(2)`, `All` against
+`Original`, eight seeds `k·2^17`, batched CPU mode, `Independent` layout, `Binary64`,
+measured by the audit at c32821e:
+
+| Formulation | Shift of `Dkarm43_cor(2)` / `Dagg43_cor(2)` |
+|---|---|
+| inpt | +14.6 % |
+| PSAN02n | +16.0 % |
+| HMX | +2.0 % … +2.2 % |
+| P33 | −3.3 % … −3.5 % |
+| HPEPA3 | −9.5 % … −11.2 % |
+
+The row of line 720 in the defect report carries these figures with this place; its
+`Corrected` cell is `unchanged`.
+
+---
+
 <a id="window-lower-edge-redraw-rate-2026-10-18"></a>
 
 ## 2026-10-18 — from `ACCEPTANCE.md`, "The redraw rate of label 451 under `WindowLowerEdge`" — the run table

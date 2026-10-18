@@ -31,7 +31,7 @@ public sealed record SimulationOptions
     public int NeighbourBudget { get; init; } = SimulationDefaults.NeighbourBudget;
     public StreamLayout Streams { get; init; } = StreamLayout.Independent; // Original is sequential only (see "## Errors")
     public PrecisionKind Precision { get; init; } = PrecisionKind.Binary64;
-    public ulong Seed { get; init; }                            // 0: the layout's initial states
+    public ulong Seed { get; init; }                            // 0: the layout's initial states; seeds equal mod 2²⁰ draw alike
     public bool ContinuedStreams { get; init; }                 // batched, batch size 1 only: the degenerate configuration
 }
 

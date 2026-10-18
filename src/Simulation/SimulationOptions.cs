@@ -99,7 +99,10 @@ public sealed record SimulationOptions
     internal CorrectionSet EffectiveCorrections =>
         Model == ModelKind.Original ? CorrectionSet.None : Corrections ?? CorrectionSet.All;
 
-    /// <summary>0: the layout's own initial states (root BOOT.md, "Execution model").</summary>
+    /// <summary>
+    /// 0: the layout's own initial states (root BOOT.md, "Execution model"). The streams jump by
+    /// <c>seed · 2^80</c> steps in a period of 2^100, so two seeds equal modulo 2^20 draw the same streams.
+    /// </summary>
     public ulong Seed { get; init; }
 
     /// <summary>

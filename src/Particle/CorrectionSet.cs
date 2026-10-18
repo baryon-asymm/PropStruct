@@ -3,11 +3,12 @@ namespace PropStruct.Particle;
 /// <summary>
 /// The explicit errors of the original that the <c>Corrected</c> model fixes, one flag each
 /// (BOOT.md, "## Corrected model"; API.md, "## Corrected model"). The values are explicit
-/// powers of two and are never renumbered; <see cref="All"/> is their sum. A member is named
-/// in its defect rows' <c>Corrected</c> column as <c>fixed (&lt;Member&gt;)</c>.
-/// <c>Attempt.Run</c> acts on <see cref="ExactConstants"/>, <see cref="BridgeFrustum"/>,
-/// <see cref="Fmkarm2OnAcceptance"/> and <see cref="WindowLowerEdge"/> only; the others fix
-/// lines of <c>Statistics</c> and mean nothing here.
+/// powers of two and are never renumbered or reused; <see cref="All"/> is their sum. The
+/// value 4 is retired: 2026-10-18, it was <c>Fmkarm2OnAcceptance</c> (BOOT.md,
+/// "## Corrected model"). A member is named in its defect rows' <c>Corrected</c> column as
+/// <c>fixed (&lt;Member&gt;)</c>. <c>Attempt.Run</c> acts on <see cref="ExactConstants"/>,
+/// <see cref="BridgeFrustum"/> and <see cref="WindowLowerEdge"/> only; the others fix lines of
+/// <c>Statistics</c> and mean nothing here.
 /// </summary>
 [Flags]
 internal enum CorrectionSet : uint
@@ -20,9 +21,6 @@ internal enum CorrectionSet : uint
 
     /// <summary>Fortran 1616–1627: the bridge volume as the frustum less the two caps.</summary>
     BridgeFrustum = 2,
-
-    /// <summary>Fortran 720: <c>fmkarm2</c> added on acceptance only.</summary>
-    Fmkarm2OnAcceptance = 4,
 
     /// <summary>Fortran 595: the window's origin at the cell's lower edge.</summary>
     WindowLowerEdge = 8,
@@ -52,5 +50,5 @@ internal enum CorrectionSet : uint
     PdoksmallFirstCell = 2048,
 
     /// <summary>The <c>Corrected</c> model: every member above.</summary>
-    All = 4095,
+    All = 4091,
 }

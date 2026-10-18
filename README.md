@@ -110,7 +110,9 @@ row marked `fixed` in the `Corrected` column of
 line in `results.m`, `RunDiagnostics.Model` in the result. It computes under `Binary64`
 only (refused with `--precision original`), in both modes and layouts, and has no
 external reference to agree with: the comparison with the original above is the
-`Original` model's.
+`Original` model's. Its matching coefficients are the original's defaults, which the
+original's authors fitted to experiment under the original program; `Corrected` refits
+none of them.
 
 ## Platform and CUDA
 

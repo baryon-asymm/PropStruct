@@ -8,6 +8,23 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="reference-mode-side-effects-withdrawn-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants", "Reference mode is the original's sequence" — all side effects but `fmkarm2`'s under `Corrected`
+
+`Fmkarm2OnAcceptance` was withdrawn from the `Corrected` model the same day, on the
+owner's word after a four-auditor audit: under it Var#2 of the pocket-in-pocket
+correction counted accepted attempts only while Var#1 and every other pocket statistic
+count rejected ones, so the two variants parted where `pdoksmall` = 0 (inpt, PSAN02n:
+`Dkarm43_cor(2)` +14.6 % and +16.0 % against `Dkarm43_cor(1)`); line 720 is not an
+explicit error against that sibling evidence (`src/Particle/HISTORY.md`). The clause as
+it stood:
+
+> the refresh, as in the original); rejected attempts keep all their side effects, but
+> `fmkarm2`'s under `Corrected` (`src/Particle`); no accumulator is reset between cycles.
+
+---
+
 <a id="reference-mode-side-effects-corrected-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Invariants", "Reference mode is the original's sequence" — rejected attempts keep every side effect, under every model

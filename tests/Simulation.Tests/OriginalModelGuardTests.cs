@@ -11,12 +11,18 @@ namespace PropStruct.Simulation.Tests;
 /// (print resolution of four to eight digits) and that of the whole <see cref="SimulationResult"/> as JSON
 /// with every double round-tripped, which a change below the print resolution moves. Both come from
 /// <see cref="ReferenceModeRunner.Fingerprint"/>, the runner that wrote the file; the approved file is
-/// generated, never typed (<c>dotnet run --project tests/RateTableTool -- original-model-guard</c>).
+/// generated, never typed (<c>dotnet run --project tests/RateTableTool -- original-model-guard</c>). The cases
+/// split by <see cref="GuardCase.IsLong"/> into the fast set and <c>Category=Long</c>.
 /// </summary>
 public class OriginalModelGuardTests(ITestOutputHelper output)
 {
-    public static IEnumerable<object[]> CaseIds() =>
-        OriginalModelGuard.Cases.Select(c => new object[] { c.Id });
+    private const string RegenerateCommand = "dotnet run --project tests/RateTableTool -- original-model-guard";
+
+    public static IEnumerable<object[]> FastCaseIds() =>
+        OriginalModelGuard.Cases.Where(c => !c.IsLong).Select(c => new object[] { c.Id });
+
+    public static IEnumerable<object[]> LongCaseIds() =>
+        OriginalModelGuard.Cases.Where(c => c.IsLong).Select(c => new object[] { c.Id });
 
     [Fact]
     public void ApprovedFileHoldsExactlyTheCasesOfTheGuard()
@@ -28,26 +34,21 @@ public class OriginalModelGuardTests(ITestOutputHelper output)
     }
 
     [Theory]
-    [MemberData(nameof(CaseIds))]
+    [MemberData(nameof(FastCaseIds))]
+    public void ResultAndResultsMMatchApprovedHashes(string id) => AssertCaseMatchesApprovedHashes(id);
+
+    [Theory]
+    [MemberData(nameof(LongCaseIds))]
     [Trait("Category", "Long")]
-    public void ResultAndResultsMMatchApprovedHashes(string id)
+    public void LongCaseResultAndResultsMMatchApprovedHashes(string id) => AssertCaseMatchesApprovedHashes(id);
+
+    private void AssertCaseMatchesApprovedHashes(string id)
     {
         var guardCase = OriginalModelGuard.Find(id);
         var run = ReferenceModeRunner.Fingerprint(guardCase.ReadFormulation(), guardCase.Options());
         output.WriteLine(OriginalModelGuard.Line(guardCase, run));
 
-        var regenerate = "regenerate with 'dotnet run --project tests/RateTableTool -- original-model-guard' " +
-            "in the same commit as the reason for the change, only if the change of the Original model is intended.";
-        Assert.True(
-            OriginalModelGuard.LoadApproved().TryGetValue(id, out var approved),
-            $"no approved hashes for '{id}' in {OriginalModelGuard.ApprovedPath}; {regenerate}");
-        Assert.True(
-            string.Equals(approved.Json, run.JsonSha256Hex, StringComparison.Ordinal),
-            $"{id}: the whole result (JSON, Elapsed and Accelerator normalised) no longer matches " +
-            $"{OriginalModelGuard.ApprovedPath}. expected sha256={approved.Json}, got sha256={run.JsonSha256Hex}; {regenerate}");
-        Assert.True(
-            string.Equals(approved.ResultsM, run.Sha256Hex, StringComparison.Ordinal),
-            $"{id}: results.m (time line aside) no longer matches {OriginalModelGuard.ApprovedPath}. " +
-            $"expected sha256={approved.ResultsM}, got sha256={run.Sha256Hex}; {regenerate}");
+        GuardHashAssertions.AssertMatchesApproved(
+            id, run, OriginalModelGuard.LoadApproved(), OriginalModelGuard.ApprovedPath, RegenerateCommand);
     }
 }

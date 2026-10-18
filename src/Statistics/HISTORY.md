@@ -4,6 +4,176 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="u4-line-limit-moves-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" and "## Setup plane" — two passages shortened for the line limit
+
+Moved 2026-10-18 (AGENTS.md §15), to make room for the re-run page's figures; each
+keeps its rule in `BOOT.md`. The passages as they stood.
+
+"## Invariants", "The setup follows the precision kind", the end of the sentence:
+
+```text
+  to what it computed before, except `SetupEchoes.Ddokmax` ("## Setup plane",
+  "review"): its stored value moved at the eighth significant digit when the
+  2026-09-24 review corrected it to read the same store every other fraction bound
+  goes through, with the five reference formulations still bit-identical at seed 0 on
+  every other cell of `results.m`.
+```
+
+"## Setup plane", "Why whole, not in pieces":
+
+```text
+**Why whole, not in pieces.** Two throwaway builds (2026-09-23, branch
+`claude/fraction-table-experiment`, not adopted) rounded first `ZSS` alone, then also
+the mass shares and bounds at `FractionLaw`'s boundary; each was a third program — its
+table was the original's while its λ, `Dmax` and size draws were not. The last rung, the
+literal fold, is what closes `inpt`'s `epsdokfr[0]` to the original's 2.70e-8.
+```
+
+<a id="categories-capacity-check-narrative-2026-10-18"></a>
+
+## 2026-10-18 — from "## Categories" — the paragraph on the `DPRow > Ncat` check, in full
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15); the rule stays in `BOOT.md`, with
+the status the check returns and the place of its proof. The paragraph's second half as
+it stood:
+
+```text
+`Categories.MergeAndDescribe` checks this rather than trusting it
+silently (root BOOT.md, "Failures are values"; `CategoriesStatus`, `API.md`): if
+`DPRow > Ncat` it returns `CategoriesStatus.CategoryCountExceedsCapacity` with every
+`out` parameter empty and no total read or written, instead of the Fortran's own
+unclamped loop over the rows `1..DPRow` (line 827, which has no clamp at all) or a
+defensive truncation that would silently change the model's output (root BOOT.md, Taboos: "No silent fix of
+a defect of the original"). `CategoriesTests.MergeAndDescribeReportsStatusWhenDpRow
+ExceedsNcat` constructs a `DPRow > Ncat` input directly (bypassing the invariant above
+on purpose, since the argument is about the model's own particles, not about what this
+method's parameters allow a caller to pass) and proves the status fires instead of the
+`IndexOutOfRangeException` the old silent clamp's own downstream `Recompute` loop threw
+once `row` was allowed past `ncat` (found restoring the old clamp as this check's own
+mutation proof, `tests/Statistics.Tests/BOOT.md`, "## Mutations").
+```
+
+<a id="corrections-page-rerun-2026-10-18"></a>
+
+## 2026-10-18 — from "## Defects of the original" and "## Corrected model" — the program-run claims of four rows and of the `CategoriesEmptyRowsMerged` entry, before the re-run of the correction-effects page (U4)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+8b29342: the first run took its "sixteen seeds" as `k << 17`, which are eight distinct
+phases, and understated its standard errors; the re-run uses `k · 2¹⁶`, adds the three
+`AllBut<Flag>` arms for the category flags, and shows the main effect of
+`CategoriesEmptyRowsMerged`, which the single-flag arm alone does not (the audit's F1:
+the rows understated it). The fragments stood as follows.
+
+Row 911–958, `CategoriesOnCopy`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; sixteen seeds) the fix alone moves `DPRow` +22 % (HPEPA3), +83 % (P33), +2.9 % (PSAN02n), not inpt or HMX
+
+Row 947–959, `CategoriesLastRowRecomputed`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no headline shift: 22 differing cells on P33, `DPRow` −2.1 ± 1.4 %
+
+Row 869–871, 915, 947, `CategoriesEmptyRowsMerged`, program-run clause:
+
+> in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no differing cell on the five references, 28 on PSAN02 read with its pocket-forming flags
+
+Row 1145, 1150, `VdokTotalOnCopy`, program-run clause:
+
+> in program runs, P312 over three cycles (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, case P312-Cycles3, 8 seeds), `VdokTotalOnCopy` alone moves `Zkarm_cor` by −2.944 ± 0.153 %
+
+`ACCEPTANCE.md`, the `VdokTotalOnCopy` criterion, its last sentence:
+
+>   (`P312-Cycles3`, 8 seeds, `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`):
+>   `Zkarm_cor` −2.944 ± 0.153 % against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
+
+"## Corrected model", the entry of `CategoriesEmptyRowsMerged`, its last sentence:
+
+>   move the category rows (`DPRow`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `fqdokkarm`)
+>   where a merge or an empty row occurs, measured on drawn totals only (`ACCEPTANCE.md`).
+
+<a id="literals-note-2026-10-01"></a>
+
+## 2026-10-18 — from "## Invariants" — "Double precision, literals as written", the note of 2026-10-01
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15); the two-line note as it stood.
+
+> ⚠ 2026-10-01: was "under either kind, except the setup plane's own literal
+> expressions", now the per-cycle plane's literals binary32 under `Original` too.
+
+<a id="no-such-check-2026-09-27"></a>
+
+## 2026-10-18 — from "## Setup plane" — "Inputs as `READ` leaves them", the note of 2026-09-27
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15); the two-line note as it stood.
+
+> ⚠ 2026-09-27: was "caught by a check over the shipped files the day it bites"; no
+> such check exists (`tests/`, `tools/`, `src/` searched); found by the D6 review.
+
+<a id="acceptance-narrations-u2-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — the narrations of the fraction-share row criterion, A9, A11, A13 and A14, told in full
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15), to make room for the evidence of the `PdoksmallFirstCell` limit and the
+`VdokTotalOnCopy` identity; each criterion keeps its tick, its place and its deciding figures. The five texts, in the order
+they stood (the ⚠ pointers that followed them are still in `ACCEPTANCE.md`):
+
+> - [x] 2026-09-23: the defect row for the fraction-share normalization is re-read against
+>   the source and corrected: the sum and division live at lines 1723/1725/1727, not
+>   1712–1714; `The port` is set to `reproduced` (under `Original`; `Binary64`
+>   unaffected), and `Consequence` now names the model effect the positive controls above
+>   measure, beside the pre-existing cosmetic `epsdokfr` reading.
+>
+> - [x] 2026-10-03: A9 (F3), the call-site order of the plane's products is held
+>   structurally (`tests/Statistics.Tests/CyclePlaneOrderSiteTests`; `API.md`, "##
+>   Cycle"): each `order.` call cites its Fortran lines, and its factors' association,
+>   read through the named form's `Original` expression, is a sub-expression of the
+>   `order` text at a cited line, a commutation one order. Green on the 23 calls; red at
+>   its own line on eleven edits, right on three commutations
+>   (`tests/Statistics.Tests/BOOT.md`, "## Mutations").
+>
+> - [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
+>   `formulas_statistics.py` (`cycle_plane_oracle.py restamp`, `verify` green;
+>   `ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until restamped); (b)
+>   `.TheTwinThatSuppliesTheInjectedSetupReproducesItsCaseFiles` runs the twin's `verify`
+>   in the fast set, red on `DOKM_UNROLL = 6`; (c) `QKS1`'s injection and `Compute` are
+>   one expression at every count (A14; `Qks1NormalisationTests`, red on the divisor
+>   `QKSS + 1` and on `f32(QKSS)`).
+>
+> - [x] 2026-10-03: A13 (the arbiter's suggestion), the pre-loop survey of the 49 shipped
+>   files is a ratchet (`PreloopSurveyTests`, `PreloopSurvey.approved.txt`; the oracle's
+>   pre-loop over every `.dat`, `tests/Fixtures/preloop_survey.py generate` into
+>   `cases/statistics/preloop_survey.json`, its `verify` the one `Long` test):
+>   `Setup.Prepare` under `Original` against the executed `zss`, `zx`, `z11`, `lambda`,
+>   `DOKM`, `DOKSD` and `GGG` differed on `CSPX04` alone until A12; the approved file is
+>   empty now. Red: the five-fold schedule set to rule L gives `AK157a`, `BK10`,
+>   `KB397` and `C166`; one unit moved in memory gives its file. Right: today's code.
+>
+> - [x] 2026-10-03: A14 (from A11), the divisor of line 718 is the exact count. The
+>   excerpt holds the loop's bytes (0x40B7FA–0x40B8AF, read, not run): `QKSS` is
+>   `INTEGER*8`, `fild qword` loads it exactly (0x40B823), each cell is `fild qword; fdiv;
+>   fstp dword`, so only the quotient rounds, as in `Pockets`. The oracle's injection is
+>   `f32(q / QKSS)` and equals `Compute` on every cycle (`Qks1NormalisationTests`, the 2^24
+>   and 2^24 + 1 pair kept against a divisor rounded to binary32). Nothing moves; the row
+>   `718, 963–996` is `reproduced`.
+
+<a id="pdoksmall-first-cell-figure-2026-10-18"></a>
+
+## 2026-10-18 — from "## Defects of the original" (row 1021–1065) and "## Acceptance criteria" — the `PdoksmallFirstCell` evidence figure, 0 → 0.191
+
+The figure the evidence case first reported, before the four-auditor audit of 2026-10-18 found its input wrong:
+`AnalyticCycle` started `Vdokstr` at the edge of the cell that holds `Dmin` (`b = int(Dmin/Di)·Di`), so cell 1 held the
+coarse mass of the whole cell, while Fortran 533 rejects `Db ≤ Dmin` before 542 accumulates it. With `Vdokstr` starting
+at `Dmin`, as its summary says ("the oxidizer drawn as coarse"), the same case gives 0.144 (P312, `Dmin` 5 µm); at the
+old start the mutation reproduces 0.191. The limit the figure hid is declared in `## Corrected model`.
+
+The row's sentence: "Under `PdoksmallFirstCell` (`## Corrected model`) the cell is assigned: on totals of P312's own mass
+CDF at `Dmin` 5 µm `pdoksmall(1)` is 0 under `None` and 0.191 under the flag
+(`tests/Statistics.Tests/CorrectedCycleEvidenceTests`)."
+
+The criterion's closing words: "Reported (P312's own mass CDF, `CorrectedCycleEvidenceTests`): `gdokleft` 0.122, a cell
+moves ≤ 21.6 %; `Dmin` 5 µm: `pdoksmall[0]` 0 → 0.191."
+
 <a id="corrected-category-flags-every-formulation-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Corrected model" — "The three category flags move the category rows of every formulation"
