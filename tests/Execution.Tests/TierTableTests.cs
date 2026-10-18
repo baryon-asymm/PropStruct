@@ -1,3 +1,4 @@
+using PropStruct.Particle;
 using PropStruct.Random;
 using PropStruct.Tests.Harness;
 using Xunit;
@@ -99,6 +100,30 @@ public sealed class TierTableTests(ITestOutputHelper output)
             ["HMX"] = (5e-13, 3.0 / 2000.0),
         };
 
+    // The Corrected model's own tiers (src/Execution/BOOT.md, "GPU/CPU tiers under `Corrected`"), derived by the
+    // rule above from one measurement, 2026-10-18, Release, attempt budget 8192, the same sample as the
+    // Original rows, setup prepared under CorrectionSet.All (ModelSetup.Corrections), CUDA against the CPU host
+    // threads:
+    //
+    //   HPEPA3:  max relative diff 3.591409E-15, diverged 0/2000
+    //   inpt:    max relative diff 5.172344E-16, diverged 0/1000
+    //   P33:     max relative diff 1.420090E-15, diverged 0/2000
+    //   PSAN02n: max relative diff 5.684923E-16, diverged 0/2000
+    //   HMX:     max relative diff 1.062193E-15, diverged 0/2000
+    //
+    // RelativeTolerance: 8E-14, one for all five as in the Original table, a margin of roughly 22x over the
+    // worst observed figure (HPEPA3). MaxDivergedShare: the rule of three, 3/n, as above. Neither is loosened
+    // without a new measurement, and the Original table is untouched.
+    public static readonly IReadOnlyDictionary<string, (double RelativeTolerance, double MaxDivergedShare)> CorrectedTiers =
+        new Dictionary<string, (double, double)>
+        {
+            ["HPEPA3"] = (8e-14, 3.0 / 2000.0),
+            ["inpt"] = (8e-14, 3.0 / 1000.0),
+            ["P33"] = (8e-14, 3.0 / 2000.0),
+            ["PSAN02n"] = (8e-14, 3.0 / 2000.0),
+            ["HMX"] = (8e-14, 3.0 / 2000.0),
+        };
+
     [Theory]
     [Trait("Category", "Long")]
     [InlineData("HPEPA3")]
@@ -106,7 +131,21 @@ public sealed class TierTableTests(ITestOutputHelper output)
     [InlineData("P33")]
     [InlineData("PSAN02n")]
     [InlineData("HMX")]
-    public void CudaAgreesWithTheCpuAcceleratorOnAWholeCycleBatch(string formulationName)
+    public void CudaAgreesWithTheCpuAcceleratorOnAWholeCycleBatch(string formulationName) =>
+        AssertCudaAgreesWithTheCpuAccelerator(formulationName, CorrectionSet.None, Tiers[formulationName]);
+
+    [Theory]
+    [Trait("Category", "Long")]
+    [InlineData("HPEPA3")]
+    [InlineData("inpt")]
+    [InlineData("P33")]
+    [InlineData("PSAN02n")]
+    [InlineData("HMX")]
+    public void CudaAgreesWithTheCpuAcceleratorOnAWholeCycleBatchUnderTheCorrectedModel(string formulationName) =>
+        AssertCudaAgreesWithTheCpuAccelerator(formulationName, CorrectionSet.All, CorrectedTiers[formulationName]);
+
+    private void AssertCudaAgreesWithTheCpuAccelerator(
+        string formulationName, CorrectionSet corrections, (double RelativeTolerance, double MaxDivergedShare) tier)
     {
         using var cuda = Engine.Create(AcceleratorKind.Cuda, RecordBudgetBytes);
 
@@ -124,13 +163,15 @@ public sealed class TierTableTests(ITestOutputHelper output)
             return;
         }
 
-        var (RelativeTolerance, MaxDivergedShare) = Tiers[formulationName];
+        var (relativeTolerance, maxDivergedShare) = tier;
 
         // Cycle 0 on the CPU accelerator; forked onto a CPU and the CUDA engine above for cycle 1
         // (DeterminismTests' own forking technique: WriteTotals + SetCycle reproduce the identical starting
         // point).
         using var warmup = Engine.Create(AcceleratorKind.Cpu, RecordBudgetBytes);
-        var ready = ReferenceFormulationDriver.PrepareThroughCycle0(warmup, StreamLayout.Independent, seed: 0UL, formulationName, AttemptsPerLaunch);
+        var ready = ReferenceFormulationDriver.PrepareThroughCycle0(
+            warmup, StreamLayout.Independent, seed: 0UL, formulationName, AttemptsPerLaunch, corrections);
+        Assert.Equal(corrections, ready.Setup.Corrections);
         var setupValue = ready.Setup;
 
         using var cpu = Engine.Create(AcceleratorKind.Cpu, RecordBudgetBytes);
@@ -163,6 +204,7 @@ public sealed class TierTableTests(ITestOutputHelper output)
         cuda.ReadTotals(cudaInteger, cudaReal);
 
         var maxRelativeDiff = 0.0;
+        var comparedFields = 0;
         for (var i = 0; i < cpuReal.Length; i++)
         {
             var scale = Math.Max(Math.Abs(cpuReal[i]), Math.Abs(cudaReal[i]));
@@ -170,6 +212,8 @@ public sealed class TierTableTests(ITestOutputHelper output)
             {
                 continue;
             }
+
+            comparedFields++;
 
             var relativeDiff = Math.Abs(cpuReal[i] - cudaReal[i]) / scale;
             maxRelativeDiff = Math.Max(maxRelativeDiff, relativeDiff);
@@ -208,13 +252,15 @@ public sealed class TierTableTests(ITestOutputHelper output)
 
         var divergedShare = (double)diverged / sampleSize;
 
-        output.WriteLine($"{formulationName}: max relative diff on real totals = {maxRelativeDiff:E} (tier {RelativeTolerance:E}); " +
-                          $"diverged {diverged}/{sampleSize} sampled particles = {divergedShare:P2} (tier {MaxDivergedShare:P2})");
+        output.WriteLine($"{formulationName} ({corrections}): max relative diff on {comparedFields}/{cpuReal.Length} real totals = {maxRelativeDiff:E} (tier {relativeTolerance:E}); " +
+                          $"diverged {diverged}/{sampleSize} sampled particles = {divergedShare:P2} (tier {maxDivergedShare:P2})");
 
-        Assert.True(maxRelativeDiff <= RelativeTolerance,
-            $"{formulationName}: max relative diff {maxRelativeDiff:E} exceeds the tier {RelativeTolerance:E}");
-        Assert.True(divergedShare <= MaxDivergedShare,
-            $"{formulationName}: diverged share {divergedShare:P2} exceeds the tier {MaxDivergedShare:P2}");
+        // A figure over no field would be no figure.
+        Assert.True(comparedFields > 0, $"{formulationName}: no real total reached the comparison");
+        Assert.True(maxRelativeDiff <= relativeTolerance,
+            $"{formulationName}: max relative diff {maxRelativeDiff:E} exceeds the tier {relativeTolerance:E}");
+        Assert.True(divergedShare <= maxDivergedShare,
+            $"{formulationName}: diverged share {divergedShare:P2} exceeds the tier {maxDivergedShare:P2}");
     }
 
     private static bool StreamsEqual(StreamSet a, StreamSet b) =>
