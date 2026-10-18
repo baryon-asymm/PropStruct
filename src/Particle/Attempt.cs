@@ -57,6 +57,7 @@ internal static class Attempt
         var layout = setup.Layout;
         var nkarm = setup.Nkarm;
         var roundToReal4 = setup.Kind == PrecisionKind.Original; // AddReal4, computed once (BOOT.md, "Precision kind").
+        var bridgeFrustum = (setup.Corrections & CorrectionSet.BridgeFrustum) != 0; // each flag read once, by & (BOOT.md, "## Corrected model")
 
         var fmkarm2Loc = scratch.SubView(0, nkarm);
         var fqks = scratch.SubView(nkarm, nkarm + 1);
@@ -273,7 +274,7 @@ internal static class Attempt
                 return AttemptOutcome.IndexOutOfRange;
             }
 
-            jj = BridgeGeometry.Volume(dr / 2.0, db / 2.0, dkarm / 2.0, aa, out vmkm, out bb); // VM (624)
+            jj = BridgeGeometry.Volume(dr / 2.0, db / 2.0, dkarm / 2.0, aa, bridgeFrustum, out vmkm, out bb); // VM (624)
         }
 
         if (aa > 0.0) // (627)

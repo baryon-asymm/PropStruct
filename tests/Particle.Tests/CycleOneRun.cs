@@ -1,6 +1,3 @@
-using System.Buffers.Binary;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using ILGPU;
 using ILGPU.Runtime;
 using PropStruct.Random;
@@ -71,14 +68,17 @@ internal sealed class CycleOneRun : IDisposable
     public ModelSetup Setup { get; }
 
     /// <summary>
-    /// Prepares <paramref name="formulation"/> under <paramref name="kind"/> and runs its
-    /// cycle 0 (the formulation's own <c>N</c> accepted particles), then the statistics
-    /// between the cycles, leaving the run ready for the first attempt of cycle 1.
+    /// Prepares <paramref name="formulation"/> under <paramref name="kind"/> with
+    /// <paramref name="corrections"/> set in <c>ModelSetup.Corrections</c> and runs its cycle 0
+    /// (<see cref="CycleZeroParticles"/> accepted particles), then the statistics between the
+    /// cycles, leaving the run ready for the first attempt of cycle 1.
     /// </summary>
-    public static CycleOneRun TakeToCycleOne(Accelerator accelerator, string formulation, PrecisionKind kind)
+    public static CycleOneRun TakeToCycleOne(
+        Accelerator accelerator, string formulation, PrecisionKind kind, CorrectionSet corrections = CorrectionSet.None)
     {
         var setup = ReferenceFormulation.Prepare(
             accelerator, formulation, kind, out var read, out var tables, out var echoes, out var inputs);
+        setup.Corrections = corrections;
 
         var run = new CycleOneRun(accelerator, setup, tables);
         try
@@ -118,24 +118,20 @@ internal sealed class CycleOneRun : IDisposable
     }
 
     /// <summary>
-    /// One attempt of cycle 1 in reference mode. <paramref name="digest"/> receives the
-    /// SHA-256 of the row <c>SnapshotTests</c> hashes (outcome, the six streams' limbs, every
-    /// integer total, the particle's record).
+    /// One attempt of cycle 1 in reference mode: what it left (outcome, streams, integer totals,
+    /// the particle's record) before an accepted attempt's record is reset.
     /// </summary>
-    public AttemptOutcome Step(out byte[] digest)
+    public AttemptTrace Step()
     {
         var outcome = Advance();
-        digest = DigestOfTheState(outcome);
+        var trace = new AttemptTrace(outcome, _streams, _integerTotals.GetAsArray1D(), _record.GetAsArray1D());
         if (outcome == AttemptOutcome.Accepted)
         {
             _record.MemSetToZero();
         }
 
-        return outcome;
+        return trace;
     }
-
-    /// <summary>A copy of the shared integer totals as they stand.</summary>
-    public long[] IntegerTotals() => _integerTotals.GetAsArray1D();
 
     public void Dispose()
     {
@@ -188,28 +184,5 @@ internal sealed class CycleOneRun : IDisposable
         }
 
         return outcome;
-    }
-
-    private byte[] DigestOfTheState(AttemptOutcome outcome)
-    {
-        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-        hash.AppendData([(byte)outcome]);
-        AppendStream(hash, _streams.S1);
-        AppendStream(hash, _streams.S2);
-        AppendStream(hash, _streams.S3);
-        AppendStream(hash, _streams.S4);
-        AppendStream(hash, _streams.S5);
-        AppendStream(hash, _streams.S6);
-        hash.AppendData(MemoryMarshal.AsBytes(_integerTotals.GetAsArray1D().AsSpan()));
-        hash.AppendData(MemoryMarshal.AsBytes(_record.GetAsArray1D().AsSpan()));
-        return hash.GetHashAndReset();
-    }
-
-    private static void AppendStream(IncrementalHash hash, Mcg128State state)
-    {
-        Span<byte> limbs = stackalloc byte[16];
-        BinaryPrimitives.WriteUInt64LittleEndian(limbs, state.Low);
-        BinaryPrimitives.WriteUInt64LittleEndian(limbs[8..], state.High);
-        hash.AppendData(limbs);
     }
 }

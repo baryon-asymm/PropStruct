@@ -10,10 +10,11 @@ namespace PropStruct.Particle.Tests;
 /// reference formulation under both precision kinds, run through <see cref="CycleOneRun"/>
 /// with <c>ModelSetup.Corrections</c> unset, one case per formulation and kind. Each
 /// attempt contributes the four <c>double</c>s that carry the SHA-256 of its trace row
-/// (outcome, the six streams' limbs, every integer total, the particle's record, the row
-/// <see cref="SnapshotTests"/> hashes for cycle 0), so a bit moved in any of them moves the
-/// approved hash. Recorded on the commit before the first <c>Corrected</c> statement
-/// and never re-approved after a refactoring (<c>BOOT.md</c>, "Taboos").
+/// (<see cref="AttemptTrace.Digest"/>: outcome, the six streams' limbs, every integer total,
+/// the particle's record, the row <see cref="SnapshotTests"/> hashes for cycle 0), so a bit
+/// moved in any of them moves the approved hash. Recorded on the commit before the first
+/// <c>Corrected</c> statement and never re-approved after a refactoring (<c>BOOT.md</c>,
+/// "Taboos").
 /// </summary>
 public class CycleOneSnapshotTests : IClassFixture<CpuHost>
 {
@@ -50,11 +51,14 @@ public class CycleOneSnapshotTests : IClassFixture<CpuHost>
         var trace = new double[AttemptCount * DoublesPerDigest];
         var accepted = 0;
         var restartedAfterLoop = 0;
+        AttemptTrace? last = null;
         for (var attempt = 0; attempt < AttemptCount; attempt++)
         {
-            var outcome = run.Step(out var digest);
-            accepted += outcome == AttemptOutcome.Accepted ? 1 : 0;
-            restartedAfterLoop += outcome == AttemptOutcome.RestartedAfterLoop ? 1 : 0;
+            last = run.Step();
+            accepted += last.Outcome == AttemptOutcome.Accepted ? 1 : 0;
+            restartedAfterLoop += last.Outcome == AttemptOutcome.RestartedAfterLoop ? 1 : 0;
+
+            var digest = last.Digest();
             for (var part = 0; part < DoublesPerDigest; part++)
             {
                 var bits = BinaryPrimitives.ReadUInt64LittleEndian(digest.AsSpan(part * sizeof(ulong)));
@@ -66,7 +70,7 @@ public class CycleOneSnapshotTests : IClassFixture<CpuHost>
         // Var#1 pocket, a bridge counted as Var#2 or the tests of lines 723-738 guards
         // none of them (the cycle-0 snapshot's own "narrower than it reads").
         var layout = run.Setup.Layout;
-        var totals = run.IntegerTotals();
+        var totals = last!.IntegerTotals;
         Assert.True(accepted > 0, $"{formulation} {kind}: no attempt of cycle 1 was accepted.");
         Assert.True(restartedAfterLoop > 0, $"{formulation} {kind}: no attempt was restarted by lines 723-738.");
         Assert.True(totals[layout.Nfq] > 0, $"{formulation} {kind}: no bridge drew from the window.");
