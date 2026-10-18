@@ -19,6 +19,9 @@ table of CUDA against the CPU accelerator and the recorded throughput figures.
 | L2 | determinism: two runs, and 1, 4, 16 CPU threads, bit for bit | the same batch | ✅ `DeterminismTests` (`Category=Long`) |
 | L2 | CUDA against the CPU accelerator on whole-cycle batches of the five reference formulations | the tier table of this node | ✅ `TierTableTests` (`Category=Long`) |
 | L2 | the host-thread path (`Engine`'s default on the CPU accelerator, root `BOOT.md`, "One particle program") equals the ILGPU-kernel-launch oracle (`forceIlgpuKernelsOnCpu: true`) bit for bit: 1000 of HPEPA3's own particles on every build; the full matrix (five formulations, batch 1/7/whole cycle, `attemptsPerLaunch` 1/2/256, 1/4/8/16 threads) as `Category=Long` | the oracle engine, forked from the same state | ✅ `HostThreadOracleTests`; `HostThreadMatrixTests` (`Category=Long`) |
+| L2 | the `Corrected` model (`CorrectionSet.All` in `ModelSetup.Corrections`, `src/Execution/BOOT.md`, "GPU/CPU tiers under `Corrected`"): CUDA against the CPU host threads on whole-cycle batches of the five reference formulations, within `TierTableTests.CorrectedTiers`, a table of its own derived by the `Original` table's rule; the `Original` table and rows are unedited | the Corrected tiers, in `TierTableTests.CorrectedTiers` and `src/Execution/BOOT.md` | ✅ `TierTableTests` (`...UnderTheCorrectedModel`, `Category=Long`) |
+| L2 | the same three identities under `CorrectionSet.All`: 1, 4, 16 threads and two runs bit for bit (`Category=Long`); host threads = ILGPU-kernel oracle over HPEPA3's first 1000 particles; reference mode = continued batch over the same | the same batch or the two paths of the same engine | ✅ `DeterminismTests`, `HostThreadOracleTests`, `ReferenceModeEqualsContinuedBatchTests` (each `...UnderTheCorrectedModel`) |
+| L2 | positive control of the `Corrected` rows: one cycle-1 fork of HPEPA3 loaded twice, a setup that differs only in `ModelSetup.Corrections` (`None`, `All`), parts the real totals by more than 1E-6 relative, on the host-thread path and on CUDA, so no identity above can hold because the set never reached the attempts | a cycle-1 batch run twice | ✅ `CorrectedModelReachesTheEnginesTests` |
 | Measurement | throughput of the particle kernel on HPEPA3, CUDA and CPU with all cores | recorded in `src/Execution/BOOT.md`, never asserted | ✅ `ThroughputMeasurementTests` (`Category=Long`) |
 | Measurement | host-thread throughput on HPEPA3's cycle 1 at 1/4/8/16 threads, and reference mode | recorded in `src/Execution/BOOT.md`, never asserted | ✅ `HostThreadThroughputTests` (`Category=Long`) |
 | L2 | generator state identity: after a real run, each of the six streams' actual final state equals its initial state jumped ahead by the draws the run's own integer totals counted for it (`## Generator state identity (2026-09-19)` has the stream-to-counter mapping) | HPEPA3 cycle 1, 2000 particles, reference mode and a continued batch | ✅ `GeneratorStateIdentityTests` (`Category=Long`) |
@@ -344,6 +347,23 @@ from method names, no change of meaning); the old → new map is
   these are not in collection 'ExecutionLongSerial':
   PropStruct.Execution.Tests.TierTableTests"; repeated by the orchestrator on
   `DeterminismTests`, red naming it, green restored.
+
+- 2026-10-18, the `Corrected` rows, each mutation applied, run, reverted and never
+  committed; right = the unmutated run, green (CUDA tiers in Release):
+  - `TierTableTests`, HPEPA3: `CorrectedTiers` relative tolerance set to 1E-15, under
+    the observed 3.591409E-15: red, "HPEPA3: max relative diff 3.591409E-015 exceeds
+    the tier 1.000000E-015"; the diverged-share tier set to -1: red, "diverged share
+    0.00 % exceeds the tier -100.00 %".
+  - `DeterminismTests`: the 16-thread configuration loaded with `Corrections = None`:
+    red in the `Corrected` case only ("Collections differ"), the `Original` case green.
+  - `HostThreadOracleTests`: the oracle loaded with `Corrections = None`:
+    red in the `Corrected` case only, the `Original` case green.
+  - `ReferenceModeEqualsContinuedBatchTests`: the continued engine loaded with
+    `Corrections = None`: red in the `Corrected` case only, the `Original` case green.
+  - `CorrectedModelReachesTheEnginesTests`: the second setup left at `None`: red on
+    both paths, "the set changed no total by more than 1.000000E-006 (max
+    0.000000E+000)"; unmutated, 1.0 on both (some total moves from its `None` value to
+    another, the set reaching the attempts).
 
 ## Taboos
 

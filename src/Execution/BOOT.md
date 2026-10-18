@@ -243,7 +243,7 @@ HISTORY.md#tier-table-derivation-narrative
 moved 2026-09-20: the grep-complete audit of which tests fork a cycle-1 state →
 HISTORY.md#grep-complete-fork-audit
 
-## GPU/CPU tiers under `Corrected` (designed 2026-10-18)
+## GPU/CPU tiers under `Corrected` (designed 2026-10-18, measured the same day)
 
 The table above is the `Original` model's; its figures and tiers are not touched. The
 `Corrected` model is measured separately, by the same `TierTableTests` method on a
@@ -253,6 +253,30 @@ Release, budget 8192), and gets its own table here, its tiers derived by the sam
 for the diverged share) and never loosened afterwards. The math probe needs no new
 entry by hand: `MathProbeCoverageTests` reads the `Math` calls of `Particle` and
 `Random` as built, the `Corrected` statements included.
+
+Measured 2026-10-18 on the reference machine (RTX 5070 Ti), Release, attempt budget
+8192, the `Original` rows' own sample and fork, the cycle-0 setup prepared with
+`CorrectionSet.All` (so `Statistics` ran its corrected statements too), CUDA against the
+CPU host threads: three runs, identical to every printed digit (the third under
+`PROPSTRUCT_REQUIRE_CUDA=1`), as the `Original` figures
+were (the runs are deterministic; the figures are one measurement, not an estimate of a
+spread). `comparedFields` is the count of real totals above 1E-12 that the relative
+difference ranges over.
+
+| Formulation | Observed max relative diff | Compared fields | Observed diverged share | Tier: relative tolerance | Tier: max diverged share |
+|---|---|---|---|---|---|
+| HPEPA3 | 3.591409E-15 | 458/971 | 0/2000 | 8E-14 | 3/2000 (0.15 %) |
+| inpt | 5.172344E-16 | 252/1054 | 0/1000 | 8E-14 | 3/1000 (0.30 %) |
+| P33 | 1.420090E-15 | 274/971 | 0/2000 | 8E-14 | 3/2000 (0.15 %) |
+| PSAN02n | 5.684923E-16 | 274/966 | 0/2000 | 8E-14 | 3/2000 (0.15 %) |
+| HMX | 1.062193E-15 | 894/2099 | 0/2000 | 8E-14 | 3/2000 (0.15 %) |
+
+One tolerance for all five, as in the `Original` table: 8E-14 is 22× the worst figure
+(HPEPA3); the observed figures are an order of magnitude under the `Original` table's
+(worst 4.4E-14), an observation, not a claim about why. The `Original` theory, rerun the
+same day in Release on CUDA, reproduced its table above digit for digit.
+Evidence of the checks that read this table: `tests/Execution.Tests/BOOT.md`,
+"## Mutations", 2026-10-18.
 
 ## Host-thread path (decided 2026-09-19)
 
