@@ -24,7 +24,29 @@ internal static class SmallParticles
     public static double[] Probability(
         int ndok, double cellSize, double ak2, double ggg, double gdokleft, double karmcoef,
         double oxidizerDensity, double propellantDensity, double[] vdokstr, PrecisionKind precision)
+        => Probability(ndok, cellSize, ak2, ggg, gdokleft, karmcoef, oxidizerDensity, propellantDensity, vdokstr, precision,
+            CorrectionSet.None);
+
+    /// <summary>
+    /// The overload of <see cref="Probability(int, double, double, double, double, double, double, double, double[], PrecisionKind)"/>
+    /// that takes the model's <see cref="CorrectionSet"/> (BOOT.md, "## Corrected model"): under
+    /// <see cref="PrecisionKind.Original"/> it is replaced by <see cref="CorrectionSet.None"/> on entry, and under
+    /// <see cref="CorrectionSet.None"/> the result is the old overload's, bit for bit. With
+    /// <see cref="CorrectionSet.ZdoksmallCoarseShare"/> <c>zdoksmall</c> is scaled by <c>GGG - gdokleft</c>, the share of
+    /// the propellant that the drawn coarse oxidizer is (line 1047), and with <see cref="CorrectionSet.PdoksmallFirstCell"/>
+    /// the first cell of <c>pdoksmall</c> is the product of its own <c>vdoksmall</c>, <c>ddoksmall</c> and
+    /// <paramref name="karmcoef"/> (lines 1059-1061).
+    /// </summary>
+    public static double[] Probability(
+        int ndok, double cellSize, double ak2, double ggg, double gdokleft, double karmcoef,
+        double oxidizerDensity, double propellantDensity, double[] vdokstr, PrecisionKind precision,
+        CorrectionSet corrections)
     {
+        if (precision == PrecisionKind.Original)
+        {
+            corrections = CorrectionSet.None;
+        }
+
         var rounding = new CyclePlaneRounding(precision);
         var vdokstrSum = 0.0;
         foreach (var v in vdokstr)
@@ -74,9 +96,11 @@ internal static class SmallParticles
             }
         }
 
+        // ZdoksmallCoarseShare: the drawn coarse oxidizer is GGG - gdokleft of the propellant, not GGG.
+        var coarseShare = corrections.HasFlag(CorrectionSet.ZdoksmallCoarseShare) ? ggg - gdokleft : ggg;
         for (var k = 0; k < ndok; k++)
         {
-            zdoksmall[k] = rounding.Store(zdoksmall[k] * ggg); // Fortran 1047
+            zdoksmall[k] = rounding.Store(zdoksmall[k] * coarseShare); // Fortran 1047
         }
 
         // The compiler's temporaries, recomputed from the same operands: T1 and T2 are hoisted
@@ -96,6 +120,12 @@ internal static class SmallParticles
 
         var pdoksmall = new double[ndok];
         pdoksmall[0] = 0.0; // pdoksmall(1): never assigned by the original (port decision, BOOT.md).
+        if (corrections.HasFlag(CorrectionSet.PdoksmallFirstCell))
+        {
+            // PdoksmallFirstCell: the first cell is assigned, as every other, and the clamp reads it from cell 2 on.
+            pdoksmall[0] = vdoksmall[0] * ddoksmall[0] * karmcoef;
+        }
+
         for (var k = 1; k < ndok; k++)
         {
             // 1062 compares this product, still in the register, with the previous element's home,

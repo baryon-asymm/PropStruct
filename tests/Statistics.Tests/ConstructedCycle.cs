@@ -21,11 +21,26 @@ internal static class ConstructedCycle
     /// <c>CycleReport.Mp</c> of the constructed cycle for <paramref name="formulation"/> under
     /// <paramref name="parameters"/> and <paramref name="precision"/>.
     /// </summary>
-    internal static double Mp(Formulation formulation, ModelParameters parameters, PrecisionKind precision)
+    internal static double Mp(Formulation formulation, ModelParameters parameters, PrecisionKind precision) =>
+        Report(formulation, parameters, precision, CorrectionSet.None).Mp;
+
+    /// <summary>
+    /// The whole <see cref="CycleReport"/> of the constructed cycle for <paramref name="formulation"/> under
+    /// <paramref name="parameters"/>, <paramref name="precision"/> and <paramref name="corrections"/>; with
+    /// <paramref name="imposed"/> the setup's stored set is replaced by it after <c>Prepare</c>, as a setup built by hand.
+    /// </summary>
+    internal static CycleReport Report(
+        Formulation formulation, ModelParameters parameters, PrecisionKind precision, CorrectionSet corrections,
+        CorrectionSet? imposed = null)
     {
-        var status = Setup.Prepare(formulation, parameters, precision, neighbourBudget: 1000, pocketRedrawBudget: 1000,
+        var status = Setup.Prepare(formulation, parameters, precision, corrections, neighbourBudget: 1000, pocketRedrawBudget: 1000,
             out var setup, out var tables, out _, out var pending, out var inputs);
         Assert.Equal(SetupStatus.Ok, status);
+
+        if (imposed is { } stored)
+        {
+            setup.Corrections = stored;
+        }
 
         var echoes = Setup.CompleteEchoes(ref setup, pending, pending.Ddokmax);
 
@@ -37,12 +52,10 @@ internal static class ConstructedCycle
             realTotals[layout.Allvdok + k] = 1.0;
         }
 
-        var report = CycleStatistics.Compute(
+        return CycleStatistics.Compute(
             setup, tables, echoes, inputs,
             cycleIndex: 1, integerTotals, realTotals, new double[setup.Ndok],
             out _, out _);
-
-        return report.Mp;
     }
 
     /// <summary>

@@ -101,6 +101,99 @@ public class CorrectionSeamTests
         Assert.Empty(BitwiseComparison.Differences((oldShare, oldCumulative, oldSum), (newShare, newCumulative, newSum), name));
     }
 
+    public static IEnumerable<object[]> ProbabilityCasesUnderBothKinds() =>
+        FormulaCaseFiles.ReadSmallParticlesProbabilityCases().SelectMany(c => new[]
+        {
+            new object[] { c.Name, false },
+            new object[] { c.Name, true },
+        });
+
+    /// <summary>
+    /// <c>SmallParticles.Probability</c> on every case of <c>small_particles_probability.json</c>: the overload under
+    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/>,
+    /// returns the old overload's <c>pdoksmall</c> bit for bit.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ProbabilityCasesUnderBothKinds))]
+    public void ProbabilityUnderNoneAndUnderOriginalEqualsTheOldOverload(string caseName, bool original)
+    {
+        var c = FormulaCaseFiles.FindSmallParticlesProbabilityCase(caseName);
+        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+
+        var oldResult = SmallParticles.Probability(
+            c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(), kind);
+        var newResult = SmallParticles.Probability(
+            c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(), kind,
+            corrections);
+
+        Assert.Empty(BitwiseComparison.Differences(oldResult, newResult, caseName));
+    }
+
+    /// <summary>
+    /// Red, the comparison itself for <c>Probability</c>: on every case with <c>gdokleft &gt; 0</c> the scaling flag applied
+    /// under <see cref="PrecisionKind.Binary64"/> is a finding of the same comparison, so that the equalities above are
+    /// not vacuous.
+    /// </summary>
+    [Fact]
+    public void AFlagAppliedUnderNoneIsAFindingOnEveryCaseWithLeftOxidizer()
+    {
+        var cases = FormulaCaseFiles.ReadSmallParticlesProbabilityCases().Where(c => c.Gdokleft > 0.0).ToList();
+        Assert.NotEmpty(cases);
+
+        foreach (var c in cases)
+        {
+            var oldResult = SmallParticles.Probability(
+                c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(),
+                PrecisionKind.Binary64);
+            var flagged = SmallParticles.Probability(
+                c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(),
+                PrecisionKind.Binary64, CorrectionSet.ZdoksmallCoarseShare);
+
+            Assert.NotEmpty(BitwiseComparison.Differences(oldResult, flagged, c.Name));
+        }
+    }
+
+    /// <summary>
+    /// <c>Compute</c> under <see cref="PrecisionKind.Original"/> on the analytic totals of every shipped formulation: a
+    /// setup whose stored set was put there by hand as <see cref="CorrectionSet.All"/> gives the report, the totals and
+    /// <c>nextPdoksmall</c> of the setup that stores <see cref="CorrectionSet.None"/>, bit for bit, in cycles 1 and 2.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ShippedNames))]
+    public void ComputeUnderOriginalIgnoresAStoredSet(string name)
+    {
+        var formulation = ShippedFormulations.Read(name);
+        var plain = AnalyticCycle.Prepare(formulation, ModelParameters.Default, PrecisionKind.Original, CorrectionSet.None);
+        var imposed = AnalyticCycle.Prepare(formulation, ModelParameters.Default, PrecisionKind.Original, CorrectionSet.None, CorrectionSet.All);
+
+        Assert.Empty(BitwiseComparison.Differences(TwoCycles(plain), TwoCycles(imposed), name));
+    }
+
+    /// <summary>
+    /// Red, the comparison itself for <c>Compute</c>: under <see cref="PrecisionKind.Binary64"/> the same stored
+    /// <see cref="CorrectionSet.All"/> is a finding on P312, whose <c>gdokleft</c> is positive.
+    /// </summary>
+    [Fact]
+    public void ComputeUnderBinary64SeesAStoredSet()
+    {
+        var formulation = ShippedFormulations.Read("P312");
+        var plain = AnalyticCycle.Prepare(formulation, ModelParameters.Default, PrecisionKind.Binary64, CorrectionSet.None);
+        var imposed = AnalyticCycle.Prepare(formulation, ModelParameters.Default, PrecisionKind.Binary64, CorrectionSet.None, CorrectionSet.All);
+
+        Assert.NotEmpty(BitwiseComparison.Differences(TwoCycles(plain), TwoCycles(imposed), "P312"));
+    }
+
+    private static (CycleReport First, CycleReport Second, double[] Totals, long[] IntegerTotals, double[] NextPdoksmall) TwoCycles(
+        AnalyticCycle cycle)
+    {
+        var integerTotals = cycle.IntegerTotals();
+        var realTotals = cycle.RealTotals();
+        var first = cycle.Compute(1, integerTotals, realTotals, out _);
+        var second = cycle.Compute(2, integerTotals, realTotals, out var next);
+        return (first, second, realTotals, integerTotals, next);
+    }
+
     public static IEnumerable<object[]> ShippedNames() => ShippedFormulations.Names.Select(name => new object[] { name });
 
     /// <summary>
