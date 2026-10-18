@@ -124,15 +124,12 @@ public class SmallParticlesCorrectedTests
     /// </summary>
     private static void AssertClosedForm(double scale, bool firstCell, double[] actual)
     {
-        var s1 = Ggg - Gdokleft;
-        var s2 = 1.0 - Ggg + Gdokleft;
         var expected = new double[Ndok];
         for (var k = 1; k <= Ndok; k++)
         {
             var z = k == 1 ? 0.5 * scale : scale;
             var d = k == 1 ? 0.25 : 1.0 / (2.0 * k);
-            var pl = (1.0 - (s1 - z)) / (1.0 / PropellantDensity - (s1 - z) / OxidizerDensity);
-            var raw = z / (s2 + z) * pl / OxidizerDensity * d * Karmcoef;
+            var raw = SmallParticlesClosedForm.Product(z, d, Ggg, Gdokleft, Karmcoef, OxidizerDensity, PropellantDensity);
             if (k == 1)
             {
                 expected[0] = firstCell ? raw : 0.0;

@@ -266,12 +266,11 @@
   Costed 2026-10-03: about forty rows, two new site kinds, pins for residues 0, 3
   → HISTORY.md#a8-costing-2026-10-03
 - [x] 2026-10-03: A9 (F3), the call-site order of the plane's products is held
-  structurally (`tests/Statistics.Tests/CyclePlaneOrderSiteTests`; `API.md`, "##
-  Cycle"): each `order.` call cites its Fortran lines, and its factors' association,
-  read through the named form's `Original` expression, is a sub-expression of the
-  `order` text at a cited line, a commutation one order. Green on the 23 calls; red at
-  its own line on eleven edits, right on three commutations
+  structurally (`tests/Statistics.Tests/CyclePlaneOrderSiteTests`; `API.md`, "## Cycle"):
+  green on the 23 calls, red at its own line on eleven edits, right on three commutations
   (`tests/Statistics.Tests/BOOT.md`, "## Mutations").
+
+  ⚠ 2026-10-18: was the rule of the association test told in full, now the figures → HISTORY.md#acceptance-narrations-u2-2026-10-18
 - [x] 2026-10-03: A10 (F4), `PARAM` runs in the oracle (0x4181A5–0x418577) and `ZSS`,
   `ZX`, `Z11` are the executable's (`ListingOracleTests`, `PreloopSurveyTests`, both
   approved files empty): over the 49 shipped files `ZSS` per addition equals it on 49
@@ -282,23 +281,20 @@
 
   ⚠ 2026-10-18: was the call's stub, the reader fix and the moved references told in
   full, now the deciding figures → HISTORY.md#a10-narration-2026-10-18
-- [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
-  `formulas_statistics.py` (`cycle_plane_oracle.py restamp`, `verify` green;
-  `ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until restamped); (b)
+- [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests `formulas_statistics.py`
+  (`ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until restamped); (b)
   `.TheTwinThatSuppliesTheInjectedSetupReproducesItsCaseFiles` runs the twin's `verify`
   in the fast set, red on `DOKM_UNROLL = 6`; (c) `QKS1`'s injection and `Compute` are
-  one expression at every count (A14; `Qks1NormalisationTests`, red on the divisor
-  `QKSS + 1` and on `f32(QKSS)`).
+  one expression at every count (A14; `Qks1NormalisationTests`).
 
   ⚠ 2026-10-03: was (c) "one expression only while `QKSS` is a binary32 integer", now
   at every count (A14); the text moved 2026-10-18 → HISTORY.md#a11-narration-2026-10-18
-- [x] 2026-10-03: A14 (from A11), the divisor of line 718 is the exact count. The
-  excerpt holds the loop's bytes (0x40B7FA–0x40B8AF, read, not run): `QKSS` is
-  `INTEGER*8`, `fild qword` loads it exactly (0x40B823), each cell is `fild qword; fdiv;
-  fstp dword`, so only the quotient rounds, as in `Pockets`. The oracle's injection is
-  `f32(q / QKSS)` and equals `Compute` on every cycle (`Qks1NormalisationTests`, the 2^24
-  and 2^24 + 1 pair kept against a divisor rounded to binary32). Nothing moves; the row
+- [x] 2026-10-03: A14 (from A11), the divisor of line 718 is the exact count: `QKSS` is
+  `INTEGER*8`, the oracle's injection `f32(q / QKSS)` equals `Compute` on every cycle
+  (`Qks1NormalisationTests`, the 2^24 and 2^24 + 1 pair); nothing moves, the row
   `718, 963–996` is `reproduced`.
+
+  ⚠ 2026-10-18: was the excerpt's loop addresses and instructions told in full, now the figures → HISTORY.md#acceptance-narrations-u2-2026-10-18
 - [x] 2026-10-03: A12, the `JZZ = 2` setup loop is the executable's (0x408CFE–0x408F8E;
   the schedule: `BOOT.md`, "## Setup plane"), followed by `Setup.AnalyticSizes` and the
   twin's `jzz2_sums`; the survey's approved file is empty (`CSPX04` agrees). Right: the
@@ -310,13 +306,10 @@
   ⚠ 2026-10-18: was the schedule's addresses and each red edit's count told in full,
   now the figures → HISTORY.md#a12-narration-2026-10-18
 - [x] 2026-10-03: A13 (the arbiter's suggestion), the pre-loop survey of the 49 shipped
-  files is a ratchet (`PreloopSurveyTests`, `PreloopSurvey.approved.txt`; the oracle's
-  pre-loop over every `.dat`, `tests/Fixtures/preloop_survey.py generate` into
-  `cases/statistics/preloop_survey.json`, its `verify` the one `Long` test):
-  `Setup.Prepare` under `Original` against the executed `zss`, `zx`, `z11`, `lambda`,
-  `DOKM`, `DOKSD` and `GGG` differed on `CSPX04` alone until A12; the approved file is
-  empty now. Red: the five-fold schedule set to rule L gives `AK157a`, `BK10`,
-  `KB397` and `C166`; one unit moved in memory gives its file. Right: today's code.
+  files is a ratchet (`PreloopSurveyTests`, `PreloopSurvey.approved.txt`): `Setup.Prepare`
+  under `Original` against the executed `zss`, `zx`, `z11`, `lambda`, `DOKM`, `DOKSD`
+  and `GGG` differed on `CSPX04` alone until A12; the approved file is empty now. Red:
+  the five-fold schedule set to rule L gives `AK157a`, `BK10`, `KB397` and `C166`.
 
   ⚠ 2026-10-03: the first run gave `C166` besides `CSPX04`, the twin's reader at fault →
   HISTORY.md#survey-c166-reader-2026-10-03
@@ -332,10 +325,8 @@
   `Simulation.Tests.DegenerateConfigurationTests`; setup-plane detail in
   `HISTORY.md#setup-plane-remeasured-both-fixes-2026-09-27`).
 - [x] 2026-09-23: the defect row for the fraction-share normalization is re-read against
-  the source and corrected: the sum and division live at lines 1723/1725/1727, not
-  1712–1714; `The port` is set to `reproduced` (under `Original`; `Binary64`
-  unaffected), and `Consequence` now names the model effect the positive controls above
-  measure, beside the pre-existing cosmetic `epsdokfr` reading.
+  the source and corrected: the sum and division live at lines 1723/1725/1727; `The port` is
+  `reproduced` (under `Original`; `Binary64` unaffected), `Consequence` names the model effect.
 
   ⚠ 2026-09-23: was "792–797, 1712–1714", now "792–797, 1704, 1716, 1723, 1725, 1727" → HISTORY.md#fraction-share-citation-correction-2026-09-23
 - [x] 2026-09-23: `Dmin` rounds under `Original` too, and so does `Di`/`Dj` ("## Setup
@@ -410,11 +401,23 @@
   the 1061 formula under the second; `gdokleft = 0`, cell 1 empty: bit-identical
   (`SmallParticlesCorrectedTests`, red on each mutation). Reported (P312's own mass CDF,
   `CorrectedCycleEvidenceTests`): `gdokleft` 0.122, a cell moves ≤ 21.6 %; `Dmin` 5 µm:
-  `pdoksmall[0]` 0 → 0.191.
+  `pdoksmall[0]` 0 → 0.144.
+
+  ⚠ 2026-10-18: was 0 → 0.191 (`Vdokstr` began at the cell edge, not at `Dmin`), now 0 → 0.144 → HISTORY.md#pdoksmall-first-cell-figure-2026-10-18
+- [x] 2026-10-18: Corrected, the declared limit of `PdoksmallFirstCell` against an integral of
+  the size law (`PdoksmallFirstCellLimitTests`): the corrected cell is line 1031's spread share,
+  to 1e-12; the model's own cell, the coarse mass in `[Dmin, Di/AK2)`, is 0 at 5 and 6 µm where
+  the flag gives 0.144 and 0.121; at 3 µm `zdoksmall(1)` 0.109 against 0.0625, the cell 0.185
+  against 0.176; red at the old `Vdokstr` start and on a halved first cell, 3 of 4 each.
 - [x] 2026-10-18: Corrected, `VdokTotalOnCopy`: over two cycles `None` divides the
   constructed totals in place twice, the flag leaves them byte-identical and `DolM2`,
   `DolM3` equal their closed form over the undivided totals; cycle 1 equals `None`;
-  P312, `KXX = 3`: moves from cycle 2 (×0.774, ×0.599; `VdokTotalOnCopyTests`).
+  P312, `KXX = 3`: moves from cycle 2 (×0.774, ×0.599; `VdokTotalOnCopyTests`). On constant
+  totals with `VmkmTotal = Vsmkm`, `VdokTotal = Svd` (P312, three cycles) `DolM2 = DolM3 =
+  DolM1` in every cycle under the flag, to 1e-12 (one product in other orders over `Ndok`
+  terms), under `None` in cycle 1 only; red with the store back in place (3 of 7). Program
+  (`P312-Cycles3`, 8 seeds, `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`):
+  `Zkarm_cor` −2.944 ± 0.153 % against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
 - [x] 2026-10-18: Corrected, `CategoriesOnCopy`: the totals are byte-identical after a call
   and a second call equals the first, its report that of `None` on fresh totals, where
   `None`'s second call differs; through `Compute`, cycle 0 twice writes no total (the four

@@ -121,3 +121,8 @@
       hash (2 of 2) and green reverted; `LineMapCoverageTests` red on line 785 added to
       the list (in `771–1175` and in no row), naming it by number, green reverted; 324
       cases of the fast set with the original absent.
+- [x] 2026-10-18: `PdoksmallFirstCellLimitTests` and the identity in `VdokTotalOnCopyTests`
+      (`src/Statistics/ACCEPTANCE.md`, the two criteria of that date): the integral of the
+      size law is right on a uniform law (linear, midpoint mean) before it measures anything;
+      the totals of `AnalyticCycle` begin `Vdokstr` at `Dmin`; the three reds are in
+      "## Mutations".
