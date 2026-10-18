@@ -31,6 +31,7 @@ public class HostEqualsCpuAcceleratorTests : IClassFixture<CpuHost>
     [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 0, 0u)]   // accepted, cycle 0
     [InlineData(2.0, 0.2, 1.0, 0.1, 10.0, 1, 0u)]   // restarted after loop (no pocket)
     [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.BridgeFrustum)] // the frustum volume on the kernel path
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.All)]           // the Corrected model on the kernel path
     public void RunMatchesOnHostAndTheCpuAccelerator(double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag, uint corrections)
     {
         var acc = _host.Accelerator;
