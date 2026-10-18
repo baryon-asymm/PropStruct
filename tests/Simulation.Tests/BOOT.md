@@ -15,7 +15,10 @@ The definition of what "`Simulation` is ready" means.
 | L0/L1 | `RunDiagnostics.AttemptsPerLaunch` is the effective budget (1 in reference mode, the option otherwise), not the option unconditionally; a smaller budget forces more launches on a formulation needing more than one attempt | `SmallFormulation`/HPEPA3 at budgets 1, 1024 and reference mode | ✅ 2026-09-28: `AttemptsPerLaunchDiagnosticsTests` |
 | L2 | reference mode on HPEPA3 reproduces the reference's printed counters | `tests/Fixtures/references/HPEPA3/results.m.txt` through `tests/Harness` | ✅ 2026-09-19: `Hpepa3CounterTests` (figures in `src/Simulation/BOOT.md`, "## Counter check") |
 | L2 | the statistical criterion on the five reference formulations, realigned again 2026-09-24 to root's rate-based pass condition (root BOOT.md, "the pass condition compares failure rates, not single runs") | link 1 no longer lives here at all — it is a *rate* over sixteen seeds, owned by `tests/Harness.Tests/RateCriterionTests` over the pregenerated `tests/Fixtures/rate-table.json`; this node keeps only an exact seed-0 snapshot (a change detector, not a reproduction claim) and link 3: batched `Binary64` against sequential `Binary64`, statistically, on the port's own replicas, CPU accelerator and CUDA (`StatisticalCriterion.TwoSampleBiasOfSets`, `tests/Harness/API.md`) | ✅ 2026-10-01: `StatisticalCriterionTests`, 40 cases (30 `Category=Long`: 20 seed-0 snapshot, 10 link 3), all pass — see "## Statistical criterion measurement (2026-09-24)" below. The 2026-09-23 ratchet-based measurement (link 1 as a per-run comparison against the original's own replicas, retired the same day audit D5 named it) is superseded, `HISTORY.md#statistical-criterion-measurement-2026-09-23-link-1`. |
-| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 33 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-18: `OriginalModelGuardTests`, 34 cases (33 `Category=Long`), "## The Original-model guard" |
+| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 35 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-18: `OriginalModelGuardTests`, 36 tests: 35 cases, 12 in the fast set and 23 `Category=Long`, and the file's own; "## The Original-model guard" |
+| L2 | the `Corrected` model's results do not move unnoticed, and it means every flag of `CorrectionSet` | the same hashes, 10 CPU runs under `Corrected` (`Snapshots/CorrectedModelSnapshot.approved.txt`); the mapping read from `EffectiveCorrections` | ✅ 2026-10-18: `CorrectedModelGuardTests`, 11 tests, 2 of them `Long`; `ModelKindTests`; "## The Corrected-model snapshot" |
+
+⚠ 2026-10-18: was "34 cases (33 `Category=Long`)" in the guard's row, the whole guard run by no CI → HISTORY.md#original-guard-criterion-33-cases
 
 ⚠ 2026-09-19: the ✅ marks of this table were first dated 2026-09-18 by a session that
 ended at a usage limit, and two of them did not hold when this session started. The
@@ -101,59 +104,18 @@ sequentially so as not to oversubscribe the machine. The CPU and CUDA rows share
 set of reference-mode runs per formulation (`ReferenceSetsIndependentDouble`'s own
 cache, keyed by formulation name, `LazyThreadSafetyMode.ExecutionAndPublication`):
 whichever row xunit runs first for a formulation pays for the eight reference runs,
-the other reuses them and reports zero added reference time — so the total cost below
-is not double-counted.
+the other reuses them and reports zero added reference time — so the total cost is not
+double-counted.
 
-Measured on this branch merged onto `claude/wave7` at `a621e09`:
+Measured 2026-09-23 on `claude/wave7` at `a621e09`, CPU accelerator and CUDA: **0 of
+the compared cells differ on any of the five formulations**, 1509 cells (P33) to 6635
+(HMX); no ratchet was needed on either accelerator. The tables, the wall times and the
+note on the category-indexed families moved to history (AGENTS.md §15).
 
-| Formulation | Cells compared | Differ | Reference (parallel) | CPU batched (sequential) | CPU total |
-|---|---|---|---|---|---|
-| HPEPA3 | 2071 | 0 | 31.3 s | 33.2 s | 1 m 4 s |
-| inpt | 2634 | 0 | 2.7 s | 3.8 s | 6.5 s |
-| P33 | 1509 | 0 | 3.1 s | 3.2 s | 6.3 s |
-| PSAN02n | 2151 | 0 | 11.5 s | 10.0 s | 21.4 s |
-| HMX | 6635 | 0 | 55.3 s | 81.6 s | 2 m 17 s |
+⚠ 2026-10-18: was the per-formulation tables of cells, differences and wall times of the CPU and CUDA
+rows, now their result and one figure → HISTORY.md#link-3-measurement-tables-2026-09-23
 
-CUDA row added 2026-09-23, later the same day, reusing the reference sets above (the
-"Reference" column reads "reused" rather than a second measurement):
-
-| Formulation | Cells compared | Differ | Reference | CUDA batched (sequential) |
-|---|---|---|---|---|
-| HPEPA3 | 2071 | 0 | reused, 24.3 s | 53.4 s |
-| inpt | 2634 | 0 | reused, 1.9 s | 19.9 s |
-| P33 | 1509 | 0 | reused, 2.1 s | 15.1 s |
-| PSAN02n | 2151 | 0 | reused, 8.9 s | 16.8 s |
-| HMX | 6635 | 0 | reused, 50.2 s | 5 m 32 s |
-
-Cell counts match the CPU table exactly, as they must: both rows compare the same
-eight reference sets against a batched set of the same shape, only the accelerator
-differs. HMX's CUDA batched time is the one figure worth a reader's attention: 5 m 32 s
-against the CPU row's 1 m 22 s (its own eight-seed sum from the table above), the same
-"CUDA collapses on HMX" tier root `ACCEPTANCE.md`'s benchmark criterion already measured
-(394 against 1954 accepted particles/s, cycle 1) — this is that collapse's own
-consequence on a wall clock, not a new finding; the constraint's decision (no kernel
-restructuring before acceptance) is root's, not this node's, to revisit.
-
-No cell of any formulation needed a ratchet, on either accelerator: the
-category-indexed families (`fqdokkarm(<row>,:)`, `Dkarmcat`, `dokkarm43`, `dokkarm10`,
-`coef`) `Compare`'s own canonical-axis rule exists for (`tests/Harness/BOOT.md`,
-"Canonical category axis") produced no spurious difference here either —
-`TwoSampleBiasOfSets` has no such handling of its own (`tests/Harness/BOOT.md`,
-"Two-sample bias"), but a physical row a given seed's run never produced is simply a
-member `ValuesAt` (`tests/Harness`'s own) drops from that cell's sample, not a
-mismatch it compares, and with sixteen runs per formulation split across two large
-seed strides the coincidence needed to populate a row on one side and not the other,
-thinly enough to trip a Welch test by chance at `α = 10⁻³` family-wise, did not occur
-on any of the five formulations measured, on either accelerator.
-
-⚠ 2026-09-23: `TwoSampleBiasOfSets` itself was found, the same evening these rows were
-first measured, to false-positive on a bit-identical constant cell compared across two
-sets of *different* sizes (`tests/Harness/HISTORY.md#twosamplebiasofsets-constant-cell-false-positive`;
-fixed the same day). It does not touch the rows above: every link-3 comparison here
-pairs two equal-size sets (`R = 8` against `R = 8`), and the defect's mechanism —
-`Array.Average()` of `n` identical values rounding differently for different `n` —
-cannot produce a nonzero gap between two means computed over the *same* `n` from the
-*same* bit-identical value. Not re-measured, since nothing that could change it changed.
+⚠ 2026-10-18: was the 2026-09-23 note that `TwoSampleBiasOfSets`' constant-cell false positive does not touch link 3's equal-size sets, now moved → HISTORY.md#twosamplebiasofsets-note-2026-09-23
 
 Non-degeneracy (positive control, root BOOT.md's own two-proof taboo — a mutation
 inside batched mode's `Original`-layout derivation is refused before it runs, so no
@@ -196,31 +158,7 @@ observation, the cross-reference to "Known bias of the original's seeds", the
 of it is re-verified or carried forward; it is preserved in full,
 `HISTORY.md#statistical-criterion-measurement-2026-09-19`.
 
-**What root BOOT.md should record, not written there by this task** (AGENTS.md §11:
-both affected acceptance criteria are root's own): the "Reference mode in each layout
-satisfies the criterion..." and "The `Original` accumulation kind reproduces..."
-criteria cite figures measured under a mix of `Binary64`/original-replica and
-`Original`/original-replica comparisons across several sessions; this session's own
-link-1 numbers (above) reproduce root's own 2026-09-23 re-run exactly (same three
-known-open cells, same compared/excluded counts on every row checked), so they
-corroborate rather than change root's own standing text.
-
-Link 3 is new evidence for a criterion root BOOT.md has not yet drafted words for:
-"batched and CUDA against sequential `Binary64`, statistically, on the port's own
-replicas" is named as a link but carried no measured row in root's own acceptance
-criteria the way link 1 and link 2 do. The CPU half of that gap was filled earlier
-2026-09-23 (above); the CUDA half is filled the same day, later: zero differing cells
-on all five formulations on `AcceleratorKind.Cuda` too, the "## Link 3 measurement"
-CUDA table above. Root BOOT.md's own acceptance criterion "Batched mode (whole-cycle
-batches, CPU accelerator and CUDA) satisfies the same criterion..." currently reads,
-of the `Independent` layout: "It stays unticked until CUDA is run the same way." That
-condition is now met — this node offers both the CPU and CUDA rows as its evidence —
-and root's own criterion is the owner's to tick, not this node's (AGENTS.md §11: the
-criterion is root's own text). `tests/Execution.Tests`' own tier tables remain the
-place a CUDA-vs-CPU claim for the kernel path itself belongs (this node's own
-`## Dependencies`); this node's own claim is narrower — CUDA batched mode agrees with
-the port's own sequential reference mode, statistically, the same claim the CPU row
-makes, not a claim that CUDA agrees with the CPU accelerator cell for cell.
+⚠ 2026-10-18: was a paragraph proposing to root which of its criteria link 3's CPU and CUDA rows evidence (root's own to tick, AGENTS.md §11), now moved → HISTORY.md#link-3-proposal-to-root
 
 ## Invariants
 
@@ -368,6 +306,23 @@ guard), seen red, reverted:
 | the `Enum.IsDefined` check of the validator removed (T13) | the three cases of `AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck` |
 | each `CorrectionSet` flag applied under `Original`, one at a time (T13) | the cases of `ACCEPTANCE.md`'s per-flag table |
 
+### U3 (2026-10-18)
+
+Each applied alone, run against the named facts, seen red, reverted (`git checkout` of
+the file, diff clean):
+
+| Mutation | Red |
+|---|---|
+| the mapping `Corrected` → `All & ~GdokleftOnce` (scratch edit of `EffectiveCorrections`) | `ModelKindTests.TheEffectiveCorrectionsAreEveryFlagUnderCorrectedWithNoSeamAndNoneUnderOriginal` alone; the other 23 `ModelKindTests` cases stayed green, which is the gap it closes |
+| each of the eleven flags dropped from the `Corrected` mapping | the cases of `ACCEPTANCE.md`'s Corrected per-flag table |
+| each flag applied under `Original` over the 12 fast guard cases | the cases of `ACCEPTANCE.md`'s fast-subset criterion |
+| one character of `extra/PSAN02-sfr-dmin20-cycles3/Original`'s hash in `OriginalModelGuard.approved.txt`, and of `corrected/extra/P33-defaults`' in `CorrectedModelSnapshot.approved.txt`, edited | those two cases, nothing else; 18 of 20 fast guard cases green |
+| `MeasurementCase.SeedStrideBits` 16 → 17 | `EveryCasesSeedsAndTheAuditsEightHaveDistinctPhasesModulo2To20`, `TheOldStrideWithSixteenSeedsRepeatsEightPhasesAndTheCheckNamesThem`, `TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes` |
+| the `RequireDistinctPhases` calls of `CorrectionEffectsReport` commented out | `TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes` |
+| `CorrectionArm.AllBut` mapped to `All & flag` | `TheCategoryFlagsAreTheThreeAndEachAllButArmSetsEveryOtherFlag` |
+| the `AllBut` arms not added to `Measured` | that fact and `TheMeasuredArmsAreOriginalAllEachSingleFlagAndAllButEachCategoryFlagOnceUnderDistinctNames` |
+| `Dagg43_cor(2)` removed from `HeadlineQuantity.All` | `TheHeadlineQuantitiesAreReadFromTheParsedCellsAndDPRowIsTheCategoryCount` |
+
 ## Budget ladder (2026-10-01)
 
 Task C3 of the budget decision (`src/Simulation/BOOT.md`, "## Budget selection rule
@@ -405,8 +360,20 @@ nine reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5 
 `HomogenizedOxidizerFraction` 0.1), `PSAN02` (SFR read, `Dmin` 20 µm; then 3 cycles; then
 `Di` 10 µm too), `P33`, `P2` (`extra/...`), the paths the references leave dark (`Gdokleft`
 is 0 there), at `ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print
-`NaN`, which `ResultsMFile` does not parse, so the runner does not. 34 cases, 7 m 26 s to
-generate in Release.
+`NaN`, which `ResultsMFile` does not parse, so the runner does not; and one
+`Original`-precision run, `extra/PSAN02-sfr-dmin20-cycles3/Original` (U3: reference
+mode, `Independent`, three cycles, `Gdokleft` 0.49): the setup plane under the other
+precision kind on a path the references leave dark. 35 cases, 7 m 26 s to generate in
+Release (34 cases).
+
+**Fast set and `Long`** (U3, 2026-10-18, `GuardCase.IsLong`): the guard was wholly
+`Category=Long`, so CI never ran it. The `batched/*` and `extra/*` cases run in the fast
+set, 12 cases, 32 s in Debug together with the Corrected snapshot's; `seed0/*` and the
+three P312 extras that took 44 to 94 s in Debug (`-defaults`, `-cycles3`,
+`-homogenized0.1`) stay `Long`, 23 cases. The 12 still see every flag of `CorrectionSet`
+(`ACCEPTANCE.md`, the fast-subset criterion); the two flags that rest on one case each
+have it in the fast set: `extra/P312-dmin5` (`PdoksmallFirstCell`, 0.07 s) and
+`extra/PSAN02-sfr-dmin20-di10` (`GdokleftOnce`).
 
 `PSAN02-sfr-dmin20-di10` (2026-10-18, T13): `PSAN02-sfr-dmin20` keeps the default `Di`, and
 `1.9999999999999998e-05 / 1e-05` truncates to 1, so its `b` is 10 µm, `φ(b)` is 0 and
@@ -416,6 +383,35 @@ original port: `src/` checked out at `ac1fc20` (the tree removed and checked out
 that commit), the generator built and run in Release, `src/` restored from `HEAD`. The
 regenerated file differs from the committed one by that one added line, and the 34 cases
 pass at the head, `Original` unchanged.
+
+`extra/PSAN02-sfr-dmin20-cycles3/Original` (2026-10-18, U3) was generated the same way:
+the tree removed and `src/` checked out at `ac1fc20`, `tests/RateTableTool` as at the
+base of U3 but for the case (`Program.cs` without the `corrected-model-snapshot`
+subcommand and `CorrectedModelGuard.cs` set aside, since a `Corrected` model does not
+exist at `ac1fc20`), `original-model-guard` run in Release (35 cases, 6 m 45 s), `src/`
+and the tool restored from `HEAD`. The file differs from the committed one by that one
+line; the 34 older lines came out byte-identical, the old model's product code
+reproducing them. The case is green at the head.
+
+## The Corrected-model snapshot
+
+U3, 2026-10-18: the `Corrected` model has no external reference, so nothing but a change
+detector can say that its results did not move. `CorrectedModelGuardTests` is the
+Original guard's mechanism on ten cases (`CorrectedModelGuard.Cases`,
+`tests/RateTableTool`): the eight reduced extras of the guard that show the fixes the
+references leave dark (`extra/P312-defaults`, `-dmin5`, `-cycles3`,
+`extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10`, `extra/P33-defaults`,
+`extra/P2-defaults`) and `batched/inpt`, `batched/PSAN02n`, which show
+`CategoriesEmptyRowsMerged`; each is the Original guard's case run under
+`ModelKind.Corrected` with no seam, ids prefixed `corrected/`. `P312-homogenized0.1` is
+left out: the other P312 cases cover it. The two P312 cases that take 47 and 102 s in
+Debug are `Category=Long`; the other eight run in the fast set (about 10 s).
+`Snapshots/CorrectedModelSnapshot.approved.txt` is written by `dotnet run --project
+tests/RateTableTool -- corrected-model-snapshot` at the head (Release, 10 cases, 52 s),
+never typed; green in Debug. It asserts that the `Corrected` results are those approved,
+not that they are right: a regeneration is the owner's decision, in the commit that
+changes the model. Its per-flag proof is in `ACCEPTANCE.md`: dropping any of the eleven
+flags from the mapping turns at least one fast case red.
 
 ## Correction-effects measurement
 
@@ -427,9 +423,20 @@ measurement"). Its pages are generated into `Measurements/corrections-2026-10-18
 folder, never typed.
 
 - **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
-  seam `SimulationOptions.Corrections`, the flags read from the enum
+  seam `SimulationOptions.Corrections`; and, for the three category flags, which act on
+  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All read
+  from the enum
   (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
-  and budgets, seeds `k * 2^17`. CUDA not used: other sessions share the GPU.
+  and budgets, seeds `k * 2^16` (U3). CUDA not used: other sessions share the GPU.
+- **Seeds are phases**: the streams jump by `seed · 2^80` in a period of 2^100, so seeds
+  equal modulo 2^20 are copies. `k * 2^17` repeated after eight seeds; `k * 2^16` gives
+  sixteen distinct phases. A fast fact asserts it for every case, and the report refuses
+  arms whose seeds repeat one. The audit's positive control keeps its own eight seeds `k
+  * 2^17`.
+  ⚠ 2026-10-18: was seeds `k * 2^17` → HISTORY.md#correction-effects-seeds-repeat-2026-10-18
+- **Headline columns**: the quantities of the first tables include `Dkarm43_cor(1)`,
+  `Dkarm43_cor(2)`, `Dagg43_cor(1)`, `Dagg43_cor(2)` and `Zkarm_cor`, read from the
+  result as the others are (U3).
 - **Cases**: the five references, 16 seeds; four extras for the fixes the references do not
   show, 8 seeds: `P312` defaults, `Dmin` 5 µm, three cycles, and `PSAN02` read with its SFR at
   `Dmin` 20 µm, `Di` 10 µm. `P312` runs at 100 particles per cycle (40 for three cycles,

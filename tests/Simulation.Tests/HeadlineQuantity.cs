@@ -15,10 +15,14 @@ internal sealed record HeadlineQuantity(string Label, string Key, int Index, boo
     public static IReadOnlyList<HeadlineQuantity> All { get; } = new[]
     {
         Cell("Dkarm43", "Dkarm43(1)"),
+        Cell("Dkarm43_cor(1)", "Dkarm43_cor(1)"),
+        Cell("Dkarm43_cor(2)", "Dkarm43_cor(2)"),
         Cell("Dkarm10", "Dkarm10"),
         Cell("Zkarm", "Zkarm"),
         Cell("Zkarm_cor", "Zkarm_cor"),
         Cell("Dagg43", "Dagg43(1)"),
+        Cell("Dagg43_cor(1)", "Dagg43_cor(1)"),
+        Cell("Dagg43_cor(2)", "Dagg43_cor(2)"),
         Cell("da_coef", "da_coef"),
         Cell("Dqmkm2", "Dqmkm2"),
         Cell("Dok43sd", "Dok43sd"),

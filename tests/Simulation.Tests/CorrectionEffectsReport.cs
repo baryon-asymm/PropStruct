@@ -18,13 +18,18 @@ internal static class CorrectionEffectsReport
     public static string CaseSection(MeasurementCase measurementCase, IReadOnlyList<ArmRuns> arms, int particlesPerCycle)
     {
         var original = arms.Single(arm => arm.Arm == CorrectionArm.Original.Name);
+        foreach (var arm in arms)
+        {
+            MeasurementCase.RequireDistinctPhases(arm.Seeds);
+        }
+
         var others = arms.Where(arm => arm.Arm != CorrectionArm.Original.Name).ToArray();
         var text = new StringBuilder();
 
         _ = text.AppendLine(Invariant, $"## {measurementCase.Name}");
         _ = text.AppendLine();
         var lastIndex = original.Seeds.Count - 1;
-        _ = text.AppendLine(Invariant, $"{measurementCase.Description}. Batched mode, CPU accelerator, `Independent` layout, `Binary64`; seeds `k * 2^17`, k = 0..{lastIndex} ({original.Seeds.Count} seeds); {measurementCase.Formulation.Cycles} cycle(s) of {particlesPerCycle} particles; `Dmin` {Micrometres(measurementCase.Parameters.Dmin.Metres)} um, `Di` {Micrometres(measurementCase.Parameters.CellSize.Metres)} um, `Dj` {Micrometres(measurementCase.Parameters.CategoryStep.Metres)} um.");
+        _ = text.AppendLine(Invariant, $"{measurementCase.Description}. Batched mode, CPU accelerator, `Independent` layout, `Binary64`; seeds `k * 2^{MeasurementCase.SeedStrideBits}`, k = 0..{lastIndex} ({original.Seeds.Count} seeds); {measurementCase.Formulation.Cycles} cycle(s) of {particlesPerCycle} particles; `Dmin` {Micrometres(measurementCase.Parameters.Dmin.Metres)} um, `Di` {Micrometres(measurementCase.Parameters.CellSize.Metres)} um, `Dj` {Micrometres(measurementCase.Parameters.CategoryStep.Metres)} um.");
         _ = text.AppendLine();
         _ = text.AppendLine(Invariant, $"Work: {arms.Sum(arm => arm.TotalSeconds):F0} s over {arms.Count} arms ({string.Join(", ", arms.Select(arm => $"{arm.Arm} {arm.TotalSeconds:F0}"))} s).");
         _ = text.AppendLine();
@@ -112,8 +117,9 @@ internal static class CorrectionEffectsReport
     /// </summary>
     public static (IReadOnlyList<TwoSampleCell> Cells, int EvenCount, int OddCount) EvenAgainstOdd(ArmRuns original)
     {
-        var even = original.Completed.Where(run => (run.Seed >> 17) % 2 == 0).Select(run => run.Cells).ToArray();
-        var odd = original.Completed.Where(run => (run.Seed >> 17) % 2 == 1).Select(run => run.Cells).ToArray();
+        MeasurementCase.RequireDistinctPhases(original.Seeds);
+        var even = original.Completed.Where(run => (run.Seed >> MeasurementCase.SeedStrideBits) % 2 == 0).Select(run => run.Cells).ToArray();
+        var odd = original.Completed.Where(run => (run.Seed >> MeasurementCase.SeedStrideBits) % 2 == 1).Select(run => run.Cells).ToArray();
         return (StatisticalCriterion.TwoSampleBiasOfSets(even, odd), even.Length, odd.Length);
     }
 

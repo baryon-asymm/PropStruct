@@ -4,6 +4,134 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="link-3-measurement-tables-2026-09-23"></a>
+## 2026-10-18 — Statistical criterion measurement (2026-09-24), link 3's measurement tables of 2026-09-23
+
+Moved out of `BOOT.md` to keep it inside its limit (AGENTS.md §15); the result (zero
+differing cells on all five formulations, on both accelerators) stays there. Original
+text:
+
+Measured on this branch merged onto `claude/wave7` at `a621e09`:
+
+| Formulation | Cells compared | Differ | Reference (parallel) | CPU batched (sequential) | CPU total |
+|---|---|---|---|---|---|
+| HPEPA3 | 2071 | 0 | 31.3 s | 33.2 s | 1 m 4 s |
+| inpt | 2634 | 0 | 2.7 s | 3.8 s | 6.5 s |
+| P33 | 1509 | 0 | 3.1 s | 3.2 s | 6.3 s |
+| PSAN02n | 2151 | 0 | 11.5 s | 10.0 s | 21.4 s |
+| HMX | 6635 | 0 | 55.3 s | 81.6 s | 2 m 17 s |
+
+CUDA row added 2026-09-23, later the same day, reusing the reference sets above (the
+"Reference" column reads "reused" rather than a second measurement):
+
+| Formulation | Cells compared | Differ | Reference | CUDA batched (sequential) |
+|---|---|---|---|---|
+| HPEPA3 | 2071 | 0 | reused, 24.3 s | 53.4 s |
+| inpt | 2634 | 0 | reused, 1.9 s | 19.9 s |
+| P33 | 1509 | 0 | reused, 2.1 s | 15.1 s |
+| PSAN02n | 2151 | 0 | reused, 8.9 s | 16.8 s |
+| HMX | 6635 | 0 | reused, 50.2 s | 5 m 32 s |
+
+Cell counts match the CPU table exactly, as they must: both rows compare the same
+eight reference sets against a batched set of the same shape, only the accelerator
+differs. HMX's CUDA batched time is the one figure worth a reader's attention: 5 m 32 s
+against the CPU row's 1 m 22 s (its own eight-seed sum from the table above), the same
+"CUDA collapses on HMX" tier root `ACCEPTANCE.md`'s benchmark criterion already measured
+(394 against 1954 accepted particles/s, cycle 1) — this is that collapse's own
+consequence on a wall clock, not a new finding; the constraint's decision (no kernel
+restructuring before acceptance) is root's, not this node's, to revisit.
+
+No cell of any formulation needed a ratchet, on either accelerator: the
+category-indexed families (`fqdokkarm(<row>,:)`, `Dkarmcat`, `dokkarm43`, `dokkarm10`,
+`coef`) `Compare`'s own canonical-axis rule exists for (`tests/Harness/BOOT.md`,
+"Canonical category axis") produced no spurious difference here either —
+`TwoSampleBiasOfSets` has no such handling of its own (`tests/Harness/BOOT.md`,
+"Two-sample bias"), but a physical row a given seed's run never produced is simply a
+member `ValuesAt` (`tests/Harness`'s own) drops from that cell's sample, not a
+mismatch it compares, and with sixteen runs per formulation split across two large
+seed strides the coincidence needed to populate a row on one side and not the other,
+thinly enough to trip a Welch test by chance at `α = 10⁻³` family-wise, did not occur
+on any of the five formulations measured, on either accelerator.
+
+<a id="link-3-proposal-to-root"></a>
+## 2026-10-18 — Statistical criterion measurement (2026-09-24), the proposal to root about link 3
+
+Moved out of `BOOT.md` to keep it inside its limit (AGENTS.md §15); it was a proposal to
+root, not current truth of this node. Original text:
+
+**What root BOOT.md should record, not written there by this task** (AGENTS.md §11:
+both affected acceptance criteria are root's own): the "Reference mode in each layout
+satisfies the criterion..." and "The `Original` accumulation kind reproduces..."
+criteria cite figures measured under a mix of `Binary64`/original-replica and
+`Original`/original-replica comparisons across several sessions; this session's own
+link-1 numbers (above) reproduce root's own 2026-09-23 re-run exactly (same three
+known-open cells, same compared/excluded counts on every row checked), so they
+corroborate rather than change root's own standing text.
+
+Link 3 is new evidence for a criterion root BOOT.md has not yet drafted words for:
+"batched and CUDA against sequential `Binary64`, statistically, on the port's own
+replicas" is named as a link but carried no measured row in root's own acceptance
+criteria the way link 1 and link 2 do. The CPU half of that gap was filled earlier
+2026-09-23 (above); the CUDA half is filled the same day, later: zero differing cells
+on all five formulations on `AcceleratorKind.Cuda` too, the "## Link 3 measurement"
+CUDA table above. Root BOOT.md's own acceptance criterion "Batched mode (whole-cycle
+batches, CPU accelerator and CUDA) satisfies the same criterion..." currently reads,
+of the `Independent` layout: "It stays unticked until CUDA is run the same way." That
+condition is now met — this node offers both the CPU and CUDA rows as its evidence —
+and root's own criterion is the owner's to tick, not this node's (AGENTS.md §11: the
+criterion is root's own text). `tests/Execution.Tests`' own tier tables remain the
+place a CUDA-vs-CPU claim for the kernel path itself belongs (this node's own
+`## Dependencies`); this node's own claim is narrower — CUDA batched mode agrees with
+the port's own sequential reference mode, statistically, the same claim the CPU row
+makes, not a claim that CUDA agrees with the CPU accelerator cell for cell.
+
+<a id="twosamplebiasofsets-note-2026-09-23"></a>
+## 2026-10-18 — Statistical criterion measurement (2026-09-24), the `TwoSampleBiasOfSets` note of 2026-09-23
+
+Moved out of `BOOT.md` (AGENTS.md §15). Original text:
+
+⚠ 2026-09-23: `TwoSampleBiasOfSets` itself was found, the same evening these rows were
+first measured, to false-positive on a bit-identical constant cell compared across two
+sets of *different* sizes (`tests/Harness/HISTORY.md#twosamplebiasofsets-constant-cell-false-positive`;
+fixed the same day). It does not touch the rows above: every link-3 comparison here
+pairs two equal-size sets (`R = 8` against `R = 8`), and the defect's mechanism —
+`Array.Average()` of `n` identical values rounding differently for different `n` —
+cannot produce a nonzero gap between two means computed over the *same* `n` from the
+*same* bit-identical value. Not re-measured, since nothing that could change it changed.
+
+<a id="original-guard-criterion-33-cases"></a>
+## 2026-10-18 — `ACCEPTANCE.md`, the Original-model guard criterion before U3
+
+Original wording of the first sentence of the criterion (`BOOT.md`, "## The
+Original-model guard"): "the `Original` model is guarded by hashes of the full result
+(`OriginalModelGuardTests`): 33 cases, green in Debug against a Release-written file."
+The whole guard carried `Category=Long`, so the fast set and CI ran one fact of it, the
+one that checks that the approved file holds the guard's cases. U3 split the cases: the
+seed-0 ones and the three slow P312 extras stay `Long`, the others run in the fast set.
+
+<a id="model-kind-tests-case-count"></a>
+## 2026-10-18 — `ACCEPTANCE.md`, the `ModelKindTests` count
+
+The criterion read "`ModelKindTests` (18 cases)". The file held 23 test cases (counting
+each row of a theory) before U3 added the mapping fact, 24 after.
+
+<a id="correction-effects-seeds-repeat-2026-10-18"></a>
+## 2026-10-18 — `ACCEPTANCE.md`, the correction-effects measurement ticked on repeating seeds
+
+Original tick, `- [x] 2026-10-18: the effect of each correction is measured on the five
+references (16 seeds) and four extra cases (8 seeds), per arm and printed quantity
+(CorrectionEffectsMeasurement, Measurements/corrections-2026-10-18.md; BOOT.md, "##
+Correction-effects measurement"; 9 cases, 14 arms, 1568 runs, none failed, about 95
+minutes of work on the CPU)`, with the positive and negative controls it names. The
+seeds were `k << 17`, `k = 0..15`. The streams jump by `seed · 2^80` steps in a period
+of 2^100 (`src/Random/BOOT.md`), so two seeds equal modulo 2^20 draw the same streams:
+seed k equals seed k + 8, and all 560 pairs of the five committed raw CSVs of 16 seeds
+(14 arms times 8 seeds times 5 cases) are identical in every printed column. The audit
+of the four auditors of 2026-10-18 found it; the measurement over `k << 16` replaces it.
+The controls that used eight seeds (`WindowLowerEdge` in reference mode over the audit's
+own `k << 17`, `k = 0..7`) were not affected: eight seeds at that stride are eight
+phases.
+
 <a id="ca1707-renames-2026-09-24"></a>
 ## 2026-09-24 — CA1707: test names renamed (underscores removed)
 

@@ -1,3 +1,5 @@
+using PropStruct.Execution;
+using PropStruct.Input;
 using PropStruct.Particle;
 using Xunit;
 
@@ -20,18 +22,48 @@ public class CorrectionMeasurementToolingTests
     }
 
     [Fact]
-    public void TheMeasuredArmsAreOriginalAllAndEachSingleFlagOnceUnderDistinctNames()
+    public void TheMeasuredArmsAreOriginalAllEachSingleFlagAndAllButEachCategoryFlagOnceUnderDistinctNames()
     {
         var arms = CorrectionArm.Measured;
+        var single = CorrectionArm.SingleFlags.Count;
+        var categories = CorrectionArm.CategoryFlags.Count;
 
-        Assert.Equal(2 + CorrectionArm.SingleFlags.Count, arms.Count);
+        Assert.Equal(2 + single + categories, arms.Count);
         Assert.Equal(arms.Count, arms.Select(arm => arm.Name).Distinct(StringComparer.Ordinal).Count());
         Assert.Equal(ModelKind.Original, arms[0].Model);
         Assert.Null(arms[0].Corrections);
         Assert.Equal(ModelKind.Corrected, arms[1].Model);
         Assert.Null(arms[1].Corrections);
         Assert.All(arms.Skip(2), arm => Assert.Equal(ModelKind.Corrected, arm.Model));
-        Assert.Equal(CorrectionArm.SingleFlags, arms.Skip(2).Select(arm => arm.Corrections!.Value));
+        Assert.Equal(CorrectionArm.SingleFlags, arms.Skip(2).Take(single).Select(arm => arm.Corrections!.Value));
+        Assert.Equal(CorrectionArm.CategoryFlags, CorrectionArm.SingleFlags.Where(flag => flag.ToString().StartsWith("Categories", StringComparison.Ordinal)));
+        Assert.Equal(
+            CorrectionArm.CategoryFlags.Select(flag => $"AllBut{flag}"),
+            arms.Skip(2 + single).Select(arm => arm.Name));
+    }
+
+    /// <summary>
+    /// The three category flags, named by the spec of the arms, and the seam of each leave-one-out arm: every flag
+    /// but the one it is named after, so that the flag is out and the other ten are in.
+    /// </summary>
+    [Fact]
+    public void TheCategoryFlagsAreTheThreeAndEachAllButArmSetsEveryOtherFlag()
+    {
+        Assert.Equal(
+            [CorrectionSet.CategoriesOnCopy, CorrectionSet.CategoriesLastRowRecomputed, CorrectionSet.CategoriesEmptyRowsMerged],
+            CorrectionArm.CategoryFlags);
+
+        foreach (var flag in CorrectionArm.CategoryFlags)
+        {
+            var arm = CorrectionArm.AllBut(flag);
+
+            Assert.Equal($"AllBut{flag}", arm.Name);
+            Assert.False(arm.Corrections!.Value.HasFlag(flag));
+            Assert.Equal(CorrectionSet.All, arm.Corrections.Value | flag);
+            Assert.Equal(System.Numerics.BitOperations.PopCount((uint)CorrectionSet.All) - 1, System.Numerics.BitOperations.PopCount((uint)arm.Corrections.Value));
+            Assert.Equal(arm.Corrections, arm.Options(ModelParameters.Default, ExecutionMode.Batched, 0UL).Corrections);
+            Assert.Equal(arm, CorrectionArm.Named(arm.Name));
+        }
     }
 
     /// <summary>
@@ -92,15 +124,86 @@ public class CorrectionMeasurementToolingTests
         var cells = new Dictionary<string, double[]>
         {
             ["Dkarm43(1)"] = [136.73],
+            ["Dkarm43_cor(1)"] = [140.01],
+            ["Dkarm43_cor(2)"] = [141.02],
+            ["Dagg43_cor(1)"] = [12.34],
+            ["Dagg43_cor(2)"] = [13.45],
             ["Dkarmcat"] = [10, 20, 30],
             ["pdoksmall"] = [0.5, 0.25],
         };
 
         Assert.Equal(136.73, HeadlineQuantity.All.Single(q => q.Label == "Dkarm43").Read(cells));
+        Assert.Equal(140.01, HeadlineQuantity.All.Single(q => q.Label == "Dkarm43_cor(1)").Read(cells));
+        Assert.Equal(141.02, HeadlineQuantity.All.Single(q => q.Label == "Dkarm43_cor(2)").Read(cells));
+        Assert.Equal(12.34, HeadlineQuantity.All.Single(q => q.Label == "Dagg43_cor(1)").Read(cells));
+        Assert.Equal(13.45, HeadlineQuantity.All.Single(q => q.Label == "Dagg43_cor(2)").Read(cells));
+        Assert.Contains(HeadlineQuantity.All, q => q.Label == "Zkarm_cor");
         Assert.Equal(3.0, HeadlineQuantity.All.Single(q => q.Label == "DPRow").Read(cells));
         Assert.Equal(0.5, HeadlineQuantity.All.Single(q => q.Label == "pdoksmall[0]").Read(cells));
         Assert.Equal(0.25, HeadlineQuantity.StrongestPdoksmallCell(1).Read(cells));
         Assert.Null(HeadlineQuantity.StrongestPdoksmallCell(2).Read(cells));
         Assert.Null(HeadlineQuantity.All.Single(q => q.Label == "Zkarm").Read(cells));
     }
+
+    /// <summary>
+    /// The streams jump by <c>seed * 2^80</c> in a period of 2^100, so seeds equal modulo 2^20 are copies. Every case's
+    /// seeds at its own count, and the audit's eight, have distinct phases. Red on the stride 2^17 with sixteen seeds
+    /// (the next fact), right on 2^16.
+    /// </summary>
+    [Fact]
+    public void EveryCasesSeedsAndTheAuditsEightHaveDistinctPhasesModulo2To20()
+    {
+        foreach (var measurementCase in MeasurementCase.All)
+        {
+            var repeated = MeasurementCase.RepeatedPhases(MeasurementCase.SeedsOf(measurementCase.SeedCount));
+            Assert.True(repeated.Count == 0, $"{measurementCase.Name}: seeds {string.Join(", ", repeated)} repeat a phase.");
+        }
+
+        Assert.Empty(MeasurementCase.RepeatedPhases(CorrectionEffectsMeasurement.AuditSeeds));
+    }
+
+    /// <summary>
+    /// The positive control of the check, of the size of the effect: sixteen seeds at the stride 2^17 land on eight
+    /// phases, seed <c>k + 8</c> repeating seed <c>k</c> (<c>8 * 2^17 = 2^20</c>), so exactly the eight seeds
+    /// <c>8..15</c> are reported; at the stride 2^16 none is.
+    /// </summary>
+    [Fact]
+    public void TheOldStrideWithSixteenSeedsRepeatsEightPhasesAndTheCheckNamesThem()
+    {
+        var oldSeeds = MeasurementCase.SeedsOf(16, MeasurementCase.AuditSeedStrideBits);
+        var repeated = MeasurementCase.RepeatedPhases(oldSeeds);
+
+        Assert.Equal(oldSeeds.Skip(8), repeated);
+        Assert.Equal(8, repeated.Count);
+        _ = Assert.Throws<InvalidOperationException>(() => MeasurementCase.RequireDistinctPhases(oldSeeds));
+        MeasurementCase.RequireDistinctPhases(MeasurementCase.SeedsOf(16));
+    }
+
+    /// <summary>
+    /// The report refuses to run over arms whose seeds repeat a phase, in its section and in the floor of the
+    /// comparison; over distinct phases it runs, and the stride it prints is the measurement's.
+    /// </summary>
+    [Fact]
+    public void TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes()
+    {
+        var measurementCase = MeasurementCase.References[0];
+        var repeating = ArmOf(CorrectionArm.Original.Name, MeasurementCase.SeedsOf(16, MeasurementCase.AuditSeedStrideBits));
+        var distinct = ArmOf(CorrectionArm.Original.Name, MeasurementCase.SeedsOf(16));
+
+        _ = Assert.Throws<InvalidOperationException>(() => CorrectionEffectsReport.CaseSection(measurementCase, [repeating], 1));
+        _ = Assert.Throws<InvalidOperationException>(() => CorrectionEffectsReport.EvenAgainstOdd(repeating));
+
+        var (_, even, odd) = CorrectionEffectsReport.EvenAgainstOdd(distinct);
+        var section = CorrectionEffectsReport.CaseSection(measurementCase, [distinct], 1);
+        Assert.Equal((8, 8), (even, odd));
+        Assert.Contains("seeds `k * 2^16`", section, StringComparison.Ordinal);
+    }
+
+    private static ArmRuns ArmOf(string name, IReadOnlyList<ulong> seeds) => new(
+        "fingerprint",
+        "case",
+        name,
+        "Batched",
+        seeds,
+        [.. seeds.Select(seed => new MeasuredRun(seed, MeasuredRun.Completed, 0.0, new Dictionary<string, double[]> { ["Dkarm43(1)"] = [100.0 + (seed >> 16)] }))]);
 }

@@ -13,7 +13,7 @@ namespace PropStruct.Simulation.Tests;
 /// The hand-run measurement of what each correction does to each printed quantity (<c>BOOT.md</c>, "##
 /// Correction-effects measurement"; task T12): the <c>Original</c> arm, the <c>Corrected</c> model (<c>All</c>) and
 /// each flag of <see cref="CorrectionSet"/> alone, on the five reference formulations and four extra cases, in
-/// batched mode on the CPU with the <c>Independent</c> layout and <c>Binary64</c>, over seeds <c>k * 2^17</c>. The
+/// batched mode on the CPU with the <c>Independent</c> layout and <c>Binary64</c>, over seeds <c>k * 2^16</c>. The
 /// tables are generated into <c>Measurements/corrections-2026-10-18</c>; nothing in them is typed. The facts are
 /// <c>Category=Long</c>, which keeps them out of the fast set and out of CI, and <c>Category=Measurement</c>, which
 /// selects them alone. Select a slice with <c>--filter "Category=Measurement&amp;DisplayName~HMX"</c>.
@@ -39,7 +39,8 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
 
     private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
 
-    private static IReadOnlyList<ulong> AuditSeeds { get; } = MeasurementCase.SeedsOf(AuditSeedCount);
+    /// <summary>The audit's own eight seeds <c>k * 2^17</c>, <c>k = 0..7</c>: eight distinct phases, which sixteen at that stride would not have.</summary>
+    internal static IReadOnlyList<ulong> AuditSeeds { get; } = MeasurementCase.SeedsOf(AuditSeedCount, MeasurementCase.AuditSeedStrideBits);
 
     public static IEnumerable<object[]> CasesAndArms() =>
         MeasurementCase.All.SelectMany(measurementCase => CorrectionArm.Measured.Select(arm => new object[] { measurementCase.Name, arm.Name }));
@@ -79,7 +80,7 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
         Assert.NotEmpty(runs.Completed);
     }
 
-    /// <summary>The section and the raw values of one case, from the runs of its fourteen arms (run where missing).</summary>
+    /// <summary>The section and the raw values of one case, from the runs of its arms (run where missing).</summary>
     [Theory]
     [MemberData(nameof(CaseNames))]
     [Trait("Category", "Long")]
