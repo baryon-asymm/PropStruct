@@ -54,6 +54,30 @@ public class CorrectionSeamTests
         Assert.Equal(CorrectionSet.None, newResult.Setup.Corrections);
     }
 
+    /// <summary>
+    /// <c>AnalyticSizes</c> on the tables and shares <c>Prepare</c> hands back: the overload under
+    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with
+    /// <see cref="PrecisionKind.Original"/>, returns the old overload's <c>DOKM</c> and <c>DOKSD</c> bit for bit.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(FormulationsUnderBothKinds))]
+    public void AnalyticSizesUnderNoneAndUnderOriginalEqualTheOldOverload(string name, bool original)
+    {
+        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        var formulation = ShippedFormulations.Read(name);
+        var prepared = PrepareOld(formulation, kind);
+        Assert.Equal(SetupStatus.Ok, prepared.Status);
+        var shares = formulation.Fractions.Length;
+        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+
+        Setup.AnalyticSizes(formulation.SizeLawCode, shares, prepared.Tables.MassShare, prepared.Tables.Share, prepared.Tables.Bounds,
+            kind, out var oldDokm, out var oldDoksd);
+        Setup.AnalyticSizes(formulation.SizeLawCode, shares, prepared.Tables.MassShare, prepared.Tables.Share, prepared.Tables.Bounds,
+            kind, corrections, out var newDokm, out var newDoksd);
+
+        Assert.Empty(BitwiseComparison.Differences((oldDokm, oldDoksd), (newDokm, newDoksd), name));
+    }
+
     public static IEnumerable<object[]> ShippedNames() => ShippedFormulations.Names.Select(name => new object[] { name });
 
     /// <summary>

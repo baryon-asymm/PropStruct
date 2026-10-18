@@ -99,7 +99,26 @@ internal static class Setup
     public static void AnalyticSizes(
         int sizeLaw, int fractionCount, double[] massShare, double[] share, double[] bounds, PrecisionKind precision,
         out double dokm, out double doksd)
+        => AnalyticSizes(sizeLaw, fractionCount, massShare, share, bounds, precision, CorrectionSet.None, out dokm, out doksd);
+
+    /// <summary>
+    /// The overload of <see cref="AnalyticSizes(int, int, double[], double[], double[], PrecisionKind, out double, out double)"/>
+    /// that takes the model's <see cref="CorrectionSet"/> (BOOT.md, "## Corrected model"): under
+    /// <see cref="PrecisionKind.Original"/> it is replaced by <see cref="CorrectionSet.None"/> on entry, and under
+    /// <see cref="CorrectionSet.None"/> the result is the old overload's, bit for bit. With
+    /// <see cref="CorrectionSet.DoksdConsistent"/>, under <paramref name="sizeLaw"/> = 2 the standard deviation is the
+    /// mass-weighted variance of the law that holds there, uniform in <c>D</c>:
+    /// <c>2/3 * DOK2 / DOK3 - DOKM^2</c>, <c>DOK2</c> summed in the loop of <c>DOK4</c> and <c>DOK3</c>.
+    /// </summary>
+    public static void AnalyticSizes(
+        int sizeLaw, int fractionCount, double[] massShare, double[] share, double[] bounds, PrecisionKind precision,
+        CorrectionSet corrections, out double dokm, out double doksd)
     {
+        if (precision == PrecisionKind.Original)
+        {
+            corrections = CorrectionSet.None;
+        }
+
         double Round(double value) => precision == PrecisionKind.Original ? Binary32.ToNearestRepresentable(value) : value;
 
         var original = precision == PrecisionKind.Original;
@@ -131,6 +150,7 @@ internal static class Setup
             // (a register, unrounded, in passes 2-4).
             var dok4 = 0.0;
             var dok3 = 0.0;
+            var dok2 = 0.0;
             for (var j = 0; j < fractionCount; j++)
             {
                 var lower = bounds[2 * j];
@@ -155,10 +175,21 @@ internal static class Setup
 
                 dok4 = Round(dok4 + term4);
                 dok3 = Round(dok3 + term3);
+                if (corrections.HasFlag(CorrectionSet.DoksdConsistent))
+                {
+                    // DoksdConsistent: the second moment of this law, beside DOK4 and DOK3, in j order.
+                    dok2 += (Math.Pow(upper, 6) - Math.Pow(lower, 6)) * share[j] / (upper - lower);
+                }
             }
 
             var massUniformCoefficient = original ? Binary32.ToNearestRepresentable(0.8) : 0.8;
             dokm = Round(massUniformCoefficient * dok4 / dok3);
+            if (corrections.HasFlag(CorrectionSet.DoksdConsistent))
+            {
+                // DoksdConsistent: the variance of the mass-weighted law uniform in D, not the other law's moment.
+                doksd = 2.0 / 3.0 * dok2 / dok3 - dokm * dokm;
+                return;
+            }
         }
         else
         {
@@ -189,7 +220,7 @@ internal static class Setup
     /// out of bounds without them"), checked in the order <see cref="SetupStatus"/>
     /// declares them; the fraction-law tables (<see cref="FractionLaw.Build"/>), the
     /// tail-probability draw (<see cref="FractionLaw.TryTailDraw"/>) and the analytical
-    /// oxidizer size (<see cref="AnalyticSizes"/>) only run once every precondition
+    /// oxidizer size (<see cref="AnalyticSizes(int, int, double[], double[], double[], PrecisionKind, CorrectionSet, out double, out double)"/>) only run once every precondition
     /// holds. <paramref name="setup"/>'s own <c>Dmax</c> is left at its default (0) and
     /// <paramref name="draw"/> carries what <c>Particle.SizeLaw.Sample</c> needs to
     /// produce it; the caller passes the sampled diameter to
@@ -409,7 +440,7 @@ internal static class Setup
         var rounding = new CyclePlaneRounding(precision);
         var g378 = rounding.Temporary(ggg / plot1); // Fortran 378
         var lambda = rounding.Store(g378 * zss * plot2); // Fortran 378
-        AnalyticSizes(formulation.SizeLawCode, fractionCount, massShare, share2, bounds, precision, out var dokm, out var doksd);
+        AnalyticSizes(formulation.SizeLawCode, fractionCount, massShare, share2, bounds, precision, effective, out var dokm, out var doksd);
 
         // k5 (Alpha), k7/k8 (PocketCoefficient/BridgeCoefficient), GM (MetalMassFraction),
         // eps_dok (EpsDok) and eta (AggregatedOxideFraction): every other generated
