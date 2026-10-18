@@ -473,9 +473,9 @@ the draws and every integer total stay bit-identical. Effect: `volume` alone, in
 
 Declared, not an error of the fix: the solid is the program's straight frustum between
 the contact circles, not the published bridge bounded by the notional pocket surfaces
-(concave side), so the fix moves the volume further from the published one (0.53 to
-0.64 of it by the audit's integration). Under this flag alone P33's `Zkarm_cor` crosses
-zero (the row 1616–1627 holds the figures): nothing bounds `1 − DolM2`, no clamp.
+(concave side), which is 0.53 to 0.64 of the frustum less its caps (the audit's
+integration), so the fix moves the volume away from it. Under this flag alone P33's
+`Zkarm_cor` crosses zero (row 1616–1627): nothing bounds `1 − DolM2`, no clamp.
 
 **Line 720 — withdrawn 2026-10-18** (the flag `Fmkarm2OnAcceptance`, value 4, is
 retired and never reused). The original adds the staged `fmkarm2_loc` to `fmkarm2`
