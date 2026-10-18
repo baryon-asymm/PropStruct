@@ -391,37 +391,37 @@
   block a `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests`
   green. Met 2026-10-18 for `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files,
   both kinds; `CorrectionSeamTests`, `CorrectedStatementStructureTests`, each red on a
-  mutation); open for `MergeAndDescribe`, `Probability`, with the flags that read them.
-- [ ] Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is the `None`
-  value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base, each to
-  1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the matches of
-  `3\.14\d*`, `12\.566\d*`, `0?\.333\d*` and the quotient `1/3.` (not after a letter,
-  digit or point) in the four line-map ranges at exactly 1704, 1716, 1014 and 1016
-  (twice), red on a removed site. Met 2026-10-18 for the two `PARAM` sites and the `ZSS`
-  ratio on 49 files, red under `None` and on each coefficient reverted
-  (`ExactConstantsTests`); open for `mp` and the `Legacy` test, with 1014 and 1016.
+  mutation), `Probability` (4 cases), `Compute` (49 files); open for `MergeAndDescribe`.
+- [x] 2026-10-18: Corrected, `ExactConstants`: on the same inputs `ZSS` (so λ) is the
+  `None` value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base,
+  to 1e-12 relative on 49 files; red: ratio 1 under `None`, `mp` moving 8.6e-5 to
+  1.15e-4. A `Legacy` test finds `3\.14\d*`, `12\.566\d*`, `0?\.333\d*` and the quotient
+  `1/3.` (not after a letter, digit or point) in the four line-map ranges at exactly
+  1704, 1716, 1014 and 1016 (twice) (`ExactConstantsTests`, red on each constant
+  reverted; `ExactConstantsSitesTests`, red on a removed site).
 - [x] 2026-10-18: Corrected, `DoksdConsistent`: one `JZZ = 2` fraction gives the closed
   form `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance,
   also on every shipped `JZZ = 2` file, to 1e-12; P33 prints `Dok43sd` 112.66 µm, P2
   8.07 µm; red: `None`'s 75.45 µm and `NaN`; `JZZ ≠ 2` bit-identical to `None`
   (`DoksdConsistentTests`; red on `1/3` for `2/3` and on the flag read as another).
-- [ ] Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0` fraction across
-  `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by `GGG·GDOK·φ(b)`
-  and the flag equals it, under both laws; `b` at or below the bound: bit-identical; on
-  one PSAN02 `--sfr`, `Dmin = 20 µm` total set, `None` minus the flag is 0.0119 (three
-  digits).
-- [ ] Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, seen through
-  `pdoksmall` (`zdoksmall` stays inside `Probability`): for a `vdokstr` whole in cell 1,
-  `AK2 = 2` and `gdokleft > 0`, where 1021–1056 give `zdoksmall` ½ in cell 1 and 1
-  beyond before the scaling and `ddoksmall` ¼ and `1/(2k)`, `pdoksmall` is the closed
-  form of 1047–1064 with the scaling by `GGG` under `None` and by `GGG − gdokleft` under
-  the first flag, `pdoksmall[0]` 0 under `None` and the 1061 formula under the second;
-  `gdokleft = 0`, cell 1 empty: bit-identical. P312 at its defaults and at `Dmin = 5 µm`
-  moves `pdoksmall` (reported).
-- [ ] Corrected, `VdokTotalOnCopy`: over two cycles of constructed totals `None` divides
-  them in place twice, while under the flag they are byte-identical after both calls and
-  `DolM2`, `DolM3` equal their closed form over the undivided totals; cycle 1
-  bit-identical to `None`; P312 with `KXX = 3` moves them from cycle 2 (reported).
+- [x] 2026-10-18: Corrected, `GdokleftOnce`: on constructed totals with an `SFR = 0`
+  fraction across `b`, `None` exceeds the analytic `GGG·[FMDOK(k) + GDOK(1 − φ(b))]` by
+  `GGG·GDOK·φ(b)` and the flag equals it, under both laws; `b` at or below the bound:
+  bit-identical; PSAN02 `--sfr`, `Dmin` 20 µm, `Di` 10 µm: `None` minus the flag 0.0119,
+  0.0175 of the oxidizer (`GdokleftOnceTests`, red on each mutation).
+- [x] 2026-10-18: Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, through
+  `pdoksmall`: for a `vdokstr` whole in cell 1, `AK2 = 2` and `gdokleft > 0`, where
+  1021–1056 give `zdoksmall` ½ in cell 1 and 1 beyond before the scaling and `ddoksmall`
+  ¼ and `1/(2k)`, `pdoksmall` is the closed form of 1047–1064, scaled by `GGG` under
+  `None` and by `GGG − gdokleft` under the first flag, `pdoksmall[0]` 0 under `None` and
+  the 1061 formula under the second; `gdokleft = 0`, cell 1 empty: bit-identical
+  (`SmallParticlesCorrectedTests`, red on each mutation). Reported (P312's own mass CDF,
+  `CorrectedCycleEvidenceTests`): `gdokleft` 0.122, a cell moves ≤ 21.6 %; `Dmin` 5 µm:
+  `pdoksmall[0]` 0 → 0.191.
+- [x] 2026-10-18: Corrected, `VdokTotalOnCopy`: over two cycles `None` divides the
+  constructed totals in place twice, the flag leaves them byte-identical and `DolM2`,
+  `DolM3` equal their closed form over the undivided totals; cycle 1 equals `None`;
+  P312, `KXX = 3`: moves from cycle 2 (×0.774, ×0.599; `VdokTotalOnCopyTests`).
 - [ ] Corrected, the categories: `CategoriesOnCopy` leaves the totals byte-identical and
   a second call equal to the first, its report that of `None` on a fresh copy, where
   `None`'s second call differs; `CategoriesLastRowRecomputed` on rows whose last merge
@@ -430,5 +430,5 @@
   an empty middle row `None` keeps, a `QDOKSS = 1` row under neither. The five
   references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
-  with its flag's code and these criteria's evidence, never before.
-  Landed: `DoksdConsistent`, 2026-10-18.
+  with its flag's code and these criteria's evidence, never before. Landed 2026-10-18:
+  every flag but the three of the categories.

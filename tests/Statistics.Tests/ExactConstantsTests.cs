@@ -8,8 +8,10 @@ namespace PropStruct.Statistics.Tests;
 /// <c>ExactConstants</c> at <c>PARAM</c>'s two sites (<c>src/Statistics/BOOT.md</c>, "## Corrected model"; Fortran
 /// 1704 and 1716): the coefficients <c>3/3.14</c> and <c>24/3.14</c> are <c>3/π</c> and <c>24/π</c>, so the
 /// normalising sum <c>ZSS</c>, and λ with it, is the <c>None</c> value times <c>3.14/π</c>, and <c>ZX</c> and
-/// <c>Z11</c>, ratios of the same terms, move in their last bits only. The sites of lines 1014 and 1016 are the
-/// per-cycle statements', and the <c>Legacy</c> test that finds the four sites in the line map's ranges comes with them.
+/// <c>Z11</c>, ratios of the same terms, move in their last bits only. At lines 1014 and 1016 (<c>Matrix</c>) the
+/// base of the cube root is the same number under both sets (π cancels between 1014 and 1016), so <c>mp</c> is the
+/// <c>None</c> value times <c>y^(1/3 - 0.3333)</c>. <c>ExactConstantsSitesTests</c> finds the four sites in the
+/// line map's ranges.
 /// </summary>
 public class ExactConstantsTests
 {
@@ -107,6 +109,61 @@ public class ExactConstantsTests
             CorrectionSet.ExactConstants, out var share, out var cumulative, out var sum);
 
         Assert.Empty(BitwiseComparison.Differences((none.Share, none.Cumulative, none.Zss), (share, cumulative, sum), name));
+    }
+
+    /// <summary>
+    /// Right: <c>mp</c> (line 1016) under the flag is the <c>None</c> value times <c>y^(1/3 - 0.3333)</c>, <c>y</c> the
+    /// base of the power, to 1e-12 relative, on every shipped formulation. <c>y</c> is read back from <c>None</c>'s own
+    /// <c>mp = 2 y^0.3333</c>, not recomputed from the statements under test.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ShippedNames))]
+    public void MpIsTheNoneValueTimesTheBaseToTheOneThirdMinusThreeThreeThreeThree(string name)
+    {
+        var none = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Binary64,
+            CorrectionSet.None).Mp;
+        var exact = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Binary64,
+            CorrectionSet.ExactConstants).Mp;
+
+        var baseOfThePower = Math.Pow(none / 2.0, 1.0 / 0.3333);
+
+        AssertRelative(none * Math.Pow(baseOfThePower, 1.0 / 3.0 - 0.3333), exact);
+    }
+
+    /// <summary>
+    /// Red: a flag that <c>Matrix</c> does not read leaves <c>mp</c> to the bit, so the ratio is 1 under <c>None</c>, where
+    /// the check above would reject it by the size of the effect (measured 8.6e-5 to 1.15e-4 relative over the 49
+    /// files; the bound here is 1e-5, seven orders above the check's 1e-12).
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ShippedNames))]
+    public void WithoutTheFlagMpIsTheOldValueAndTheEffectIsLargerThanTheTolerance(string name)
+    {
+        var none = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Binary64,
+            CorrectionSet.None).Mp;
+        var other = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Binary64,
+            CorrectionSet.DoksdConsistent | CorrectionSet.CategoriesOnCopy).Mp;
+        var exact = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Binary64,
+            CorrectionSet.ExactConstants).Mp;
+
+        Assert.Equal(BitConverter.DoubleToInt64Bits(none), BitConverter.DoubleToInt64Bits(other));
+        Assert.True(Math.Abs(exact - none) > 1e-5 * none, $"{name}: the effect {Math.Abs(exact - none) / none:E3} is smaller than the bound");
+    }
+
+    /// <summary>
+    /// Under <see cref="PrecisionKind.Original"/> the flag changes nothing in <c>Compute</c> either, also when the stored
+    /// set was put there by hand (a setup that did not come from <c>Prepare</c>): <c>mp</c> is the same bits.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ShippedNames))]
+    public void UnderOriginalMpIgnoresAnImposedFlag(string name)
+    {
+        var none = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Original,
+            CorrectionSet.None).Mp;
+        var imposed = ConstructedCycle.Report(ShippedFormulations.Read(name), ModelParameters.Default, PrecisionKind.Original,
+            CorrectionSet.None, CorrectionSet.ExactConstants).Mp;
+
+        Assert.Equal(BitConverter.DoubleToInt64Bits(none), BitConverter.DoubleToInt64Bits(imposed));
     }
 
     public static IEnumerable<object[]> ShippedNames() => ShippedFormulations.Names.Select(name => new object[] { name });

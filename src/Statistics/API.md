@@ -212,9 +212,11 @@ Decided 2026-10-18 (BOOT.md, "## Corrected model"). `CorrectionSet` and
 member of "## Setup" plus `CorrectionSet corrections` after its `PrecisionKind`; the old
 overloads stay and forward `CorrectionSet.None`, and under `PrecisionKind.Original` every
 new one replaces `corrections` by `None` on entry. Implemented 2026-10-18 (T5): the setup's
-three, with `DoksdConsistent` in `AnalyticSizes` and `ExactConstants` in `Build` (the
-`Categories` and `SmallParticles` overloads below wait for the flags that read them: an
-unused parameter is an analyzer error, IDE0060).
+three, with `DoksdConsistent` in `AnalyticSizes` and `ExactConstants` in `Build`; (T7) the
+`Probability` overload below, with `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, and
+`Compute` reading `setup.Corrections` for `ExactConstants` (`mp`) and `GdokleftOnce`
+(the `Categories` overload waits for the flags that read it: an unused parameter is an
+analyzer error, IDE0060).
 
 ```csharp
 internal static class Setup
@@ -239,6 +241,14 @@ internal static class FractionLaw
         CorrectionSet corrections,
         out double[] share, out double[] cumulative, out double sum);
 }
+
+internal static class SmallParticles
+{
+    public static double[] Probability(
+        int ndok, double cellSize, double ak2, double ggg, double gdokleft, double karmcoef,
+        double oxidizerDensity, double propellantDensity, double[] vdokstr, PrecisionKind precision,
+        CorrectionSet corrections);
+}
 ```
 
 ## Corrected model, per-cycle overloads ⏳
@@ -253,14 +263,6 @@ internal static class Categories
         AccumulatorLayout layout, Span<long> integerTotals, Span<double> realTotals, PrecisionKind precision,
         CorrectionSet corrections,
         out int dpRow, out double[] dpockets, out double[] dokp43, out double[] qdokkarm, out double[][] qdokso);
-}
-
-internal static class SmallParticles
-{
-    public static double[] Probability(
-        int ndok, double cellSize, double ak2, double ggg, double gdokleft, double karmcoef,
-        double oxidizerDensity, double propellantDensity, double[] vdokstr, PrecisionKind precision,
-        CorrectionSet corrections);
 }
 ```
 
