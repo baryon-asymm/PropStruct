@@ -322,18 +322,13 @@ Declared, AGENTS.md §12.
   declared there), and `VMKM` (declared there for the first time, 2026-09-24).
 
   **Design decision, 2026-09-24 (owner and orchestrator): the membership of the rounded
-  set is generated too, not only its kind.** Until then the script generated each
-  name's kind, but the list of names was typed by hand (`FIELD_FORTRAN_NAMES`), which
-  could not hold a scalar local: six REAL*4 sums at lines 642–666 (`VSMKM1`, `SVD1`,
-  `Vdok_loc`, `Vmkm_loc`, `Vdok_loc2`, `Vmkm_loc2`) were missed and stayed `double`
-  under `Original` (fidelity audit of 2026-09-24, P-1). Implemented the same day: the
-  script now scans this node's own `## Line map` ranges directly, keyed by Fortran
-  name; the only hand-written part is `RealFourWriteSites.txt`, mapping each Fortran
-  name to its C# write site, "not ported", or "not rounded"; and
-  `tests/Particle.Tests/RealFourAccumulatorMappingTests.cs` guards the mapping both
-  ways, proven red on a synthetic fixture and, once, on the real files. Measured the
-  same day: `Binary64` bit-identical, `Original` moves `Zkarm_cor` alone (≤ 8.6e-7
-  relative) → `HISTORY.md#measurements-condensed-2026-10-18`.
+  set is generated too, not only its kind.** The script scans this node's own `## Line
+  map` ranges directly, keyed by Fortran name; the only hand-written part is
+  `RealFourWriteSites.txt` (each name to its C# write site, "not ported" or "not
+  rounded"), guarded both ways by `RealFourAccumulatorMappingTests`. A typed list had
+  missed six REAL*4 sums at lines 642–666 (fidelity audit of 2026-09-24, P-1);
+  `Binary64` stays bit-identical, `Original` moves `Zkarm_cor` alone (≤ 8.6e-7 relative)
+  → `HISTORY.md#measurements-condensed-2026-10-18`, `HISTORY.md#real4-membership-design-2026-10-18`
 
   `QKS1`, `FQKS`, `AUS` and `TU` are REAL*4 **decision** variables of the original: they
   gate the empty-window test (`AUS`, line 589), the `1.0 − FQKS(iks) < 1E-5` truncation
@@ -476,18 +471,21 @@ the draws and every integer total stay bit-identical. Effect: `volume` alone, in
 `Vsmkm`, `VmkmTotal`, `VmkmTotal2` through `VSMKM1`, `Vmkm_loc`, `Vmkm_loc2`
 (`Zkarm`, `Zkarm_cor`, `epszkarm_n`).
 
+Declared, not an error of the fix: the solid is the program's straight frustum between
+the contact circles, not the published bridge bounded by the notional pocket surfaces
+(concave side), so the fix moves the volume further from the published one (0.53 to
+0.64 of it by the audit's integration). Under this flag alone P33's `Zkarm_cor` crosses
+zero (the row 1616–1627 holds the figures): nothing bounds `1 − DolM2`, no clamp.
+
 **Line 720 — withdrawn 2026-10-18** (the flag `Fmkarm2OnAcceptance`, value 4, is
 retired and never reused). The original adds the staged `fmkarm2_loc` to `fmkarm2`
-before the tests of 723–738, so a rejected attempt's Var#2 pocket volumes enter it;
-the `Corrected` model keeps that commit point. `fmkarm_cor` (Var#1, 685–686) and every
-other pocket statistic (QKS, VKS, DP31/41 676–679, QDOKS 711) count rejected attempts
-too: under the flag Var#2 alone counted accepted ones, so the two variants of one
-correction parted on their population, not on their exclusion rule. Where `pdoksmall`
-is 0 in every cell (inpt, PSAN02n) both must equal the uncorrected set: under `Original`
-they do (214.81/214.81 µm, 162.93/162.93 µm at seed 0), under `All` `Dkarm43_cor(2)`
-went to 246.36 µm (+14.7 %) and 189.13 µm (+16.1 %). Staging `fmkarm2_loc` like the
-bridge sums (741–755) is no explicit error against that evidence, and only explicit
-errors are fixed. Paired shifts of the audit: `HISTORY.md#fmkarm2-audit-2026-10-18`.
+before the tests of 723–738, as every other pocket statistic counts rejected attempts
+too; the `Corrected` model keeps that commit point, since staging it like the bridge
+sums (741–755) is no explicit error and only explicit errors are fixed. The deciding
+figure: where `pdoksmall` is 0 (inpt, PSAN02n) `Dkarm43_cor(1)` and `(2)` agree under
+`Original` (214.81 µm both at seed 0), and under `All` `(2)` went to +14.7 % and
++16.1 %. The audit's paired shifts: `HISTORY.md#fmkarm2-audit-2026-10-18`; the full
+paragraph: `HISTORY.md#real4-membership-design-2026-10-18`.
 
 ⚠ 2026-10-18: was the row of line 720 `fixed (Fmkarm2OnAcceptance)` with the effect measured by `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, now `unchanged` with the audit's paired shifts, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
@@ -502,11 +500,13 @@ stream 6) — measured by the throwaway variant of the 2026-09-24 audit (eight s
 the five references): `Dqmkm2` −2.8 % to −7.0 %, `Zkarm` +4.9 % to +13.5 %
 (`HISTORY.md#bridge-window-origin-audit-2026-09-24`). Risk: with the upper-edge origin
 a pocket is never smaller than `Di·mindk > AK3·Dr`, so a bridge with `Dr ≥ Db` never
-redraws on `A ≥ 2·RK`; the lower edge admits pockets down to `Di·(mindk − 1)`, and a
-bridge past `PocketRedrawBudget` (12,800, `Simulation`'s internal default, no flag)
-fails the run. The coding task probed the rate (`ACCEPTANCE.md`, 2026-10-18): the largest
-count per bridge was 109 draws (P33, 2.4·10⁵ bridges), 11.7 times under a tenth of the
-budget, so no proposal to `Simulation` was needed.
+redraws on `A ≥ 2·RK`; the lower edge admits pockets below `AK3·Dr` down to
+`Di·(mindk − 1)`, the cell resolution of a whole-cell window, the histogram-edge
+class of the audit's E6b, declared, not an error of the fix; and a bridge past
+`PocketRedrawBudget` (12,800, `Simulation`'s internal default, no flag) fails the run.
+The coding task probed the rate (`ACCEPTANCE.md`, 2026-10-18): the largest count per
+bridge was 109 draws (P33, 2.4·10⁵ bridges), 11.7 times under a tenth of the budget,
+so no proposal to `Simulation` was needed.
 
 Unchanged under `Corrected`, none an explicit error: rejected attempts keep their side
 effects, line 720's staged sum included; no reset between cycles; the QKS1 refresh
@@ -515,21 +515,23 @@ edge of line 646; the shared stream 6 and the seeds (`Random`'s). The REAL*4 and
 rows are `not reachable`: `Corrected` runs under `Binary64` only; the `3.14159` row,
 `numeric` too, is `ExactConstants`'.
 
+⚠ 2026-10-18: was "sixteen seeds" and the old page's shifts (`k·2¹⁷`, eight distinct phases; `Zkarm` −3.406 ± 0.323 % … −2.722 ± 0.199 %), now sixteen distinct seeds `k·2¹⁶` with each shift's standard error in the rows 1616–1627, 469… and 595 → HISTORY.md#corrections-page-rerun-2026-10-18
+
 ## Defects of the original
 
 | Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
 |---|---|---|---|---|---|---|
 | 425–719, 721–756 | algorithm | An attempt later ended as `RestartedAfterLoop` by the acceptance tests of lines 723–738 keeps every histogram, bridge and pocket accumulator update it made before those tests fired: nothing is undone on rejection (`## Invariants`, "Every side effect of the original, in the same place"). The staged `fmkarm2_loc` sum of line 720 is its own row. | not measured | reproduced | none | unchanged |
 | 720 | algorithm | Line 720 adds the attempt's staged `fmkarm2_loc` to `fmkarm2` after the neighbour loop but before the acceptance tests of 723–738, while the bridge sums are committed after them (741–755): a rejected attempt's Var#2 pocket volumes enter `fmkarm2`. Every pocket statistic does the same (`fmkarm_cor` 685–686, QKS, VKS, DP31/41 676–679, QDOKS 711), so the commit point is not an explicit error (`## Corrected model`, "Line 720"). | measured 2026-10-18 by the four-auditor audit at c32821e (eight seeds `k·2¹⁷`, batched CPU, `Independent`, `Binary64`, `All` with the withdrawn flag against `Original`; paired shifts of `Dkarm43_cor(2)`/`Dagg43_cor(2)`): inpt +14.6 %, PSAN02n +16.0 %, HMX +2.0…+2.2 %, P33 −3.3…−3.5 %, HPEPA3 −9.5…−11.2 %; the fix was withdrawn, the original's commit point stands (`src/Particle/HISTORY.md#fmkarm2-audit-2026-10-18`) | reproduced | none | unchanged |
-| 1616–1627 | algorithm | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation, shift ± its standard error): the fix alone moves `Zkarm` by −3.4 % (HPEPA3), −12.4 % (inpt), −7.0 % (P33), −12.8 % (PSAN02n), −2.7 % (HMX); `Dqmkm2` unmoved | reproduced | none | fixed (BridgeFrustum) |
-| 469, 484, 501, 524, 542, 643, 648, 665, 677, 685, 702, 747, 750, 754 | numeric | The sphere volumes `π/6·D³` and the Poisson radius `rrL` take the truncated literal `3.14159` for π (`## Constraints`; `## Corrected model`, "`ExactConstants`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`): with Statistics' sites, `da_coef` −0.0086 % (HMX) to −0.0100 % (HPEPA3), a seed-independent setup shift; `Dkarm43`, `Dkarm10`, `Dagg43` +0.04 % to +0.09 %, seen only by the same-seed paired t | reproduced | none | fixed (ExactConstants) |
+| 1616–1627 | algorithm | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, the re-run at 8b29342; batched, CPU, `Independent`, `Binary64`, sixteen distinct seeds `k·2¹⁶` per reference formulation; shift in per cent of the `Original` mean ± the standard error of the shift, each past the Welch threshold at 10⁻³ for that quantity alone): the fix alone moves `Zkarm` by −3.400 ± 0.319 % (HPEPA3), −12.434 ± 0.076 % (inpt), −7.037 ± 0.615 % (P33), −12.828 ± 0.058 % (PSAN02n), −2.732 ± 0.192 % (HMX) and `Dqmkm2` not at all; on P33 it carries `Zkarm_cor` through zero, −1174.9 ± 12.6 % of `Original`'s 5.81e-3 (the arm's mean −0.062, all sixteen seeds negative, `raw-P33.csv`), which no clamp bounds (`## Corrected model`, "`BridgeFrustum`") | reproduced | none | fixed (BridgeFrustum) |
+| 469, 484, 501, 524, 542, 643, 648, 665, 677, 685, 702, 747, 750, 754 | numeric | The sphere volumes `π/6·D³` and the Poisson radius `rrL` take the truncated literal `3.14159` for π (`## Constraints`; `## Corrected model`, "`ExactConstants`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, the re-run at 8b29342; batched, CPU, `Independent`, `Binary64`, sixteen distinct seeds `k·2¹⁶` per reference formulation; shift in per cent of the `Original` mean ± the standard error of the shift): with Statistics' sites, `da_coef` −0.0086 % (HMX) to −0.0100 % (HPEPA3), a seed-independent setup shift whose standard error is at rounding size (3e-15 to 8e-15 points); `Dkarm43` +0.048 ± 0.017 % (PSAN02n) to +0.091 ± 1.324 % (P33), `Dkarm10` +0.027 ± 0.027 % (HMX) to +0.053 ± 0.041 % (P33), `Dagg43` +0.040 ± 0.043 % (inpt) to +0.082 ± 1.324 % (P33), inside the Welch threshold at 10⁻³ in all fifteen but `Dkarm10` on PSAN02n (t +4.0) and seen by the same-seed paired t, +4.6 to +49.0 | reproduced | none | fixed (ExactConstants) |
 | 425–767 | algorithm | No accumulator is reset at a cycle boundary beyond the two in-place rewrites `Statistics` makes: a per-cycle quantity printed for cycle `k ≥ 1` already carries every accepted particle of cycles `1..k` ("Totals between cycles"). | not measured | reproduced | none | unchanged |
 | 496 | numeric | A draw the original repeats (`X1 == 1`, line 496) is redrawn from the same stream on an unbounded pass (not a `GO TO 11`, so uncounted); the original's REAL*4/x87 rounding could in principle hit `X1 == 1.0` exactly there ("Decisions where the port departs from a transcription"). | not measured | reproduced | none | not reachable |
 | 529 | dead | Tests `Dr ≥ Dmax` again inside the neighbour loop; the test cannot fire because line 474 already restarted the attempt whenever `Dr ≥ Dmax` ("Decisions where the port departs from a transcription"; `## Line map`). | not measured | declared, not reproduced | none | unchanged |
 | 466, 521, 541, 543, 701, 706, 710 | dead | `VDOKS` (710) feeds only `VDOKSO` and `DOKP432`, which nothing prints (1397 is commented out); `idok_local_all` (541) and `ipocket_loc_cor` (701) are never read; `qdokstr` (543) feeds nothing printed or carried forward; `QDOK` (706)'s only print (1403) and `ALLVDOK_FR` (466, 521)'s only print (1282) are commented out ("Decisions where the port departs from a transcription"). | not measured | declared, not reproduced | none | unchanged |
 | 469, 524, 542, 642–643, 648–649, 665–666, 685, 702, 707, 708, 720, 741–743, 747, 749–750, 753–754 | numeric | The original's REAL*4 sums (`ALLVDOK`, `vdokstr`, `DOKP41`, `fmkarm*`, `VSMKM`, `VSMKM1`, `SVD1`, `Vdok_loc`, `Vmkm_loc`, `Vdok_loc2`, `Vmkm_loc2`…) saturate on long runs ("Decisions where the port departs from a transcription"). | measured 2026-09-21 at the original's own one-rounding-per-drawn-particle granularity: worst-cell binary32-vs-double relative error reaches 65% (`Allvdok`/`Vdokstr`) on HMX, 46% on HPEPA3; `Dokp41`/`Dokp31` (feeding `dokkarm43`) exceed the whole replica band on HPEPA3/HMX (ratio 1.1-2.8) — REAL*4 accumulation alone could fully explain those formulations' failing `dokkarm43` cells; `Fmkarm2` rules the story out everywhere. Reproduced by `PrecisionKind.Original`, opt-in, `Binary64` the default (`## Accumulators`; `tests/Particle.Tests/PrecisionKindClassificationTests.cs`). | reproduced | none | not reachable |
 | 589, 601, 716 | numeric | `QKS1`, `FQKS`, `AUS` and `TU` are REAL*4 decision variables that gate a branch rather than print a value: `QKS1`/`FQKS` feed the `1.0 − FQKS(iks) < 1E-5` truncation of line 601, `AUS` is their reciprocal sum (line 589's empty-window test), `TU` gates the neighbour-loop exit of line 716; the original's REAL*4 rounding can cross a threshold one draw earlier or later than `double` arithmetic does ("Decisions where the port departs from a transcription"). | measured causally 2026-09-21: a throwaway binary32-emulating variant of exactly these four variables (discarded, never committed) run on HPEPA3 across the same 27-point `N` sweep `tests/Harness`'s own smooth-vs-step check used declines by only 3% (`pdoksmall[2]`) and 3.6% (`fmdok[1]`) of the original's own drop, all of it below `N = 10000`, and is exactly as flat as the unmodified port for `N ≥ 14500` — refuted as the mechanism behind these two cells' own drift ("Decisions where the port departs from a transcription"). | declared, not reproduced | none | unchanged |
-| 595 | algorithm | `DPOC(mindk)=Di*mindk` anchors the bridge-window's diameter CDF one cell (`Di`) above the QKS1 cell whose probability mass it pairs with, so `DM` draws every bridge pocket diameter one histogram cell too high (`## Attempt structure`, "Bridge window once per attempt"). | measured (fidelity audit 2026-09-24, U-P1; eight seeds `k·2¹⁷`, all five reference formulations, `Independent` layout, `--precision double`, a throwaway variant with the origin at the cell's lower edge, discarded and never committed): `Dqmkm2` moves −2.8% to −7.0% and `Zkarm` +4.9% to +13.5%, both far beyond the seeds' own spread; 75–95 of 1513–6643 compared cells differ per formulation; a cell-centre origin gives about half the shift on every formulation, a dose-proportional response; `Dqmkm1`/`qmkm1` and the bridge count are bit-identical (`src/Particle/HISTORY.md#bridge-window-origin-audit-2026-09-24`). | reproduced | none | fixed (WindowLowerEdge) |
+| 595 | algorithm | `DPOC(mindk)=Di*mindk` anchors the bridge-window's diameter CDF one cell (`Di`) above the QKS1 cell whose probability mass it pairs with, so `DM` draws every bridge pocket diameter one histogram cell too high (`## Attempt structure`, "Bridge window once per attempt"). | measured (fidelity audit 2026-09-24, U-P1; eight seeds `k·2¹⁷`, all five reference formulations, `Independent` layout, `--precision double`, a throwaway variant with the origin at the cell's lower edge, discarded and never committed): `Dqmkm2` moves −2.8% to −7.0% and `Zkarm` +4.9% to +13.5%, both far beyond the seeds' own spread; 75–95 of 1513–6643 compared cells differ per formulation; a cell-centre origin gives about half the shift on every formulation, a dose-proportional response; `Dqmkm1`/`qmkm1` and the bridge count are bit-identical (`src/Particle/HISTORY.md#bridge-window-origin-audit-2026-09-24`); measured again on the shipped flag 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, the re-run at 8b29342; batched, CPU, `Independent`, `Binary64`, sixteen distinct seeds `k·2¹⁶` per reference formulation; shift in per cent of the `Original` mean ± the standard error of the shift): the flag alone moves `Dqmkm2` by −6.953 ± 0.006 % (HPEPA3), −2.805 ± 0.011 % (inpt), −4.376 ± 0.022 % (P33), −3.645 ± 0.006 % (PSAN02n), −4.825 ± 0.013 % (HMX) and `Zkarm` by +11.844 ± 0.314 %, +7.128 ± 0.078 %, +11.552 ± 0.606 %, +13.402 ± 0.054 %, +4.860 ± 0.189 % in that order, each past the Welch threshold at 10⁻³; 87 to 98 of 1518 to 7624 compared cells differ per formulation, the floor 0 of 1506 to 7139 (`## Corrected model`, "`WindowLowerEdge`"). | reproduced | none | fixed (WindowLowerEdge) |
 | 299 | dead | `Xss5`, `Xss6` (line 299 zeroes only `XSS0`–`XSS4`) and `NnTotal` are never initialized by the original ("Decisions where the port departs from a transcription"). | not measured | declared, not reproduced | none | unchanged |
 | 478, 533, 1761–1776 | numeric | `Dr`/`Db` (implicit REAL*4, no declaration) pass through subroutine `SIZE`'s own REAL*4 store before the `Dr.le.Dmin`/`Db.le.Dmin` test; a draw a hair above `Dmin` can round down to `Dmin`'s own binary32 value and fire the test ("Decisions where the port departs from a transcription"). | measured 2026-09-23: real reference-mode replay observes 3/2,000,000 attempts on HMX (rate 3.72e-4) and 4/1,200,000 on HPEPA3 (2.21e-5), 0/500,000 on P33; against the original's own lagged replicas (mean 1.19e-3 HMX, 5.47e-5 HPEPA3) this mechanism alone reaches the right order of magnitude; counts of 3 and 4 events, whose Poisson 95 % intervals are 7.7e-5–1.09e-3 for HMX and 6.0e-6–5.7e-5 for HPEPA3, so HPEPA3 is fully consistent and HMX narrowly short (`tests/Particle.Tests/DminBoundaryProbe.cs`, `DminBoundaryProbeTests.cs`). | declared, not reproduced | `HPEPA3,HMX: ConditionBreaking(2)` | unchanged |
 

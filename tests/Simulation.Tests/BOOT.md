@@ -448,10 +448,15 @@ folder, never typed.
 - **Controls**: the seam with `None` equals `Original` (`ModelKindTests`). Negative: `Original`
   even against odd seeds. Positive: `WindowLowerEdge` in reference mode over `k = 0..7`,
   `DoksdConsistent` on P33, `ExactConstants` on `Setup.Lambda`.
-- **Floor** (measured 2026-10-18): the negative control is not clean. `TwoSampleBiasOfSets`
-  has no count floor or print resolution, so cells one half prints and the other does not, and
-  cells printed more coarsely than their spread, differ with infinite or huge t: 0 to 9 cells in
-  1200 to 7000, listed in `control-negative-*.md`. The fact asserts the floor under one per cent.
+- **Floor** (measured 2026-10-18, the re-run at 8b29342): the negative control is clean,
+  0 differing of 1234 to 7139 compared cells in all nine cases, `Original` even seeds
+  against odd (8 against 8 on the references, 4 against 4 on the extras).
+  `TwoSampleBiasOfSets` has no count floor or print resolution (`tests/Harness/API.md`),
+  so cells one half prints and the other does not, or printed more coarsely than their
+  spread, could differ with infinite or huge t; the fact asserts the floor under one per
+  cent and each case's table prints it beside the arms.
+
+  ⚠ 2026-10-18: was "not clean: 0 to 9 cells in 1200 to 7000" on the first run, whose halves held copied seeds, now 0 in every case → HISTORY.md#correction-effects-floor-first-run-2026-10-18
 - **The store** `Measurements/cache/` (ignored by git, `MeasuredRunStore`) lets a run too long for
   one command be made in slices; it records each build's fingerprint and does not compare it,
   since a rebuild of unchanged source changes it. Delete it before a run that is to be evidence.
