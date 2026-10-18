@@ -83,7 +83,9 @@ nothing else in that section. A table with the old six-column header, ending at
 - `Corrected` says what the `Corrected` model kind does with the defect, and is one of:
   `unchanged` (it computes as the `Original` model does here); `not reachable` (the
   defect exists only under `PrecisionKind.Original`, REAL*4 or x87 rounding, which the
-  `Corrected` model refuses; allowed only when `Kind` is `numeric`); or
+  `Corrected` model refuses; allowed only when `Kind` is `numeric` and `The port` is
+  `reproduced`: a row the port declares without reproducing exists nowhere in that
+  model, and says `unchanged`); or
   `fixed (<Member>[, <Member>]…)` (it computes the intended behaviour; each `<Member>`
   is a C# identifier, none repeated, naming the internal `CorrectionSet` flag that
   carries the fix, or the reserved name `Model` for a fix keyed on the model kind itself,
@@ -134,6 +136,9 @@ least one row", never exactly one.
 ⚠ 2026-10-02: the example was `src/Simulation` and `src/Particle` both declaring
 `HPEPA3,HMX: ConditionBreaking(2)`, "for two different mechanisms": one defect in two
 rows; `src/Simulation`'s is removed (root `BOOT.md`, "one row per defect").
+
+⚠ 2026-10-18: was `not reachable` allowed on any `numeric` row, now on a `numeric` row
+whose `The port` is `reproduced` only; any other is a format error.
 
 ⚠ 2026-10-18: `Differing cells` read "reference mode under `Original`", the precision
 kind alone; with a second model kind, `Corrected`, in the tree it now names both the

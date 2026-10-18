@@ -73,9 +73,12 @@ CORRECTED_KINDS: Tuple[str, ...] = (
 IDENTIFIER = r"[A-Za-z_][A-Za-z0-9_]*"
 FIXED_VALUE = re.compile(
     r"^fixed \((?P<members>{0}(?:, {0})*)\)$".format(IDENTIFIER))
-# 'not reachable' is the one value tied to a Kind: a defect that exists only under
-# PrecisionKind.Original, which the Corrected model refuses, is a numeric one.
+# 'not reachable' is the one value tied to a Kind and to a port: a defect that exists
+# only under PrecisionKind.Original, which the Corrected model refuses, is a numeric
+# one, and one the port reproduces under that kind (a row the port declares without
+# reproducing does not exist there, so 'unchanged' is its value).
 NOT_REACHABLE_KIND = "numeric"
+NOT_REACHABLE_PORT = "reproduced"
 
 NOT_MEASURED = "not measured"
 # A "measurement with its place": at least one backtick-quoted test, fixture, file or
@@ -376,11 +379,11 @@ def parse_declared_cells(path_label: str, source_line: int, raw: str) -> List[De
     return cells
 
 
-def parse_corrected(path_label: str, source_line: int, kind: str,
+def parse_corrected(path_label: str, source_line: int, kind: str, port: str,
                     raw: str) -> Tuple[str, ...]:
     """The CorrectionSet members of one 'Corrected' cell, () unless it is 'fixed (...)'.
 
-    The value is 'unchanged', 'not reachable' (a numeric row only) or
+    The value is 'unchanged', 'not reachable' (a numeric row the port reproduces only) or
     'fixed (<Member>[, <Member>]...)', each member a C# identifier, none repeated;
     anything else is a format error.
     """
@@ -392,6 +395,12 @@ def parse_corrected(path_label: str, source_line: int, kind: str,
                 path_label, source_line + 1,
                 "'Corrected' {!r} is allowed only on a {!r} row, this row is {!r}".format(
                     raw, NOT_REACHABLE_KIND, kind),
+            )
+        if port != NOT_REACHABLE_PORT:
+            raise DefectFormatError(
+                path_label, source_line + 1,
+                "'Corrected' {!r} is allowed only where 'The port' is {!r}, this row's is "
+                "{!r}".format(raw, NOT_REACHABLE_PORT, port),
             )
         return ()
     fixed = FIXED_VALUE.match(raw)
@@ -450,7 +459,7 @@ def build_defect(node: str, path_label: str, source_line: int, cells: Sequence[s
         )
 
     differing_cells = parse_declared_cells(path_label, source_line, differing)
-    corrections = parse_corrected(path_label, source_line, kind, corrected)
+    corrections = parse_corrected(path_label, source_line, kind, port, corrected)
     return Defect(node, source_line + 1, fortran, kind, what, consequence, port,
                   differing_cells, corrected, corrections)
 
@@ -489,8 +498,8 @@ PREAMBLE = (
     "defect silently fixed does not exist (root `BOOT.md`, Taboos). `Corrected` says "
     "what the `Corrected` model kind, which fixes only the explicit errors of the "
     "original, does with the defect: `unchanged`, `not reachable` (a numeric defect "
-    "that exists only under the `Original` precision kind, which that model refuses) "
-    "or `fixed`, naming the `CorrectionSet` members that carry the fix."
+    "the port reproduces, which exists only under the `Original` precision kind, one "
+    "that model refuses) or `fixed`, naming the `CorrectionSet` members that carry the fix."
 )
 
 

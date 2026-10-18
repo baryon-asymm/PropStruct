@@ -329,6 +329,25 @@ class DefectReportTest(unittest.TestCase):
         self.set_corrected("a", "unchanged", "not reachable")
         self.assertFormatError("allowed only on a 'numeric' row, this row is 'dead'", "a")
 
+    def test_not_reachable_on_a_row_the_port_does_not_reproduce_is_an_error(self) -> None:
+        for port in ("declared, not reproduced", "open"):
+            with self.subTest(port=port):
+                self.write("a/BOOT.md", NODE_BOOT.format(
+                    name="a",
+                    rows="| 100 | numeric | rounds in REAL*4 | not measured | {} | none "
+                         "| not reachable |".format(port)))
+                self.assertFormatError(
+                    "allowed only where 'The port' is 'reproduced', this row's is "
+                    "{!r}".format(port), "a")
+
+    def test_unchanged_is_accepted_on_a_numeric_row_the_port_does_not_reproduce(self) -> None:
+        self.write("a/BOOT.md", NODE_BOOT.format(
+            name="a",
+            rows="| 100 | numeric | rounds in REAL*4 | not measured "
+                 "| declared, not reproduced | none | unchanged |"))
+        defects = [defect for defect in self.collect() if defect.node == "a"]
+        self.assertEqual(["unchanged"], [defect.corrected for defect in defects])
+
     def test_not_reachable_on_a_numeric_row_is_accepted(self) -> None:
         self.write("a/BOOT.md", NODE_BOOT.format(
             name="a",
