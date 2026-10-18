@@ -204,10 +204,9 @@ internal static class BridgeGeometry
 }
 ```
 
-⚠ 2026-10-18: `Attempt.Run` reads `ExactConstants` and `BridgeFrustum` (implemented, the
-latter through `Volume`'s parameter); it does not yet read `Fmkarm2OnAcceptance` and
-`WindowLowerEdge`, whose statements are not written (`Build`'s parameter is, and is passed
-`false` by `Run`). The paragraph below states the whole contract.
+⚠ 2026-10-18: was `Attempt.Run` not yet reading `Fmkarm2OnAcceptance` and `WindowLowerEdge`
+(`Build` was passed `false`), now reading all four members the next paragraph names, the
+statements written (T4).
 
 The values are explicit powers of two and are never renumbered; `All` is their sum. The
 `Corrected` model (root `BOOT.md`, "Model kind") is `All`, and the node that maps the

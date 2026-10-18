@@ -126,9 +126,13 @@ internal static class ConstructedModel
     /// <see cref="SizeLaw.Sample"/> that this peek must also straddle, so there is nothing
     /// else to call for it (the constructed-input analogue of <c>tests/Random.Tests</c>'
     /// <c>BigInteger</c> oracle for the generator: a genuine oracle, not a shortcut).
+    /// <paramref name="spherePi"/> is the π of <c>VP</c> (line 484) and <paramref name="radiusPi"/>
+    /// that of <c>rrL</c> (line 501), each the original's <c>3.14159</c> unless a test names
+    /// another, so one oracle serves the <c>ExactConstants</c> sites singly.
     /// </summary>
     public static (double Dr, double Db, double Rrl, double Aa, double MaxDrDb) PeekFirstNeighbour(
-        Accelerator accelerator, ModelSetup setup, double[] bounds, double[] cumulative, StreamSet streams)
+        Accelerator accelerator, ModelSetup setup, double[] bounds, double[] cumulative, StreamSet streams,
+        double spherePi = 3.14159, double radiusPi = 3.14159)
     {
         using var boundsBuffer = accelerator.Allocate1D(bounds);
         using var cumulativeBuffer = accelerator.Allocate1D(cumulative);
@@ -145,9 +149,9 @@ internal static class ConstructedModel
             x1 = Mcg128.Next(ref streams.S3);
         } while (x1 == 1.0);
 
-        var vp = 3.14159 / 6.0 * dr * dr * dr;
+        var vp = spherePi / 6.0 * dr * dr * dr;
         var kcil = -(Math.Log(1.0 - x1) * (1.0 / setup.Lambda)) + vp;
-        var rrl = Math.Pow(3.0 * kcil / (4.0 * 3.14159), 1.0 / 3.0);
+        var rrl = Math.Pow(3.0 * kcil / (4.0 * radiusPi), 1.0 / 3.0);
 
         var x2 = Mcg128.Next(ref streams.S4);
         var x21 = Mcg128.Next(ref streams.S5);

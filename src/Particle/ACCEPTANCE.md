@@ -85,8 +85,7 @@
       decision, since `SetCriterionTests` gates every declared entry.
 
 The `Corrected` model (`BOOT.md`, "## Corrected model"; designed 2026-10-18;
-`BridgeFrustum` and `ExactConstants` at this node's sites implemented 2026-10-18,
-`Fmkarm2OnAcceptance` and `WindowLowerEdge` not yet read by `Attempt.Run`). Each fix is
+the four flags this node reads implemented 2026-10-18). Each fix is
 proven twice (root `BOOT.md`, Taboos): red on the defect, right on an answer known
 beforehand.
 
@@ -112,18 +111,22 @@ beforehand.
       each branch forced on under `None` (scratch, reverted): `BridgeFrustum` and
       `ExactConstants` (the bool read `|| true`), 10 of 10 cases each; `Fmkarm2OnAcceptance`
       (line 720's loop moved after 738 under `ireset == 0`) and `WindowLowerEdge`
-      (`Build(…, true, …)` in `Attempt.Run`), which `Attempt.Run` does not read yet, as
-      scratch emulations, 10 of 10 each: the flags' own implementations re-prove it.
-- [ ] One flag changes what its entry names and nothing else: on the same cycle-1
+      (`Build(…, true, …)` in `Attempt.Run`) were first scratch emulations, 10 of 10 each;
+      re-proved on their own implementations 2026-10-18 (the flag's bool read `|| true`
+      under `None`, scratch, reverted): 10 of 10 cases each.
+- [x] One flag changes what its entry names and nothing else: on the same cycle-1
       sequence, `BridgeFrustum` alone leaves outcomes, streams, integer totals and
       every record field but `Vsmkm`, `VmkmTotal` and `VmkmTotal2` bit-identical and
       moves those three; `Fmkarm2OnAcceptance` alone leaves everything but `Fmkarm2`
       bit-identical and moves it. Red: a scratch mutation of `bb` under
-      `BridgeFrustum` turns the first red. Open for `Fmkarm2OnAcceptance`; for
-      `BridgeFrustum` 2026-10-18, `tests/Particle.Tests`,
+      `BridgeFrustum` turns the first red. 2026-10-18, `tests/Particle.Tests`,
       `CorrectionIsolationTests.BridgeFrustumMovesTheBridgeVolumeFieldsAndNothingElse`
-      (HPEPA3, inpt, P33, 10⁴ cycle-1 attempts, `Binary64`): green, and red under
-      `bb *= 1.1` in the flag's arm (3 of 3).
+      and `Fmkarm2OnAcceptanceMovesFmkarm2AndNothingElse` (HPEPA3, inpt, P33, 10⁴
+      cycle-1 attempts, `Binary64`; PSAN02n and HMX are not in the set, as for the
+      first half): green, and red, reverted, under `bb *= 1.1` in the frustum arm and
+      under `record[JammedTotal] += 1e-3` in the `Fmkarm2OnAcceptance` arm, 3 of 3 each.
+      `WindowLowerEdge` has no isolation case: its entry says it changes the draws that
+      follow, so a bit-identical remainder is not claimed.
 - [x] `BridgeFrustum`'s volume (`tests/Particle.Tests`, `BridgeGeometryTests`), at
       `r2/r1` of 0.6, 0.998 and 1 with `r1 = 50 µm`, `rk = 40 µm`, `a = 5 µm`
       (`Volume`'s own arguments; there `Original` is 69 times short at 0.998 and
@@ -141,10 +144,13 @@ beforehand.
       ratios), `TheFlagUnsetIsTheOldSignatureBitForBit`. Red, reverted: the second cap's
       sign flipped in the flag's arm turns the three quadrature cases red (volume 1.03e−13
       against 5.81e−14 at ratio 1); `bb *= 1.000001` there turns the JJ/bb case red alone.
-- [x] `ExactConstants` at this node's sites. Right: on a constructed attempt each
-      sphere-volume term the record receives (`Allvdok`, `Vks`, `Svd`) equals the
-      `None` term times π/3.14159 to 1e−14 relative (the effect is 8.45e−7). Red: under
-      `None` the ratio is 1. The site list is generated (`Category=Legacy`): a test
+- [x] `ExactConstants` at this node's sites. Right: on a constructed attempt the
+      sphere-volume terms the record receives are π/6 times their cubes, `Allvdok` and
+      `Svd` equal the `None` term times π/3.14159 and `Vks` equals π/6 times the recorded
+      pocket cubes `Dp31`, each to 1e−14 relative (the effect is 8.45e−7), and the first
+      pocket's radius, `rrL − (Dr + Db)/2`, equals the oracle with π at both `rrL` and
+      `VP` to 1e−14. Red: under `None` the ratio is 1, and the radius is 1e−8 or more
+      from the π oracle. The site list is generated (`Category=Legacy`): a test
       scans the four line-map ranges of the Fortran for every match of `3\.14\d*`,
       `12\.566\d*`, `0?\.333\d*` and of the quotient `1/3.` not preceded by a letter,
       digit or point, one mapping row per line and literal, and checks them both
@@ -165,29 +171,72 @@ beforehand.
       `Vks` test and the site check red; both constants forced on under `None` turn the
       ten cycle-1 cases and the five cycle-0 snapshots red; a row removed from the
       mapping, a row added to the list and a use added to `Attempt.cs` each name their
-      line.
-- [ ] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
+      line. 2026-10-18, the `rrL` site by value: `ExactConstantsTests.
+      TheFirstPocketRadiusCarriesTheExactFourPiOfRrlUnderTheFlag` (one neighbour of a
+      single fraction, `DpMax` against `ConstructedModel.PeekFirstNeighbour` given π at
+      both sites; the oracle with the literal at `rrL` only is 1e−8 or more away):
+      red, reverted, when the flag's arm of `fourPi` is the literal (1.06e−6 from the π
+      oracle), and no other check of this item turns red then.
+
+  ⚠ 2026-10-18: this item first said each of `Allvdok`, `Vks` and `Svd` "equals the
+  `None` term times π/3.14159", which cannot hold for `Vks`: its radius
+  `rk = rrL − (Dr + Db)/2` moves with `rrL` under the same flag, so its term is not the
+  `None` term scaled. Found by T3's coder; reworded to what `ExactConstantsTests` tests,
+  `Vks` against π/6 of the recorded pocket cubes, under both models.
+- [x] `Fmkarm2OnAcceptance` on a constructed case (`NnMax` low enough that line 735
       fires after a Var#2 pocket is staged). Red: under `None` `Fmkarm2` grows by the
       staged sum on `RestartedAfterLoop`. Right: under the flag it is unchanged there,
-      and an `Accepted` attempt adds the same bits under both.
-- [ ] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
+      and an `Accepted` attempt adds the same bits under both. 2026-10-18,
+      `tests/Particle.Tests`, `Fmkarm2OnAcceptanceTests` (each under both precision
+      kinds): `UnderNoneARejectedAttemptStillAddsTheStagedSum` (`NnMax` 1e−9, outcome
+      `RestartedAfterLoop`, `conditions(9)` = 1, `Fmkarm2` equal to the accepted run's
+      cells, which the same seed gives with `NnMax` 1e9), `UnderTheFlagARejectedAttemptAddsNothing`
+      (every cell 0), `AnAcceptedAttemptAddsTheSameBitsUnderBoth` (record, `Fmkarm2` and
+      integer totals bit-equal). Red, reverted: the flag read forced off turns the second
+      red (both kinds); the `None` cycle-1 and cycle-0 snapshots stay green with the write
+      moved after line 738.
+- [x] `WindowLowerEdge` on 10⁶ draws of `BridgeWindow.SamplePocket` over a window
       built from a constructed QKS1 with `mindk ≥ 2`. Right: under the flag
       `dpoc[0] = Di·(mindk − 1)` and the draws per QKS1 cell match the cell masses
       (χ² at `α = 10⁻³`). Red: under `None` the same test rejects, each draw one cell
-      high.
+      high. 2026-10-18, `tests/Particle.Tests`, `WindowLowerEdgeTests`
+      (`Di = 0.5`, `Dr = 4`, `AK3 = 0.2`, `AK4 = 0.95`, cells 2..8 of a QKS1 of mass
+      `1 + i`, 10⁶ draws from stream 6 of the original seeds, critical value 22.458 at
+      6 degrees of freedom): `UnderTheFlagTheDrawsPerCellMatchTheCellMasses` (χ² =
+      1.659, no draw outside cells 2..8, `dpoc[0] = 0.5`) and
+      `UnderNoneTheSameTestRejectsEachDrawOneCellHigh` (χ² = 92 033, draws above cell 8,
+      none in cell 2, `dpoc[0] = 1.0`); `AttemptRunPassesTheFlagToTheWindow` (the same
+      constructed attempt moves a record cell or total under the flag), red, reverted,
+      when `Attempt.Run` hands `Build` the flag as false.
 - [ ] `WindowLowerEdge`'s positive control at program level, once `Simulation`'s seam
       exists: the flag alone on the 2026-09-24 audit's apparatus (reference mode,
       `Independent`, `Binary64`, seeds `k·2¹⁷`, `k = 0..7`, the five references)
       reproduces `Dqmkm2` −2.8 % to −7.0 % and `Zkarm` +4.9 % to +13.5 % within their
       standard errors (`tests/Simulation.Tests`, hand-run category).
-- [ ] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
+- [x] The redraw rate of label 451 under `WindowLowerEdge`, measured in its coding
       task with a scratch counter in `Attempt.Run` (reverted): the largest count and the
       mean per bridge, against `None`, on `AccumulatorSweep`'s sequence with 10⁵ cycle-1
       attempts per reference formulation, recorded with the place. Closed below a tenth
       of `PocketRedrawBudget`, or by the proposal to `Simulation` `BOOT.md` asks for.
-- [ ] An attempt on the host thread and on the ILGPU CPU accelerator stays
+      2026-10-18, a scratch measurement on f72cde0, nothing committed, the full table in
+      `HISTORY.md#window-lower-edge-redraw-rate-2026-10-18` (Release, reference mode,
+      `Binary64`, host thread, one run per cell: a count of bridges, no spread). Largest
+      number of draws of one bridge, `None` against the flag: HPEPA3 4 against 14, inpt 4
+      against 5, P33 27 against 109, PSAN02n 5 against 7, HMX 17 against 40; mean draws per
+      bridge, 1.0002–1.0117 against 1.0050–1.0301. The largest, 109 draws (108 redraws) on
+      P33, is below the 1,280 a tenth of `PocketRedrawBudget` (12,800) asks, by a factor
+      of 11.7: closed, no proposal. The figure bounds the 2.4·10⁵ bridges measured; a
+      longer run's maximum is not bounded by it, and P33's tail (8 bridges of 20 draws or
+      more, the largest 109) is the one to read first if a run ever fails
+      `BridgeDrawBudgetExceeded` under the flag.
+- [x] An attempt on the host thread and on the ILGPU CPU accelerator stays
       bit-identical with `Corrections = All` (`HostEqualsCpuAcceleratorTests`, its
-      cases with the field set).
+      cases with the field set). 2026-10-18, `tests/Particle.Tests`,
+      `HostEqualsCpuAcceleratorTests.RunMatchesOnHostAndTheCpuAccelerator`, the cases
+      `BridgeFrustum`, `All` (accepted, cycle 1) and `All` with `NnMax` 1e−9 (rejected by
+      line 735, `Fmkarm2` not committed), each against the host call, bit for bit in
+      outcome, streams, totals, record and scratch. Red, reverted: the kernel launched
+      with `Corrections` cleared turns the three cases red.
 - [ ] The members agree with the defect report: a test of `tests/Particle.Tests` reads
       `docs/ORIGINAL-DEFECTS.md`, collects the members named in `fixed (…)` values of
       the `Corrected` column, the reserved name `Model` (`src/Output`'s printing fixes,
@@ -197,4 +246,8 @@ beforehand.
       member's rows set back to `unchanged`; right on the real page. Committed with the
       fix that flips the last row: until then the two sets cannot be equal, and a check
       that cannot be green is not committed (AGENTS.md §13). `CorrectionSet` is
-      internal: `PublicSurface.approved.txt` does not move for it.
+      internal: `PublicSurface.approved.txt` does not move for it. Status 2026-10-18
+      (T4): the page names `fixed (BridgeFrustum)`, `fixed (Fmkarm2OnAcceptance)` and
+      `fixed (WindowLowerEdge)`; `ExactConstants` and the eight `Statistics` members
+      still read `unchanged`, so the two sets cannot be equal yet and the test is not
+      written.
