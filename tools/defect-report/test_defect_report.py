@@ -477,9 +477,44 @@ class DefectReportTest(unittest.TestCase):
         stale_date = output.read_text(encoding="utf-8").replace(
             datetime.date.today().isoformat(), "2020-01-01",
         )
-        output.write_text(stale_date, encoding="utf-8")
+        output.write_bytes(stale_date.encode("utf-8"))
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(0, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+
+    def test_check_reads_a_crlf_page_as_stale(self) -> None:
+        """Red once: the old writer's output, write_text on Windows, is the same page
+        with CRLF, and --check must fail it, naming the CR bytes."""
+        output = self.root / "docs" / "ORIGINAL-DEFECTS.md"
+        declared = self.root / "docs" / "declared-differences.json"
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, defect_report.main([str(self.root), "--output", str(output)]))
+        output.write_bytes(output.read_bytes().replace(b"\n", b"\r\n"))
+        with contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()) as captured:
+            self.assertEqual(1, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+        self.assertIn("CR bytes", captured.getvalue())
+
+        output.write_bytes(output.read_bytes().replace(b"\r\n", b"\n"))
+        declared.write_bytes(declared.read_bytes().replace(b"\n", b"\r\n"))
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(1, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+
+    def test_the_writer_emits_no_carriage_return_on_any_platform(self) -> None:
+        """Right once: a regenerated page and twin hold LF only, and regenerating over
+        CRLF files repairs them so that --check is green again."""
+        output = self.root / "docs" / "ORIGINAL-DEFECTS.md"
+        declared = self.root / "docs" / "declared-differences.json"
+        arguments = [str(self.root), "--output", str(output)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, defect_report.main(arguments))
+            output.write_bytes(output.read_bytes().replace(b"\n", b"\r\n"))
+            declared.write_bytes(declared.read_bytes().replace(b"\n", b"\r\n"))
+            self.assertEqual(0, defect_report.main(arguments))
+            self.assertEqual(0, defect_report.main(arguments + ["--check"]))
+        for path in (output, declared):
+            content = path.read_bytes()
+            self.assertIn(b"\n", content)
+            self.assertNotIn(b"\r", content, path.name)
 
     def test_check_without_a_page_yet_is_an_error_not_a_write(self) -> None:
         output = self.root / "docs" / "ORIGINAL-DEFECTS.md"

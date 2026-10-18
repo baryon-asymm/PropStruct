@@ -16,7 +16,7 @@ defect_report: <n> defects from <k> nodes -> docs/ORIGINAL-DEFECTS.md; <m> decla
 | `<tree-root>` | the tree root: the directory holding `AGENTS.md` |
 | `--output` | where the page goes; the default is `docs/ORIGINAL-DEFECTS.md` under the root |
 | `--declared-output` | where the `Differing cells` JSON twin goes; the default is `docs/declared-differences.json` under the root |
-| `--check` | write nothing; exit non-zero when either generated file differs from what would be generated, printing a diff per stale file |
+| `--check` | write nothing; exit non-zero when either generated file differs from what would be generated, byte for byte (a CR is a difference), printing a diff per stale file |
 
 Exit code: `0` — both files written, or both up to date under `--check`; `1` — a
 malformed table, a missing input or, under `--check`, either file stale; `2` — bad
@@ -142,7 +142,10 @@ model and the precision kind. The grammar and the JSON are unchanged.
 ## Side effects
 
 Reads every `BOOT.md` under the tree root; writes the two output pages, and nothing
-else.
+else. Both are written as UTF-8 with LF line ends on every platform, no BOM.
+
+⚠ 2026-10-18: was written in text mode, so on Windows with CRLF, and `--check` hid the
+difference; now LF bytes, and a CR in a generated file makes `--check` fail.
 
 ## Out of scope
 
