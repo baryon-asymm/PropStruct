@@ -103,7 +103,7 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
       the other 29 not run. The fast set is green but for the one expected
       `ReflectedFlagCoverageTests` case, and `StructuralTests` carries the one edit
       `% Model kind:` in `IsComparableCommentBanner`.)
-- [x] The footer line: under `Corrected` the line of `BOOT.md`, "## Corrected model",
+- [x] The footer line: under `Corrected` the line of `API.md`, "## Corrected model",
       is written verbatim after the execution-mode line and holds no `=` and no digit;
       two results identical but for `Diagnostics.Model` and `StoredSetup.Ak1`/`Ak2`/`Ak4`
       (`null` under `Original`, the default ratios under `Corrected`), at
@@ -111,13 +111,15 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
       and condition 5's label. Asserted by content; red once with the line's text
       altered.
       (2026-10-18, `tests/Output.Tests/CorrectedResultsMTests`:
-      `ACorrectedResultWritesTheFooterLineOfBootMdVerbatimAfterTheExecutionModeLine`,
-      which reads the expected line out of this node's `BOOT.md`,
+      `ACorrectedResultWritesTheFooterLineOfApiMdVerbatimAfterTheExecutionModeLine`,
+      which reads the expected line out of this node's `API.md`,
       `TheFooterLineHoldsNoEqualsSignAndNoDigitAndIsExcludedFromTheStructuralComparison`,
       `AnOriginalResultWritesNoModelLine` and
       `ACorrectedResultAtDefaultRatiosAndNoLeftOxidizerDiffersFromAnOriginalOneInExactlyThreeLines`,
       whose other lines are the archived ones; red with `corrected` misspelt in the
-      writer's line, the verbatim test alone failing.)
+      writer's line, the verbatim test alone failing; the block moved from `BOOT.md` to
+      `API.md` on 2026-10-18 for the neighbours' sake, and red again with the block's
+      `corrected` misspelt: the same test and `tests/Cli.Tests`' footer test failed.)
 - [x] The `fqmkm1` step: `(step = 0.001)` under `Corrected`, `(step = 0.01)` under
       `Original`, and `fqmkm2`'s and `coef`'s comments unchanged under both; red once
       with the branch removed.

@@ -102,11 +102,14 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       added to the catalog's values).
 - [x] 2026-10-18: `--model corrected --mode reference` writes a `results.m` that carries
       the model footer line exactly once, and `--model original` writes none: the expected
-      text is read from the code block of `src/Output/BOOT.md`, "## Corrected model", not
+      text is read from the code block of `src/Output/API.md`, "## Corrected model", not
       typed (`ModelFlagTests.ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal`,
       `DocumentedFooterLine`), 158 of 158 cases of `tests/Cli.Tests`. Red once: with
       `RunOptionsBuilder`'s `--model` assignment forced to `Original` the `corrected` case
-      fails; right once: both cases green with the assignment restored.
+      fails; right once: both cases green with the assignment restored. Moved from
+      `BOOT.md` to `API.md` on 2026-10-18 (a neighbour's `BOOT.md` is not readable
+      sideways, AGENTS.md §3); red with the block's `corrected` misspelt: the `corrected`
+      case failed, right restored.
 
       ⚠ 2026-10-18: this item first waited on `Output`'s `results.m` row, which was ⏳ at
       the base; it is ✅ now (`src/Output/API.md`, "## Corrected model") and the criterion
@@ -124,4 +127,8 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
 - [x] 2026-10-18: the usage text names `--model original|corrected` and its one
       sentence; `--help` after `run` prints it
       (`ModelFlagTests.TheRunUsageNamesTheModelFlagAndItsSentence`; red with the flag
-      line removed and with the sentence altered).
+      line removed and with the sentence altered). Since 2026-10-18 the page is cited
+      with the repository, `docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct)`,
+      as the footer line does: the test takes that phrase out of the documented footer
+      line, not typed; red with the usage's repository removed (1 of 12 cases of
+      `ModelFlagTests`), right restored, 158 of 158 cases of `tests/Cli.Tests`.

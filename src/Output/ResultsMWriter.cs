@@ -511,8 +511,8 @@ public static class ResultsMWriter
         corrected is null ? original : corrected.PadRight(original.Length);
 
     /// <summary>
-    /// The footer line of the <c>Corrected</c> model, verbatim (BOOT.md, "## Corrected model", "The footer
-    /// line"): no <c>=</c> and no digit, so it stays a comment excluded from the structural comparison; no
+    /// The footer line of the <c>Corrected</c> model, verbatim (API.md, "## Corrected model", the code
+    /// block under "The footer line"): no <c>=</c> and no digit, so it stays a comment excluded from the structural comparison; no
     /// line, <c>null</c>, under <c>Original</c>.
     /// </summary>
     private static string? ModelCommentLine(ModelKind model) => model switch

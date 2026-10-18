@@ -41,7 +41,8 @@ internal static class UsageText
         --precision original is refused with batched mode.
 
         --model corrected fixes the original's explicit errors, each marked fixed in
-        docs/ORIGINAL-DEFECTS.md; original, the default, is the original's model.
+        docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct); original, the
+        default, is the original's model.
 
         Model parameters, the original's menu (canonical name, alias):
           --dmin <d>            --di <d> (--cell-size)      --dj <d> (--category-step)

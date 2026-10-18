@@ -316,8 +316,9 @@ this node only names the option.
   names both halves, and exits 2 ("The tool validates form, never meaning").
 - **Usage.** The run options gain the line `--model original|corrected
   (corrected: binary64 only)` and one sentence: `corrected` fixes the original's
-  explicit errors, each marked fixed in docs/ORIGINAL-DEFECTS.md; `original`, the
-  default, is the original's model.
+  explicit errors, each marked fixed in docs/ORIGINAL-DEFECTS.md
+  (github.com/baryon-asymm/PropStruct), the page the footer line of `results.m` cites the
+  same way; `original`, the default, is the original's model.
 - **The summary.** Under `Corrected` the summary line gains ` model=Corrected` after
   `layout=…`; under `Original` it is the line it was, byte for byte. Progress lines
   are unchanged.

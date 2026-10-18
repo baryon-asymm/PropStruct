@@ -60,13 +60,12 @@ public class CorrectedResultsMTests
     /// <summary>The label field (between <c>K) </c> and the colon) of an archived condition line.</summary>
     private static string ArchivedConditionLabel(int k) => ConditionLine.Match(ArchivedLine($" %    {k}) ")).Groups["label"].Value;
 
-    /// <summary>The footer line as BOOT.md holds it: the one fenced <c>text</c> block of "## Corrected model", leading blank included.</summary>
-    private static string FooterLineOfBootMd()
+    /// <summary>The footer line as API.md holds it: the one fenced <c>text</c> block of "## Corrected model", leading blank included.</summary>
+    private static string FooterLineOfApiMd()
     {
-        var boot = File.ReadAllText(RepositoryPaths.Resolve("src", "Output", "BOOT.md"));
-        // The block sits inside a list item: the fence's own indentation is stripped from its line.
-        var match = Regex.Match(boot, @"^(?<indent> *)```text\r?\n\k<indent>(?<line>[^\r\n]*Model kind:[^\r\n]*)\r?\n\k<indent>```", RegexOptions.Multiline);
-        Assert.True(match.Success, "BOOT.md holds no fenced text block with the footer line.");
+        var api = File.ReadAllText(RepositoryPaths.Resolve("src", "Output", "API.md"));
+        var match = Regex.Match(api, @"^(?<indent> *)```text\r?\n\k<indent>(?<line>[^\r\n]*Model kind:[^\r\n]*)\r?\n\k<indent>```", RegexOptions.Multiline);
+        Assert.True(match.Success, "API.md holds no fenced text block with the footer line.");
         return match.Groups["line"].Value;
     }
 
@@ -81,12 +80,12 @@ public class CorrectedResultsMTests
     // ---- the footer line -------------------------------------------------------------------------------
 
     [Fact]
-    public void ACorrectedResultWritesTheFooterLineOfBootMdVerbatimAfterTheExecutionModeLine()
+    public void ACorrectedResultWritesTheFooterLineOfApiMdVerbatimAfterTheExecutionModeLine()
     {
         var lines = PrecisionFooterLineTests.WriteLines(CorrectedSample());
 
         var footer = Assert.Single(FooterLines(lines));
-        Assert.Equal(FooterLineOfBootMd(), footer);
+        Assert.Equal(FooterLineOfApiMd(), footer);
 
         var footerIndex = Array.IndexOf(lines, footer);
         Assert.Contains("% Execution mode:", lines[footerIndex - 1], StringComparison.Ordinal);
