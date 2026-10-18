@@ -55,9 +55,7 @@
   It cannot see a difference within one print unit of a cell every replica prints
   alike (row 771–1175).
 
-  ⚠ 2026-10-02: was dated 2026-09-24, before the per-cycle plane changed the report
-  under `Original` (2026-10-01); now the root's re-run of that day. ⚠ 2026-09-28: was
-  "23 of 160 against 22 of 197, p = 0.124", stale; now cited (§8)
+  ⚠ 2026-10-02: was dated 2026-09-24 and "23 of 160 against 22 of 197", now the root's re-run → HISTORY.md#rate-criterion-dating-2026-10-02
 
   ⚠ 2026-09-27: was "Fed with the totals of a reference-mode run, the report satisfies
   the statistical criterion against the reference `results.m` for every non-excluded
@@ -150,16 +148,14 @@
   ⚠ 2026-09-26: was the script's own `Dmax` provenance told in full, now the tick,
   place and figure alone → HISTORY.md#z11-zx-zss-criterion-narration-2026-09-26
 
-  ⚠ 2026-10-01 (A2): `DOKM`/`DOKSD` under rule L; only PSAN02n's `Original` runs moved.
-  Rule L is retired, 2026-10-03: the listing's schedules (`BOOT.md`, "## Setup plane").
+  ⚠ 2026-10-01 (A2): was `DOKM`/`DOKSD` under rule L, now the listing's schedules → HISTORY.md#doksd-rule-l-2026-10-03
 - [x] 2026-10-03: every site of the per-cycle plane (771–1175, the hoisted block and
   line 378) is generated from the executable's listing, never typed
   (`classify-cycle-plane-listing.py` → `CyclePlane.listing.generated.txt`, over
   `fortran_source.py`; `CyclePlaneListingMapTests`, with seven pinned sites, one per
-  kind the code follows). Reformulated: the 2026-10-01 criterion read the source under
-  rule L (`classify-cycle-plane.py` → `CyclePlane.generated.txt`), retired 2026-10-03,
-  nothing reading it; its verdicts the archive confirms are the generator's own right
-  proof now (16 verdicts, `classify-cycle-plane-listing.py selftest`).
+  kind the code follows; 16 verdicts, `classify-cycle-plane-listing.py selftest`).
+
+  ⚠ 2026-10-03: was the criterion over the source under rule L, now over the listing → HISTORY.md#per-cycle-sites-reformulated-2026-10-03
 - [x] 2026-10-03: every rounding site of `CyclePlane.listing.generated.txt` (a row whose
   `rounds` is yes: 96 sites) has a row in `CyclePlaneSites.txt` naming the members whose
   `CyclePlaneRounding` call of its kind cites a line of it, or why none does, and every
@@ -220,14 +216,12 @@
   under `Original`, `Compute` equals it bit for bit on every case of
   `cases/statistics/cycle_plane_oracle.json` and `Setup.Prepare` its pre-loop run (λ,
   `DOKM`, `DOKSD`); `ListingOracle.approved.txt` and `ListingOracleSetup.approved.txt`
-  are empty, from 463 and 19 lines (r4, seen once). Every site is covered by an
-  isolating case or written `unreached` with a control or the table's reason
-  (`_check_unreached_sites_are_controlled`); k1–k4 and r1–r3, r5: `tests/Fixtures`. A
-  swapped product order moves no bit (held by A9 and `PlaneFormsTests` instead). 26
-  cases, 58 isolated sites, 18 `unreached` → HISTORY.md#oracle-fixture-cases-2026-10-03
+  are empty, from 463 and 19 lines (r4, seen once); 26 cases, 58 isolated sites, 18
+  `unreached` → HISTORY.md#oracle-fixture-cases-2026-10-03
 
   ⚠ 2026-10-18: was the unseen reds and the fixture's composition told in full, now the
-  figures → HISTORY.md#a2-narration-2026-10-18
+  figures → HISTORY.md#a2-narration-2026-10-18, the coverage sentences →
+  HISTORY.md#a2-coverage-sentences-2026-10-18
 - [x] 2026-10-03: A3, C2 (`PathIdenticalPairsReportTests`,
   `PathIdenticalPairs.approved.txt`, `CyclePlanePairsTieTests`): the port side of the
   six pairs regenerated on the stage 3 build, every integer-printed cell still equal (S4
@@ -269,9 +263,8 @@
   `Setup.AnalyticSizes` and `formulas_statistics.py` follow rows of the table. It lifts
   the declared deviation of `BOOT.md`, "## Setup plane"; until then the unroll factors
   and stores are typed and held by the pins, the survey and the drawn loops (A12).
-  Costed 2026-10-03: the walker is no obstacle (scope extended: 130 problems, 128
-  float events in no row, none from the walk); about forty rows, the temporaries'
-  cells, two new site kinds, both consumers following the table, pins for residues 0, 3.
+  Costed 2026-10-03: about forty rows, two new site kinds, pins for residues 0, 3
+  → HISTORY.md#a8-costing-2026-10-03
 - [x] 2026-10-03: A9 (F3), the call-site order of the plane's products is held
   structurally (`tests/Statistics.Tests/CyclePlaneOrderSiteTests`; `API.md`, "##
   Cycle"): each `order.` call cites its Fortran lines, and its factors' association,
@@ -383,15 +376,15 @@
   ⚠ 2026-10-02: was "reported only, not gated", now gated (the old figures were
   artefacts of recovered inputs) → HISTORY.md#control-iv-reported-only-2026-10-02
 
-- [ ] Corrected, the seam (`BOOT.md`, "## Corrected model"): every new overload under
-  `CorrectionSet.None`, and under any set with `PrecisionKind.Original`, equals its old
-  member bit for bit on every case file of `tests/Fixtures/cases/statistics`, every
-  existing test unchanged and green; red on one flag applied under `None`. A structural
-  test finds no `CyclePlaneRounding`, `CyclePlaneOrder` or `UnrolledSchedule` call in a
-  block a `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests`
-  green. Met 2026-10-18 for `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files,
-  both kinds; `CorrectionSeamTests`, `CorrectedStatementStructureTests`, each red on a
-  mutation), `Probability` (4 cases), `Compute` (49 files); open for `MergeAndDescribe`.
+- [x] 2026-10-18: Corrected, the seam (`BOOT.md`, "## Corrected model"): every new overload
+  under `CorrectionSet.None`, and under any set with `PrecisionKind.Original`, equals its
+  old member bit for bit: `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files, both
+  kinds), `Probability` (4 cases), `Compute` (49 files), `MergeAndDescribe` (4 cases, both
+  kinds, the rewritten totals too), every existing test unchanged and green; red on one
+  flag applied under `None` (`CorrectionSeamTests`). A structural test finds no
+  `CyclePlaneRounding`, `CyclePlaneOrder` or `UnrolledSchedule` call in a block a
+  `CorrectionSet` test guards, red on one planted; `CyclePlaneSiteMapTests` green
+  (`CorrectedStatementStructureTests`).
 - [x] 2026-10-18: Corrected, `ExactConstants`: on the same inputs `ZSS` (so λ) is the
   `None` value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base,
   to 1e-12 relative on 49 files; red: ratio 1 under `None`, `mp` moving 8.6e-5 to
@@ -422,13 +415,21 @@
   constructed totals in place twice, the flag leaves them byte-identical and `DolM2`,
   `DolM3` equal their closed form over the undivided totals; cycle 1 equals `None`;
   P312, `KXX = 3`: moves from cycle 2 (×0.774, ×0.599; `VdokTotalOnCopyTests`).
-- [ ] Corrected, the categories: `CategoriesOnCopy` leaves the totals byte-identical and
-  a second call equal to the first, its report that of `None` on a fresh copy, where
-  `None`'s second call differs; `CategoriesLastRowRecomputed` on rows whose last merge
-  leaves an insufficient row recomputes until none is (merged `DOKP43` =
-  `ΣDokp41/ΣDokp31`), `None` keeping the stale row; `CategoriesEmptyRowsMerged` merges
-  an empty middle row `None` keeps, a `QDOKSS = 1` row under neither. The five
-  references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
-- [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
-  with its flag's code and these criteria's evidence, never before. Landed 2026-10-18:
-  every flag but the three of the categories.
+- [x] 2026-10-18: Corrected, `CategoriesOnCopy`: the totals are byte-identical after a call
+  and a second call equals the first, its report that of `None` on fresh totals, where
+  `None`'s second call differs; through `Compute`, cycle 0 twice writes no total (the four
+  cases of `categories.json`, `CategoriesOnCopyTests`; red with the copy removed: 6 facts).
+  Reported (`CategoryFlagsOnOracleTotalsTests`, a synthetic two-cycle chain on the oracle's
+  drawn totals): `DPRow` of cycle 1 moves in 4 of 22 cases; HPEPA3 unmoved, HMX −0.06 %,
+  PSAN02n +5.6 % on `Qdokkarm`'s first row (`BOOT.md`, the row 911–958).
+- [x] 2026-10-18: Corrected, `CategoriesLastRowRecomputed`: each reported row's `DOKP43` is the
+  quotient of the sums over its merged rows and a second call from the final rows merges
+  nothing, on the case file's cascade and a four-row one, `None` keeping the stale quotient
+  (`CategoriesLastRowRecomputedTests`, red without the return, 5 of 8); 10 of 61 draws move, no reference.
+- [x] 2026-10-18: Corrected, `CategoriesEmptyRowsMerged`: an empty middle or last row merges
+  where `None` keeps it, all rows empty end at one, a `QDOKSS = 1` row is left alone
+  (`CategoriesEmptyRowsMergedTests`, red on the read removed, 4 of 7, and on `QDOKSS <= 1`, 1).
+  Reported (`CategoryFlagsOnOracleTotalsTests`): 13 of 61 draws move; HPEPA3 yes, PSAN02n, HMX no.
+- [x] 2026-10-18: Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` landed
+  with its flag's code and these criteria's evidence; a reference's seed-zero effect is
+  `Simulation`'s (`HISTORY.md#corrected-category-flags-every-formulation-2026-10-18`).

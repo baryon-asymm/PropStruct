@@ -214,9 +214,8 @@ overloads stay and forward `CorrectionSet.None`, and under `PrecisionKind.Origin
 new one replaces `corrections` by `None` on entry. Implemented 2026-10-18 (T5): the setup's
 three, with `DoksdConsistent` in `AnalyticSizes` and `ExactConstants` in `Build`; (T7) the
 `Probability` overload below, with `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, and
-`Compute` reading `setup.Corrections` for `ExactConstants` (`mp`) and `GdokleftOnce`
-(the `Categories` overload waits for the flags that read it: an unused parameter is an
-analyzer error, IDE0060).
+`Compute` reading `setup.Corrections` for `ExactConstants` (`mp`) and `GdokleftOnce`;
+(T8) the `Categories` overload of "## Corrected model, per-cycle overloads" below.
 
 ```csharp
 internal static class Setup
@@ -251,9 +250,11 @@ internal static class SmallParticles
 }
 ```
 
-## Corrected model, per-cycle overloads ⏳
+## Corrected model, per-cycle overloads ✅
 
-Planned 2026-10-18; nothing below exists yet. Same rule as "## Corrected model" above.
+Implemented 2026-10-18 (T8, with the flags of the categories). Same rule as "## Corrected
+model" above: the old overload stays and forwards `CorrectionSet.None`, and under
+`PrecisionKind.Original` the new one replaces `corrections` by `None` on entry.
 
 ```csharp
 internal static class Categories
@@ -271,7 +272,9 @@ internal static class Categories
 `ExactConstants` (lines 1014 and 1016), `GdokleftOnce` and `VdokTotalOnCopy` in its own
 private members. It writes `Qdoks`, `Dokp41` and `Dokp31` only without `CategoriesOnCopy`,
 and `VdokTotal` and `VdokTotal2` only without `VdokTotalOnCopy`: under the `Corrected`
-model, no total. `Sizes`, `CompleteEchoes`, `TryTailDraw` and `MaxSize` take no set, no fix
+model, no total. With `CategoriesOnCopy`, `MergeAndDescribe` merges, shifts and recomputes
+on copies of rows `1..DPRow` of `Qdoks`, `Dokp41` and `Dokp31`; the totals are left as
+they were. `Sizes`, `CompleteEchoes`, `TryTailDraw` and `MaxSize` take no set, no fix
 touching them. No public type changes, so the surface snapshot does not move for this node.
 
 ## Cycle listing map and table ✅

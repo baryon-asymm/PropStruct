@@ -11,10 +11,10 @@ namespace PropStruct.Statistics;
 /// 1084-1175 (<c>IF(IPRIS.EQ.0) GOTO 700</c>, line 1078): the fields of
 /// <see cref="CycleReport"/> that line range alone computes are <see cref="double.NaN"/>
 /// for <c>cycleIndex == 0</c> (BOOT.md, "## Report"). <c>categoriesStatus</c> carries
-/// <see cref="Categories.MergeAndDescribe"/>'s own status through unchanged: on anything
+/// <c>Categories.MergeAndDescribe</c>'s own status through unchanged: on anything
 /// but <see cref="CategoriesStatus.Ok"/> the returned <see cref="CycleReport"/>'s own
 /// category fields (<c>DpRow</c>, <c>Dpockets</c>, <c>Dokp43</c>, <c>Qdokkarm</c>,
-/// <c>Qdokso</c>) are the empty defaults <see cref="Categories.MergeAndDescribe"/>
+/// <c>Qdokso</c>) are the empty defaults <c>Categories.MergeAndDescribe</c>
 /// itself returns in that case, and the totals are left unread and unwritten by that
 /// call (root BOOT.md, "Failures are values": this node reports the status, the driver
 /// turns it into an exception).
@@ -70,7 +70,7 @@ internal static class CycleStatistics
             out var oxidizerWarning, out var fmdok);
 
         categoriesStatus = Categories.MergeAndDescribe(ndok, setup.Ncat, di, setup.CategoryStep, epsDok, realTotals[layout.DpMax],
-            layout, integerTotals, realTotals, setup.Kind,
+            layout, integerTotals, realTotals, setup.Kind, corrections,
             out var dpRow, out var dpockets, out var dokp43, out var qdokkarm, out var qdokso);
 
         Pockets(rounding, order, setup, layout, integerTotals, realTotals, epsDok,

@@ -154,6 +154,54 @@ public class CorrectionSeamTests
         }
     }
 
+    public static IEnumerable<object[]> CategoryCasesUnderBothKinds() =>
+        FormulaCaseFiles.ReadCategoriesCases().SelectMany(c => new[]
+        {
+            new object[] { c.Name, false },
+            new object[] { c.Name, true },
+        });
+
+    /// <summary>
+    /// <c>Categories.MergeAndDescribe</c> on every case of <c>categories.json</c>: the overload under
+    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/>,
+    /// reports and rewrites the totals as the old overload does, bit for bit.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(CategoryCasesUnderBothKinds))]
+    public void MergeAndDescribeUnderNoneAndUnderOriginalEqualsTheOldOverload(string caseName, bool original)
+    {
+        var c = FormulaCaseFiles.FindCategoriesCase(caseName);
+        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        var oldRun = CategoryRun.From(c);
+        var newRun = CategoryRun.From(c);
+
+        var oldOutcome = oldRun.MergeWithoutSet(kind);
+        var newOutcome = newRun.Merge(kind, original ? CorrectionSet.All : CorrectionSet.None);
+
+        Assert.Empty(BitwiseComparison.Differences((oldOutcome, oldRun.IntegerTotals, oldRun.RealTotals),
+            (newOutcome, newRun.IntegerTotals, newRun.RealTotals), caseName));
+    }
+
+    /// <summary>
+    /// Red, the comparison itself for <c>MergeAndDescribe</c>: on every case the copy flag applied under
+    /// <see cref="PrecisionKind.Binary64"/> leaves the totals unrewritten and is a finding of the same comparison.
+    /// </summary>
+    [Fact]
+    public void AFlagAppliedUnderNoneIsAFindingOnEveryCategoryCase()
+    {
+        foreach (var c in FormulaCaseFiles.ReadCategoriesCases())
+        {
+            var oldRun = CategoryRun.From(c);
+            var flagged = CategoryRun.From(c);
+
+            var oldOutcome = oldRun.MergeWithoutSet(PrecisionKind.Binary64);
+            var flaggedOutcome = flagged.Merge(PrecisionKind.Binary64, CorrectionSet.CategoriesOnCopy);
+
+            Assert.NotEmpty(BitwiseComparison.Differences((oldOutcome, oldRun.IntegerTotals, oldRun.RealTotals),
+                (flaggedOutcome, flagged.IntegerTotals, flagged.RealTotals), c.Name));
+        }
+    }
+
     /// <summary>
     /// <c>Compute</c> under <see cref="PrecisionKind.Original"/> on the analytic totals of every shipped formulation: a
     /// setup whose stored set was put there by hand as <see cref="CorrectionSet.All"/> gives the report, the totals and

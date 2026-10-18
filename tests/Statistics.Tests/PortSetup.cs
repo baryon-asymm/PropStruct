@@ -36,7 +36,12 @@ internal sealed record PortSetup(
         }.ToFrozenDictionary(StringComparer.Ordinal);
 
     /// <summary>Runs <c>Setup.Prepare</c> on the formulation file <paramref name="formulationFile"/>, menu values and flags as given.</summary>
-    public static PortSetup Prepare(string formulationFile, int[]? flags, IReadOnlyDictionary<string, double> menu)
+    public static PortSetup Prepare(string formulationFile, int[]? flags, IReadOnlyDictionary<string, double> menu) =>
+        Prepare(formulationFile, flags, menu, PrecisionKind.Original, CorrectionSet.None);
+
+    /// <summary>The same under <paramref name="precision"/> and <paramref name="corrections"/>.</summary>
+    public static PortSetup Prepare(
+        string formulationFile, int[]? flags, IReadOnlyDictionary<string, double> menu, PrecisionKind precision, CorrectionSet corrections)
     {
         var path = RepositoryPaths.Resolve("tests", "Fixtures", "Legacy", "formulations", formulationFile);
         var formulation = DatFile.Read(path);
@@ -52,7 +57,7 @@ internal sealed record PortSetup(
             parameters = MenuBinding[name](parameters, value);
         }
 
-        var status = Statistics.Setup.Prepare(formulation, parameters, PrecisionKind.Original, NeighbourBudget, PocketRedrawBudget,
+        var status = Statistics.Setup.Prepare(formulation, parameters, precision, corrections, NeighbourBudget, PocketRedrawBudget,
             out var setup, out var tables, out _, out var pending, out var inputs);
         return new PortSetup(status, setup, tables, inputs, pending);
     }
