@@ -22,7 +22,7 @@ public class ModelKindTests
     // acceptance criterion's own figure (src/Simulation/ACCEPTANCE.md, the mapping row), measured by
     // src/Statistics under that flag (docs/ORIGINAL-DEFECTS.md, row 399-400). No fixture holds it: the
     // archived runs are all Original.
-    private const double CorrectedP33Dok43sd = 112.66;
+    internal const double CorrectedP33Dok43sd = 112.66;
 
     private static readonly string[] FormulationFixture = ["tests", "Fixtures", "Legacy", "formulations", "P33.dat"];
 
