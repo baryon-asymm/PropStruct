@@ -20,8 +20,6 @@ namespace PropStruct.Simulation.Tests;
 /// </summary>
 public class CorrectionEffectsMeasurement(ITestOutputHelper output)
 {
-    private const string SeedCountVariable = "PROPSTRUCT_MEASUREMENT_SEEDS";
-    private const int DefaultSeedCount = 16;
     private const int AuditSeedCount = 8;
 
     // The 2026-09-24 fidelity audit of the window's origin (src/Particle/HISTORY.md, cited by docs/ORIGINAL-DEFECTS.md, row 595):
@@ -38,10 +36,7 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
 
     private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
 
-    private static IReadOnlyList<ulong> Seeds { get; } = SeedsFor(
-        int.TryParse(Environment.GetEnvironmentVariable(SeedCountVariable), NumberStyles.None, Invariant, out var count) ? count : DefaultSeedCount);
-
-    private static IReadOnlyList<ulong> AuditSeeds { get; } = SeedsFor(AuditSeedCount);
+    private static IReadOnlyList<ulong> AuditSeeds { get; } = MeasurementCase.SeedsOf(AuditSeedCount);
 
     public static IEnumerable<object[]> CasesAndArms() =>
         MeasurementCase.All.SelectMany(measurementCase => CorrectionArm.Measured.Select(arm => new object[] { measurementCase.Name, arm.Name }));
@@ -52,8 +47,6 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
 
     private static string SectionDirectory => RepositoryPaths.Resolve("tests", "Simulation.Tests", "Measurements", "corrections-2026-10-18");
 
-    private static ulong[] SeedsFor(int count) => Enumerable.Range(0, count).Select(k => (ulong)k << 17).ToArray();
-
     private static void Write(string name, string text)
     {
         _ = Directory.CreateDirectory(SectionDirectory);
@@ -61,7 +54,7 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
     }
 
     private static ArmRuns[] EnsureAllArms(MeasurementCase measurementCase) => CorrectionArm.Measured
-        .Select(arm => MeasuredRunStore.Ensure(measurementCase, arm, ExecutionMode.Batched, Seeds))
+        .Select(arm => MeasuredRunStore.Ensure(measurementCase, arm, ExecutionMode.Batched, measurementCase.Seeds))
         .ToArray();
 
     /// <summary>One slice of the measurement: the arm's runs over every seed, written to the run store.</summary>
@@ -71,7 +64,8 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
     [Trait("Category", "Measurement")]
     public void RunArmOnAllSeeds(string caseName, string armName)
     {
-        var runs = MeasuredRunStore.Ensure(MeasurementCase.Named(caseName), CorrectionArm.Named(armName), ExecutionMode.Batched, Seeds);
+        var measurementCase = MeasurementCase.Named(caseName);
+        var runs = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Named(armName), ExecutionMode.Batched, measurementCase.Seeds);
 
         output.WriteLine($"{caseName} {armName}: {runs.Completed.Count()} of {runs.Runs.Count} runs completed, {runs.TotalSeconds:F1} s.");
         foreach (var failed in runs.Runs.Where(run => !run.IsCompleted))
@@ -110,7 +104,8 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
     [Trait("Category", "Measurement")]
     public void NegativeControlOriginalEvenSeedsAgainstOddSeedsDiffersInNoCell(string caseName)
     {
-        var original = MeasuredRunStore.Ensure(MeasurementCase.Named(caseName), CorrectionArm.Original, ExecutionMode.Batched, Seeds);
+        var measurementCase = MeasurementCase.Named(caseName);
+        var original = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Original, ExecutionMode.Batched, measurementCase.Seeds);
         var even = original.Completed.Where(run => (run.Seed >> 17) % 2 == 0).Select(run => run.Cells).ToArray();
         var odd = original.Completed.Where(run => (run.Seed >> 17) % 2 == 1).Select(run => run.Cells).ToArray();
 
@@ -179,9 +174,9 @@ public class CorrectionEffectsMeasurement(ITestOutputHelper output)
     public void PositiveControlDoksdConsistentGivesP33TheConsistentDok43sd()
     {
         var measurementCase = MeasurementCase.Named("P33");
-        var original = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Original, ExecutionMode.Batched, Seeds);
-        var single = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Single(CorrectionSet.DoksdConsistent), ExecutionMode.Batched, Seeds);
-        var everything = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Everything, ExecutionMode.Batched, Seeds);
+        var original = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Original, ExecutionMode.Batched, measurementCase.Seeds);
+        var single = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Single(CorrectionSet.DoksdConsistent), ExecutionMode.Batched, measurementCase.Seeds);
+        var everything = MeasuredRunStore.Ensure(measurementCase, CorrectionArm.Everything, ExecutionMode.Batched, measurementCase.Seeds);
         var quantity = HeadlineQuantity.Cell("Dok43sd", "Dok43sd");
 
         var singleValues = CorrectionEffectsReport.ValuesOf(single, quantity).Values.ToArray();

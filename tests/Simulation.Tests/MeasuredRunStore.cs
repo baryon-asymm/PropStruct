@@ -38,7 +38,7 @@ internal sealed record ArmRuns(
 /// <summary>
 /// Runs an arm of a case over its seeds and keeps the result on disk, so that a measurement too long for one
 /// command is made in slices and a later slice, or the analysis, reads what an earlier one wrote. The directory
-/// is <c>PROPSTRUCT_MEASUREMENT_CACHE</c>, else a folder of the temporary directory, outside the repository; a file
+/// is <c>PROPSTRUCT_MEASUREMENT_CACHE</c>, else <c>Measurements/cache</c> of this node, which its <c>.gitignore</c> keeps out of the repository; a file
 /// is read back only when its fingerprint (the module version ids of the assemblies the run executes, which differ
 /// between builds and configurations) and its seed list are those of the request, else the arm is run again.
 /// </summary>
@@ -124,7 +124,7 @@ internal static class MeasuredRunStore
         var root = Environment.GetEnvironmentVariable(DirectoryVariable);
         if (string.IsNullOrEmpty(root))
         {
-            root = Path.Combine(Path.GetTempPath(), "propstruct-corrections-2026-10-18");
+            root = RepositoryPaths.Resolve("tests", "Simulation.Tests", "Measurements", "cache");
         }
 
         return Path.Combine(root, measurementCase.Name, $"{mode}-{arm.Name}.json");
