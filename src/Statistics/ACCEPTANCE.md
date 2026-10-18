@@ -392,14 +392,14 @@
   green. Met 2026-10-18 for `Prepare`, `AnalyticSizes`, `FractionLaw.Build` (49 files,
   both kinds; `CorrectionSeamTests`, `CorrectedStatementStructureTests`, each red on a
   mutation); open for `MergeAndDescribe`, `Probability`, with the flags that read them.
-- [ ] Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is the `None`
-  value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the base, each to
-  1e-12 relative; red: ratio 1 under `None`. A `Legacy` test finds the matches of
-  `3\.14\d*`, `12\.566\d*`, `0?\.333\d*` and the quotient `1/3.` (not after a letter,
-  digit or point) in the four line-map ranges at exactly 1704, 1716, 1014 and 1016
-  (twice), red on a removed site. Met 2026-10-18 for the two `PARAM` sites and the `ZSS`
-  ratio on 49 files, red under `None` and on each coefficient reverted
-  (`ExactConstantsTests`); open for `mp` and the `Legacy` test, with 1014 and 1016.
+- [x] 2026-10-18: Corrected, `ExactConstants`: right: on the same inputs `ZSS` (so λ) is
+  the `None` value times 3.14/π and `mp` its value times `y^(1/3 − 0.3333)`, `y` the
+  base, each to 1e-12 relative, on 49 files; red: ratio 1 under `None`, `mp` moving
+  8.6e-5 to 1.15e-4. A `Legacy` test finds the matches of `3\.14\d*`, `12\.566\d*`,
+  `0?\.333\d*` and the quotient `1/3.` (not after a letter, digit or point) in the four
+  line-map ranges at exactly 1704, 1716, 1014 and 1016 (twice) (`ExactConstantsTests`,
+  red on each coefficient and the exponent reverted; `ExactConstantsSitesTests`,
+  `exact_constants_sites.py`, red on a removed site, also on the original with 1704 blank).
 - [x] 2026-10-18: Corrected, `DoksdConsistent`: one `JZZ = 2` fraction gives the closed
   form `(2/3)(u⁶ − l⁶)/(u⁴ − l⁴) − DOKM²` and a quadrature of the mass-weighted variance,
   also on every shipped `JZZ = 2` file, to 1e-12; P33 prints `Dok43sd` 112.66 µm, P2
@@ -431,4 +431,4 @@
   references move by mutation (`tests/Simulation.Tests`' seed-zero guard).
 - [ ] Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` lands
   with its flag's code and these criteria's evidence, never before.
-  Landed: `DoksdConsistent`, 2026-10-18.
+  Landed 2026-10-18: `DoksdConsistent`, `ExactConstants`.

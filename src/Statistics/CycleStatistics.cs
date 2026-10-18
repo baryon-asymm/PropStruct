@@ -56,6 +56,11 @@ internal static class CycleStatistics
         var rounding = new CyclePlaneRounding(setup.Kind);
         var order = new CyclePlaneOrder(setup.Kind);
 
+        // The Original precision kind reproduces the original and is never combined with a fix (BOOT.md,
+        // "## Corrected model", "The effective set"): the stored set is None there already, replaced here
+        // too for a setup built by hand.
+        var corrections = setup.Kind == PrecisionKind.Original ? CorrectionSet.None : setup.Corrections;
+
         GeneratorAccuracy(rounding, layout, integerTotals, realTotals,
             out var eps1, out var eps2, out var eps3, out var eps4, out var eps5, out var eps6, out var eps7);
 
@@ -72,7 +77,7 @@ internal static class CycleStatistics
             out var qkss, out var epsy, out var epsmd4, out var epsmd3, out var pocketWarning,
             out var vkso, out var d432, out var dqkarm, out var dp43, out var sdevp43, out var qks1);
 
-        Matrix(rounding, setup, tables, inputs, echoes.OxidizerMassFractionEffective, fmdok,
+        Matrix(rounding, setup, tables, inputs, corrections, echoes.OxidizerMassFractionEffective, fmdok,
             out var gdokleft, out var vdokleft, out var plotsmdok, out var plotsm, out var mp);
 
         var vdokstr = realTotals.Slice(layout.Vdokstr, ndok).ToArray();
@@ -401,7 +406,8 @@ internal static class CycleStatistics
     /// 2026-09-24").
     /// </summary>
     private static void Matrix(
-        CyclePlaneRounding rounding, in ModelSetup setup, SetupTables tables, SetupInputs inputs, double ggg, double[] fmdok,
+        CyclePlaneRounding rounding, in ModelSetup setup, SetupTables tables, SetupInputs inputs, CorrectionSet corrections,
+        double ggg, double[] fmdok,
         out double gdokleft, out double vdokleft, out double plotsmdok, out double plotsm, out double mp)
     {
         var di = setup.CellSize;
@@ -436,6 +442,15 @@ internal static class CycleStatistics
         var eta = inputs.AggregatedOxideFraction;
         var t3 = rounding.Temporary(1.0 + rounding.Fold(3.0 * rounding.Literal(0.016)) * eta / (rounding.Fold(2.0 * rounding.Literal(0.027)) + rounding.Fold(3.0 * rounding.Literal(0.016)) * (1.0 - eta))); // Fortran 1015
         var t4 = rounding.Temporary((1.0 - eta) / 2000.0 + eta / 3000.0); // Fortran 1016
+        if (corrections.HasFlag(CorrectionSet.ExactConstants))
+        {
+            // ExactConstants: pi and one third at 1014 and 1016, on the shared T3, T4 and S2.
+            var exactMass = Math.PI / 6.0 * plotsmdok * inputs.MetalMassFraction / s2;
+            exactMass *= t3;
+            mp = 2.0 * Math.Pow(0.75 / Math.PI * exactMass * t4, 1.0 / 3.0);
+            return;
+        }
+
         var mpRegister = rounding.Fold(rounding.Literal(3.14159) / 6.0) * plotsmdok * inputs.MetalMassFraction / s2; // Fortran 1014
         mpRegister *= t3; // 1015
         mp = rounding.Store(2.0 * Math.Pow(rounding.Fold(0.75 / rounding.Literal(3.14159)) * mpRegister * t4, rounding.Literal(0.3333))); // Fortran 1016
