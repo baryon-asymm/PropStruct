@@ -4,6 +4,43 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="correction-effects-floor-first-run-2026-10-18"></a>
+## 2026-10-18 — `BOOT.md`, "## Correction-effects measurement", the floor of the first run
+
+The bullet read as follows before the re-run at 8b29342 (U4); the first run took its
+sixteen seeds as `k << 17`, which are eight distinct phases, so its even and odd halves
+held copied seeds, which is a reading of why the floor was not clean, not a tested one.
+
+```text
+- **Floor** (measured 2026-10-18): the negative control is not clean. `TwoSampleBiasOfSets`
+  has no count floor or print resolution, so cells one half prints and the other does not, and
+  cells printed more coarsely than their spread, differ with infinite or huge t: 0 to 9 cells in
+  1200 to 7000, listed in `control-negative-*.md`. The fact asserts the floor under one per cent.
+```
+
+<a id="correction-effects-reticked-u4-2026-10-18"></a>
+## 2026-10-18 — `ACCEPTANCE.md`, the correction-effects criterion before its re-tick (U4)
+
+The criterion as it stood unticked (the first run's tick is in
+`HISTORY.md#correction-effects-seeds-repeat-2026-10-18`); its figures were the first
+run's (14 arms, 1568 runs, about 95 minutes, the negative control not clean):
+
+```text
+- [ ] 2026-10-18: the effect of each correction is measured on the five references (16
+      seeds) and four extra cases (8 seeds), per arm and printed quantity
+      (`CorrectionEffectsMeasurement`, `Measurements/corrections-2026-10-18.md`; `BOOT.md`,
+      "## Correction-effects measurement"; 9 cases, 14 arms, 1568 runs, none failed, about 95
+      minutes of work on the CPU). Positive controls pass: `WindowLowerEdge` alone in reference
+      mode lies inside the 2026-09-24 audit's range on all five references (`Dqmkm2` -2.82 % on
+      inpt to -6.95 % on HPEPA3, `Zkarm` +4.91 % on HMX to +13.51 % on PSAN02n, the standard
+      errors 0.01 to 1.7 points; the range's two ends are reproduced to the printed digit);
+      `DoksdConsistent` gives P33 112.66 in all 16 runs, `Original` 75.45; `ExactConstants` scales
+      `Lambda` by 3.14 / π to 2.2e-16 on all five. The negative control (`Original` even against
+      odd seeds) is not clean: 0 to 9 differing cells of 1200 to 7000, all in cells
+      `TwoSampleBiasOfSets` cannot judge (one half prints, the other not; print resolution),
+      under the asserted one per cent (`BOOT.md`, "Floor").
+```
+
 <a id="link-3-measurement-tables-2026-09-23"></a>
 ## 2026-10-18 — Statistical criterion measurement (2026-09-24), link 3's measurement tables of 2026-09-23
 
