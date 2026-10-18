@@ -5,39 +5,16 @@ using Xunit;
 namespace PropStruct.Statistics.Tests;
 
 /// <summary>
-/// The seam of the <c>Corrected</c> model (<c>src/Statistics/ACCEPTANCE.md</c>, "Corrected, the seam"): a new overload
-/// that takes a <see cref="CorrectionSet"/> equals its old member bit for bit under <see cref="CorrectionSet.None"/>,
-/// and under any set with <see cref="PrecisionKind.Original"/>, on every formulation the repository ships; the old
-/// members are the ones every other test of the node already holds to the executable and the approved ratchets.
+/// The seam of the <c>Corrected</c> model (<c>src/Statistics/ACCEPTANCE.md</c>, "Corrected, the seam"): under
+/// <see cref="PrecisionKind.Original"/> a new overload that takes a <see cref="CorrectionSet"/> equals its old member
+/// bit for bit under any set, on every formulation the repository ships. The old members forward
+/// <see cref="CorrectionSet.None"/>, so a comparison of an old member with its new overload under <c>None</c> compares a
+/// function with itself and is not made: the <c>None</c> path is held by the approved ratchets and the run-level guard.
 /// </summary>
 public class CorrectionSeamTests
 {
     private const int NeighbourBudget = 1000;
     private const int PocketRedrawBudget = 1000;
-
-    public static IEnumerable<object[]> FormulationsUnderBothKinds() =>
-        ShippedFormulations.Names.SelectMany(name => new[]
-        {
-            new object[] { name, false },
-            new object[] { name, true },
-        });
-
-    /// <summary>
-    /// Right: <c>Prepare</c> under <see cref="CorrectionSet.None"/> returns the old overload's status, setup, tables,
-    /// draw, pending echoes and inputs, bit for bit; the setup's own <c>Corrections</c> is <c>None</c>.
-    /// </summary>
-    [Theory]
-    [MemberData(nameof(FormulationsUnderBothKinds))]
-    public void PrepareUnderNoneEqualsTheOldOverload(string name, bool original)
-    {
-        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
-        var formulation = ShippedFormulations.Read(name);
-        var oldResult = PrepareOld(formulation, kind);
-        var newResult = PrepareNew(formulation, kind, CorrectionSet.None);
-
-        Assert.Empty(BitwiseComparison.Differences(oldResult, newResult, name));
-        Assert.Equal(CorrectionSet.None, newResult.Setup.Corrections);
-    }
 
     /// <summary>
     /// Under <see cref="PrecisionKind.Original"/> the whole <see cref="CorrectionSet.All"/> is replaced by
@@ -56,19 +33,19 @@ public class CorrectionSeamTests
 
     /// <summary>
     /// <c>AnalyticSizes</c> on the tables and shares <c>Prepare</c> hands back: the overload under
-    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with
-    /// <see cref="PrecisionKind.Original"/>, returns the old overload's <c>DOKM</c> and <c>DOKSD</c> bit for bit.
+    /// <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/> returns the old overload's <c>DOKM</c>
+    /// and <c>DOKSD</c> bit for bit.
     /// </summary>
     [Theory]
-    [MemberData(nameof(FormulationsUnderBothKinds))]
-    public void AnalyticSizesUnderNoneAndUnderOriginalEqualTheOldOverload(string name, bool original)
+    [MemberData(nameof(ShippedNames))]
+    public void AnalyticSizesUnderOriginalEqualTheOldOverload(string name)
     {
-        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        const PrecisionKind kind = PrecisionKind.Original;
         var formulation = ShippedFormulations.Read(name);
         var prepared = PrepareOld(formulation, kind);
         Assert.Equal(SetupStatus.Ok, prepared.Status);
         var shares = formulation.Fractions.Length;
-        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+        const CorrectionSet corrections = CorrectionSet.All;
 
         Setup.AnalyticSizes(formulation.SizeLawCode, shares, prepared.Tables.MassShare, prepared.Tables.Share, prepared.Tables.Bounds,
             kind, out var oldDokm, out var oldDoksd);
@@ -80,18 +57,18 @@ public class CorrectionSeamTests
 
     /// <summary>
     /// <c>FractionLaw.Build</c> on the formulation's own masses and bounds: the overload under
-    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with
-    /// <see cref="PrecisionKind.Original"/>, returns the old overload's tables and sum bit for bit.
+    /// <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/> returns the old overload's tables and
+    /// sum bit for bit.
     /// </summary>
     [Theory]
-    [MemberData(nameof(FormulationsUnderBothKinds))]
-    public void FractionLawBuildUnderNoneAndUnderOriginalEqualTheOldOverload(string name, bool original)
+    [MemberData(nameof(ShippedNames))]
+    public void FractionLawBuildUnderOriginalEqualTheOldOverload(string name)
     {
-        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        const PrecisionKind kind = PrecisionKind.Original;
         var formulation = ShippedFormulations.Read(name);
         var prepared = PrepareOld(formulation, kind);
         Assert.Equal(SetupStatus.Ok, prepared.Status);
-        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+        const CorrectionSet corrections = CorrectionSet.All;
 
         FractionLaw.Build(formulation.SizeLawCode, formulation.Fractions.Length, prepared.Tables.MassShare, prepared.Tables.Bounds,
             kind, out var oldShare, out var oldCumulative, out var oldSum);
@@ -101,25 +78,21 @@ public class CorrectionSeamTests
         Assert.Empty(BitwiseComparison.Differences((oldShare, oldCumulative, oldSum), (newShare, newCumulative, newSum), name));
     }
 
-    public static IEnumerable<object[]> ProbabilityCasesUnderBothKinds() =>
-        FormulaCaseFiles.ReadSmallParticlesProbabilityCases().SelectMany(c => new[]
-        {
-            new object[] { c.Name, false },
-            new object[] { c.Name, true },
-        });
+    public static IEnumerable<object[]> ProbabilityCaseNames() =>
+        FormulaCaseFiles.ReadSmallParticlesProbabilityCases().Select(c => new object[] { c.Name });
 
     /// <summary>
     /// <c>SmallParticles.Probability</c> on every case of <c>small_particles_probability.json</c>: the overload under
-    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/>,
-    /// returns the old overload's <c>pdoksmall</c> bit for bit.
+    /// <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/> returns the old overload's
+    /// <c>pdoksmall</c> bit for bit.
     /// </summary>
     [Theory]
-    [MemberData(nameof(ProbabilityCasesUnderBothKinds))]
-    public void ProbabilityUnderNoneAndUnderOriginalEqualsTheOldOverload(string caseName, bool original)
+    [MemberData(nameof(ProbabilityCaseNames))]
+    public void ProbabilityUnderOriginalEqualsTheOldOverload(string caseName)
     {
         var c = FormulaCaseFiles.FindSmallParticlesProbabilityCase(caseName);
-        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
-        var corrections = original ? CorrectionSet.All : CorrectionSet.None;
+        const PrecisionKind kind = PrecisionKind.Original;
+        const CorrectionSet corrections = CorrectionSet.All;
 
         var oldResult = SmallParticles.Probability(
             c.Ndok, c.CellSize, c.Ak2, c.Ggg, c.Gdokleft, c.Karmcoef, c.OxidizerDensity, c.PropellantDensity, c.Vdokstr.ToArray(), kind);
@@ -154,29 +127,25 @@ public class CorrectionSeamTests
         }
     }
 
-    public static IEnumerable<object[]> CategoryCasesUnderBothKinds() =>
-        FormulaCaseFiles.ReadCategoriesCases().SelectMany(c => new[]
-        {
-            new object[] { c.Name, false },
-            new object[] { c.Name, true },
-        });
+    public static IEnumerable<object[]> CategoryCaseNames() =>
+        FormulaCaseFiles.ReadCategoriesCases().Select(c => new object[] { c.Name });
 
     /// <summary>
     /// <c>Categories.MergeAndDescribe</c> on every case of <c>categories.json</c>: the overload under
-    /// <see cref="CorrectionSet.None"/>, and under <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/>,
-    /// reports and rewrites the totals as the old overload does, bit for bit.
+    /// <see cref="CorrectionSet.All"/> with <see cref="PrecisionKind.Original"/> reports and rewrites the totals as the
+    /// old overload does, bit for bit.
     /// </summary>
     [Theory]
-    [MemberData(nameof(CategoryCasesUnderBothKinds))]
-    public void MergeAndDescribeUnderNoneAndUnderOriginalEqualsTheOldOverload(string caseName, bool original)
+    [MemberData(nameof(CategoryCaseNames))]
+    public void MergeAndDescribeUnderOriginalEqualsTheOldOverload(string caseName)
     {
         var c = FormulaCaseFiles.FindCategoriesCase(caseName);
-        var kind = original ? PrecisionKind.Original : PrecisionKind.Binary64;
+        const PrecisionKind kind = PrecisionKind.Original;
         var oldRun = CategoryRun.From(c);
         var newRun = CategoryRun.From(c);
 
         var oldOutcome = oldRun.MergeWithoutSet(kind);
-        var newOutcome = newRun.Merge(kind, original ? CorrectionSet.All : CorrectionSet.None);
+        var newOutcome = newRun.Merge(kind, CorrectionSet.All);
 
         Assert.Empty(BitwiseComparison.Differences((oldOutcome, oldRun.IntegerTotals, oldRun.RealTotals),
             (newOutcome, newRun.IntegerTotals, newRun.RealTotals), caseName));
