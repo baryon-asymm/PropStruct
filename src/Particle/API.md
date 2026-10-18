@@ -172,7 +172,7 @@ internal enum CorrectionSet : uint
     ZdoksmallCoarseShare = 32,           // Statistics, Fortran 1047
     GdokleftOnce = 64,                   // Statistics, Fortran 1001–1006
     DoksdConsistent = 128,               // Statistics, Fortran 399–400, 405
-    CategoriesOnCopy = 256,              // Statistics, Fortran 911–959
+    CategoriesOnCopy = 256,              // Statistics, Fortran 911–958, 825–829
     CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
     CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
     PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
@@ -202,8 +202,9 @@ on `Accepted` in cycles ≥ 1, instead of a sum at loop end; every other field k
 row of "Accumulator layout", and no layout, length or offset changes under any member.
 
 The member names are the values of the `Corrected` column of the defect report
-(`fixed (<Member>)`, `tools/defect-report/API.md`); a test of this node checks the two
-against each other. The type is internal and adds nothing to the public surface.
+(`fixed (<Member>)`, `tools/defect-report/API.md`), but for the reserved `Model` of
+`src/Output`'s printing fixes, which no flag carries; a test of this node checks the
+two against each other. The type is internal and adds nothing to the public surface.
 
 ## Size law ✅
 

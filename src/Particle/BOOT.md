@@ -164,7 +164,8 @@ evolving histogram. Read as a **model feature**, not a defect; the row is withdr
 from `## Defects of the original` below.
 
 Measured 2026-09-25: 0 of 15,036 compared cells differ (eight seeds, the five
-references, largest `|t|` 1.08) → `HISTORY.md#measurements-condensed-2026-10-18`.
+references, largest `|t|` 1.08), the variant live at 2,127 of 117,054 cells of a
+same-seed diff → `HISTORY.md#measurements-condensed-2026-10-18`.
 
 ## Line map
 
@@ -205,7 +206,7 @@ row inside `Attempt.Run`, the label it falls under (or "top", before any label).
 | 704–711 | `Attempt.Run` (`Label333`) | `VDOKS` not accumulated, see accumulators |
 | 714–716 | `Attempt.Run` (`Label550`) | |
 | 717–718 | `PocketHistogram.Normalize` | called by the driver |
-| 719–756 | `Attempt.Run` (`Label550`, the post-loop acceptance tests and commit) | line 720's write after line 739's test under `Fmkarm2OnAcceptance` (`## Corrected model`) |
+| 719–756 | `Attempt.Run` (`Label550`, the post-loop acceptance tests and commit) | line 720's write after line 738, just before 739's test, run only when `ireset == 0` under `Fmkarm2OnAcceptance` (`## Corrected model`) |
 | 758–766 | — | console progress, not ported |
 | 452–458, 490–494, 507–513, 615–619, 655–659, 691–695 | — | GSV ≠ 2 branches, not ported (root: GSV=2 only) |
 
@@ -276,7 +277,7 @@ index of their histograms and are derived by `Statistics`, not accumulated.
 | `Allvdok`, `Vdokstr` | 469, 524, 542 |
 | `Vsmkm`, `Svd`, `VmkmTotal`, `VdokTotal` | 746, 747, 749, 750 |
 | `Vks`, `FmkarmCor` | 677, 685 |
-| `Fmkarm2` | 720 (after 739 under `Fmkarm2OnAcceptance`) |
+| `Fmkarm2` | 720 (after 738, on `ireset = 0`, under `Fmkarm2OnAcceptance`) |
 | `Dokp41`, `Dokp31` | 707, 708 |
 
 "Committed" updates happen only on `Accepted` in cycles ≥ 1, from the attempt's
@@ -457,11 +458,11 @@ with it the draws that follow; λ's change and `da_coef` are `Statistics`'.
 
 **`BridgeFrustum` — the bridge volume, lines 1616–1627.** The original takes
 `BE = 3.14 − AL − DE`, `GA = AL + BE/2` and the difference of two cones through
-`tan GA` minus the caps `V1`, `V2`, all with `3.14`. Near `R2 = R1` that difference is
-the frustum only in the limit `GA → π/2`, `tan GA → ∞`; with `3.14`, `GA` stops short
-(`tan GA` ≈ 1256 at `R2 = R1`), so the volume comes out 69 times short at
-`R2/R1 = 0.998` and negative at `R2/R1 = 1` (computed in the design review of
-2026-10-18 for one geometry; `ACCEPTANCE.md`'s test states its own `R1`, `RK`, `A`).
+`tan GA` minus the caps `V1`, `V2`, all with `3.14`. With π that difference is the
+frustum, but its two cone heights diverge as `R2 → R1`, and `3.14` shifts `GA` by
+8.0e−4 (`tan GA` ≈ 1256 at `R2 = R1`): at `r1 = 50 µm`, `rk = 40 µm`, `a = 5 µm` the
+volume is 69 times short at `R2/R1 = 0.998` and negative at 1 (design review of
+2026-10-18). Even with π the heights cancel at `R2 = R1`, hence the frustum's formula.
 Under the flag, the frustum between the two chord circles less the two caps, with
 `Math.PI` whatever `ExactConstants` says: `l = ac - q1 - q2`, `h1 = r1 - q1`,
 `h2 = r2 - q2`, `r1A = r1 * Math.Sin(al)`, `r2A = r2 * Math.Sin(de)`, and
@@ -504,8 +505,9 @@ a proposal (AGENTS.md §11) instead of changing a budget here.
 Unchanged under `Corrected`, none an explicit error: rejected attempts keep their other
 side effects; no reset between cycles; the QKS1 refresh cadence (a model feature,
 `## Attempt structure`); the dead line 529; the `max ≤ Dmaxxx` edge of line 646; the
-shared stream 6 and the seeds (`Random`'s). The `numeric` rows are `not reachable`:
-`Corrected` runs under `Binary64` only.
+shared stream 6 and the seeds (`Random`'s). The REAL*4 and x87 rows are `not
+reachable`: `Corrected` runs under `Binary64` only; the `3.14159` row, `numeric` too,
+is `ExactConstants`'.
 
 ## Defects of the original
 
@@ -513,7 +515,7 @@ shared stream 6 and the seeds (`Random`'s). The `numeric` rows are `not reachabl
 |---|---|---|---|---|---|---|
 | 425–719, 721–756 | algorithm | An attempt later ended as `RestartedAfterLoop` by the acceptance tests of lines 723–738 keeps every histogram, bridge and pocket accumulator update it made before those tests fired: nothing is undone on rejection (`## Invariants`, "Every side effect of the original, in the same place"). The staged `fmkarm2_loc` sum of line 720 is its own row. | not measured | reproduced | none | unchanged |
 | 720 | algorithm | Line 720 adds the attempt's staged `fmkarm2_loc` to `fmkarm2` after the neighbour loop but before the acceptance tests of 723–738, while every other staged sum is committed after them (741–755): a rejected attempt's Var#2 pocket volumes enter `fmkarm2` (`## Corrected model`, "`Fmkarm2OnAcceptance`"). | not measured | reproduced | none | unchanged |
-| 1616–1627 | algorithm | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; the difference is the frustum only as `GA → π/2`, so near `R2 = R1` the volume collapses and at `R2 = R1` turns negative (`## Corrected model`, "`BridgeFrustum`"). | not measured | reproduced | none | unchanged |
+| 1616–1627 | algorithm | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | not measured | reproduced | none | unchanged |
 | 469, 484, 501, 524, 542, 643, 648, 665, 677, 685, 702, 747, 750, 754 | numeric | The sphere volumes `π/6·D³` and the Poisson radius `rrL` take the truncated literal `3.14159` for π (`## Constraints`; `## Corrected model`, "`ExactConstants`"). | not measured | reproduced | none | unchanged |
 | 425–767 | algorithm | No accumulator is reset at a cycle boundary beyond the two in-place rewrites `Statistics` makes: a per-cycle quantity printed for cycle `k ≥ 1` already carries every accepted particle of cycles `1..k` ("Totals between cycles"). | not measured | reproduced | none | unchanged |
 | 496 | numeric | A draw the original repeats (`X1 == 1`, line 496) is redrawn from the same stream on an unbounded pass (not a `GO TO 11`, so uncounted); the original's REAL*4/x87 rounding could in principle hit `X1 == 1.0` exactly there ("Decisions where the port departs from a transcription"). | not measured | reproduced | none | not reachable |
