@@ -29,6 +29,8 @@ internal static class CorrectionEffectsReport
         _ = text.AppendLine(Invariant, $"Work: {arms.Sum(arm => arm.TotalSeconds):F0} s over {arms.Count} arms ({string.Join(", ", arms.Select(arm => $"{arm.Arm} {arm.TotalSeconds:F0}"))} s).");
         _ = text.AppendLine();
         AppendFailures(text, arms);
+        _ = text.AppendLine(Invariant, $"Builds behind the runs: {arms.Select(arm => arm.Fingerprint).Distinct(StringComparer.Ordinal).Count()} distinct (a rebuild of unchanged source is a new one).");
+        _ = text.AppendLine();
 
         _ = text.AppendLine("### Original arm: mean, standard error and standard deviation over the seeds");
         _ = text.AppendLine();
@@ -53,7 +55,7 @@ internal static class CorrectionEffectsReport
 
         _ = text.AppendLine("### Shift against `Original`, per cent of its mean, plus or minus the standard error of the shift");
         _ = text.AppendLine();
-        _ = text.AppendLine("`*`: |Welch t| above the two-sided critical value at 10^-3 for that quantity alone (not family-wise). `abs`: the `Original` mean is zero, so the shift is absolute. The last column names the cell `[i]` of the printed `pdoksmall` array whose |Welch t| is largest among those the `Original` arm prints above 1e-30.");
+        _ = text.AppendLine("`*`: |Welch t| above the two-sided critical value at 10^-3 for that quantity alone (not family-wise). `abs`: the `Original` mean is zero, so the shift is absolute. A quantity the seed does not touch (`da_coef`, `Dok43sd`, whatever the setup computes) has a standard error at rounding size, so its t is meaningless and its star says only that the shift is exact. A relative shift of a small base (`Zkarm_cor` on P33) is large by construction. The last column names the cell `[i]` of the printed `pdoksmall` array whose |Welch t| is largest among those the `Original` arm prints above 1e-30.");
         _ = text.AppendLine();
         AppendTable(text, columns, others, arm => shifts[arm.Arm].Select(shift => shift.Shift).ToArray());
 
@@ -64,6 +66,9 @@ internal static class CorrectionEffectsReport
         _ = text.AppendLine("### Cells: `TwoSampleBiasOfSets` against `Original`, family-wise alpha 10^-3");
         _ = text.AppendLine();
         _ = text.AppendLine("The category-indexed families (`fqdokkarm`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `coef`) have no canonical axis here (`tests/Harness/API.md`), so an arm that changes the category count moves them by construction.");
+        _ = text.AppendLine();
+        var (floorCells, floorEven, floorOdd) = EvenAgainstOdd(original);
+        _ = text.AppendLine(Invariant, $"Floor of the comparison, `Original` even seeds ({floorEven}) against odd seeds ({floorOdd}): {floorCells.Count(cell => cell.Differs)} / {floorCells.Count} cells differ, in cells one half prints and the other does not or whose print resolution is coarser than their spread (`control-negative-{measurementCase.Name}.md`); an arm's count means something only above it.");
         _ = text.AppendLine();
         _ = text.AppendLine("| arm | differing / compared | quantities with a differing cell (count) |");
         _ = text.AppendLine("|---|---|---|");
@@ -99,6 +104,17 @@ internal static class CorrectionEffectsReport
         }
 
         return text.ToString();
+    }
+
+    /// <summary>
+    /// The cell comparison of the <c>Original</c> arm's even seeds against its odd seeds, with the two run counts: the
+    /// floor of <see cref="StatisticalCriterion.TwoSampleBiasOfSets"/> on that arm's own spread.
+    /// </summary>
+    public static (IReadOnlyList<TwoSampleCell> Cells, int EvenCount, int OddCount) EvenAgainstOdd(ArmRuns original)
+    {
+        var even = original.Completed.Where(run => (run.Seed >> 17) % 2 == 0).Select(run => run.Cells).ToArray();
+        var odd = original.Completed.Where(run => (run.Seed >> 17) % 2 == 1).Select(run => run.Cells).ToArray();
+        return (StatisticalCriterion.TwoSampleBiasOfSets(even, odd), even.Length, odd.Length);
     }
 
     /// <summary>Seed to value of <paramref name="quantity"/> over the runs of <paramref name="arm"/> that completed and print it.</summary>

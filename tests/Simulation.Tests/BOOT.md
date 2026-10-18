@@ -405,6 +405,38 @@ eight reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5
 `ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print `NaN`, which
 `ResultsMFile` does not parse, so the runner does not. 34 cases: 17 m 49 s in Debug.
 
+## Correction-effects measurement
+
+Added 2026-10-18 (task T12): what each correction of `CorrectionSet` does to each printed
+quantity, before any release. Hand-run, not a readiness row: `CorrectionEffectsMeasurement`
+carries `Category=Long` (out of the fast set and CI) and `Category=Measurement` (selects it
+alone; the first hand-run category of this node, `API.md`, "## Category of the hand-run
+measurement"). Its pages are generated into `Measurements/corrections-2026-10-18.md` and its
+folder, never typed.
+
+- **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
+  seam `SimulationOptions.Corrections`, the flags read from the enum
+  (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
+  and budgets, seeds `k * 2^17`. CUDA not used: other sessions share the GPU.
+- **Cases**: the five references, 16 seeds; four extras for the fixes the references do not
+  show, 8 seeds: `P312` defaults, `Dmin` 5 µm, three cycles, and `PSAN02` read with its SFR at
+  `Dmin` 20 µm, `Di` 10 µm. `P312` runs at 100 particles per cycle (40 for three cycles,
+  from 5000): it draws about 16000 attempts a particle. The seed counts follow a one-seed
+  timing run.
+- **Per quantity and arm**: shift in per cent of the `Original` mean with its standard error,
+  Welch t, paired t over the shared seeds, and `TwoSampleBiasOfSets`' differing cells at
+  `α = 10⁻³`; the arm tables are read beside the comparison's floor.
+- **Controls**: the seam with `None` equals `Original` (`ModelKindTests`). Negative: `Original`
+  even against odd seeds. Positive: `WindowLowerEdge` in reference mode over `k = 0..7`,
+  `DoksdConsistent` on P33, `ExactConstants` on `Setup.Lambda`.
+- **Floor** (measured 2026-10-18): the negative control is not clean. `TwoSampleBiasOfSets`
+  has no count floor or print resolution, so cells one half prints and the other does not, and
+  cells printed more coarsely than their spread, differ with infinite or huge t: 0 to 9 cells in
+  1200 to 7000, listed in `control-negative-*.md`. The fact asserts the floor under one per cent.
+- **The store** `Measurements/cache/` (ignored by git, `MeasuredRunStore`) lets a run too long for
+  one command be made in slices; it records each build's fingerprint and does not compare it,
+  since a rebuild of unchanged source changes it. Delete it before a run that is to be evidence.
+
 
 ## Taboos
 

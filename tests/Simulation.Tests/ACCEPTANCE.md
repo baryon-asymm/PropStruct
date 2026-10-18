@@ -77,3 +77,16 @@
       the batched refusals' unchanged messages, the seam with its negative and positive
       controls, determinism, the stored ratios; every one red once, `## Mutations`, "Model
       kind". The guard stayed green, 34 of 34, and the `SeedZero` facts, 59 of 59.
+- [x] 2026-10-18: the effect of each correction is measured on the five references (16
+      seeds) and four extra cases (8 seeds), per arm and printed quantity
+      (`CorrectionEffectsMeasurement`, `Measurements/corrections-2026-10-18.md`; `BOOT.md`,
+      "## Correction-effects measurement"; 9 cases, 14 arms, 1568 runs, none failed, about 95
+      minutes of work on the CPU). Positive controls pass: `WindowLowerEdge` alone in reference
+      mode lies inside the 2026-09-24 audit's range on all five references (`Dqmkm2` -2.82 % on
+      inpt to -6.95 % on HPEPA3, `Zkarm` +4.91 % on HMX to +13.51 % on PSAN02n, the standard
+      errors 0.01 to 1.7 points; the range's two ends are reproduced to the printed digit);
+      `DoksdConsistent` gives P33 112.66 in all 16 runs, `Original` 75.45; `ExactConstants` scales
+      `Lambda` by 3.14 / π to 2.2e-16 on all five. The negative control (`Original` even against
+      odd seeds) is not clean: 0 to 9 differing cells of 1200 to 7000, all in cells
+      `TwoSampleBiasOfSets` cannot judge (one half prints, the other not; print resolution),
+      under the asserted one per cent (`BOOT.md`, "Floor").

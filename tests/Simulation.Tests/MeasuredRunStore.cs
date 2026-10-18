@@ -38,9 +38,12 @@ internal sealed record ArmRuns(
 /// <summary>
 /// Runs an arm of a case over its seeds and keeps the result on disk, so that a measurement too long for one
 /// command is made in slices and a later slice, or the analysis, reads what an earlier one wrote. The directory
-/// is <c>PROPSTRUCT_MEASUREMENT_CACHE</c>, else <c>Measurements/cache</c> of this node, which its <c>.gitignore</c> keeps out of the repository; a file
-/// is read back only when its fingerprint (the module version ids of the assemblies the run executes, which differ
-/// between builds and configurations) and its seed list are those of the request, else the arm is run again.
+/// is <c>PROPSTRUCT_MEASUREMENT_CACHE</c>, else <c>Measurements/cache</c> of this node, which its <c>.gitignore</c>
+/// keeps out of the repository. A file is read back when its seed list is that of the request. Its fingerprint
+/// (the module version ids of the assemblies the run executes) is recorded, not compared: it differs between two
+/// builds of the same source, so comparing it would discard a finished slice for a rebuild of the tests. The
+/// store therefore cannot tell a stale arm from a current one; delete the directory before a run that is to be
+/// evidence, and read <see cref="CorrectionEffectsReport"/>'s count of distinct fingerprints.
 /// </summary>
 internal static class MeasuredRunStore
 {
@@ -58,9 +61,7 @@ internal static class MeasuredRunStore
         if (File.Exists(path))
         {
             var stored = JsonSerializer.Deserialize<ArmRuns>(File.ReadAllText(path), Json);
-            if (stored is not null
-                && string.Equals(stored.Fingerprint, Fingerprint(), StringComparison.Ordinal)
-                && stored.Seeds.SequenceEqual(seeds))
+            if (stored is not null && stored.Seeds.SequenceEqual(seeds))
             {
                 return stored;
             }
