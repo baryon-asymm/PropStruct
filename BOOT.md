@@ -139,7 +139,8 @@ errors, openly and as an option (`## Invariants`, "Model kind").
   one particle program, setup and per-cycle computation, not a second implementation; it
   runs under `Binary64` only (refused with a status under `Original` precision), in both
   modes and layouts; recorded in the result and, under `Corrected` only, in a `results.m`
-  footer (`src/Simulation`, "## Corrected model"). It has no external reference.
+  footer (`src/Simulation`, "## Corrected model"). It has no external reference, and it
+  refits none of the coefficients fitted under `Original` (`Input`'s defaults).
 
 - **The original generator, bit for bit.** GSV=2 is the multiplicative congruential
   generator modulo 2¹²⁸ with the original multiplier and the six seeds exactly as
@@ -173,10 +174,12 @@ errors, openly and as an option (`## Invariants`, "Model kind").
   the six original streams continued across particles and cycles: the same decisions
   in the same order as the Fortran. The pocket histogram QKS1 is refreshed after every
   attempt that completes the neighbour loop (attempts abandoned inside the loop skip
-  the refresh, as in the original); rejected attempts keep all their side effects, but
-  `fmkarm2`'s under `Corrected` (`src/Particle`); no accumulator is reset between cycles.
+  the refresh, as in the original); rejected attempts keep all their side effects; no
+  accumulator is reset between cycles.
 
   ⚠ 2026-10-18: was "rejected attempts keep all their side effects" under every model, now all but `fmkarm2`'s under `Corrected` → HISTORY.md#reference-mode-side-effects-corrected-2026-10-18
+
+  ⚠ 2026-10-18, the same day: was all but `fmkarm2`'s under `Corrected`, now all under every model (`Fmkarm2OnAcceptance` withdrawn) → HISTORY.md#reference-mode-side-effects-withdrawn-2026-10-18
 - **Batched mode freezes only QKS1, per launch** (decided 2026-09-17, refined the same
   day). Within one launch of the particle kernel the normalized pocket histogram is
   fixed; before each launch, the first of a batch and every relaunch of its unfinished
@@ -222,10 +225,9 @@ None.
 Outside the tree: .NET SDK 10.0 pinned by `global.json`; ILGPU 1.5.3 (NuGet), with the
 libdevice post-link taken from APThermo (github.com/baryon-asymm/APThermo,
 `src/Execution`); for the GPU path an NVIDIA driver and libnvvm/libdevice from CUDA
-Toolkit 12.8 or newer; xunit; Python 3.8+ for the protocol linter and
-the fixture generator scripts; the original program, outside the repository
-(`## Delivery`), as the generator of reference outputs; GitHub Actions and nuget.org
-(`.github/BOOT.md`).
+Toolkit 12.8 or newer; xunit; Python 3.8+ for the protocol linter and the fixture
+generator scripts; the original program, outside the repository (`## Delivery`), as the
+generator of reference outputs; GitHub Actions and nuget.org (`.github/BOOT.md`).
 
 ⚠ 2026-10-04: was the original's executable and runtime in the tree, now outside it → HISTORY.md#delivery-decided-2026-10-04
 
@@ -298,8 +300,8 @@ the fixture generator scripts; the original program, outside the repository
   thread running attempts until one is accepted or the per-launch attempt budget ends;
   unfinished particles are relaunched by the host; a run-level cap fails the run with a
   status. Per-particle streams: the layout's six initial states jumped ahead by
-  `seed · 2⁸⁰ + ordinal · 2⁴⁰` steps (the period is 2¹⁰⁰ since the multiplier is
-  ≡ 1 mod 2²⁸).
+  `seed · 2⁸⁰ + ordinal · 2⁴⁰` steps (the period is 2¹⁰⁰ since the multiplier is ≡ 1 mod
+  2²⁸), so seeds equal modulo 2²⁰ draw the same streams.
 
   In batched mode the `Original` layout's role groups are jumped by distinct offsets
   (`src/Random/BOOT.md`, "Batched derivation"); `Simulation` refuses that combination
@@ -381,8 +383,7 @@ the fixture generator scripts; the original program, outside the repository
   published without the owner's word, each time. The public history begins with one
   snapshot commit (2026-10-06); a commit hash cited in this tree names the private
   history before it, which the owner keeps as an archive, and does not resolve publicly.
-  There is no external ancestor; the loader `CLAUDE.md` carries no subject-matter claims
-  (AGENTS.md §2).
+  No external ancestor; the loader carries no subject-matter claims (AGENTS.md §2).
 
   ⚠ 2026-10-04: was a private repository, nothing published, now public with releases (`## Delivery`) → HISTORY.md#repository-public-2026-10-04
 
