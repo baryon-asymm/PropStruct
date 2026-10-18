@@ -322,6 +322,10 @@ tests in each family stay recorded as coverage, not as independently mutation-pr
 - `CategoriesOnCopy` (2026-10-18): the copy's guard in `Categories.MergeAndDescribe` made
   `&& false`: five reds in `CategoriesOnCopyTests` (four cases, `Compute`) and one in
   `CorrectionSeamTests`; reverted, green.
+- `CorrectionSeamTests` (2026-10-18): the `None` rows compared an old overload with a
+  forward of itself and are gone; each overload's `Original` coercion removed (`Prepare`'s
+  `effective`, `Compute`'s read of the stored set, the four others) turns its rows red,
+  `FractionLaw.Build`'s only with its `Original` branch read after the flag; reverted.
 - `CategoriesLastRowRecomputed` (2026-10-18): `lastRowReturns` made `&& false`: five reds in
   `CategoriesLastRowRecomputedTests` (the two quotient facts, the two stale-row facts, the
   four-row count); reverted, green.
