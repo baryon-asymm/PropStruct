@@ -8,6 +8,75 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="real4-membership-design-2026-10-18"></a>
+
+## 2026-10-18 — from "## Accumulators" and "## Corrected model" — the design decision of 2026-09-24 on the generated membership, and the paragraph of line 720, in full
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15), to make room for the declared
+notes of `BridgeFrustum` and `WindowLowerEdge`; each leaves its decision and its deciding
+figure in `BOOT.md`. The two texts as they stood.
+
+"## Accumulators", the design decision:
+
+```text
+  **Design decision, 2026-09-24 (owner and orchestrator): the membership of the rounded
+  set is generated too, not only its kind.** Until then the script generated each
+  name's kind, but the list of names was typed by hand (`FIELD_FORTRAN_NAMES`), which
+  could not hold a scalar local: six REAL*4 sums at lines 642–666 (`VSMKM1`, `SVD1`,
+  `Vdok_loc`, `Vmkm_loc`, `Vdok_loc2`, `Vmkm_loc2`) were missed and stayed `double`
+  under `Original` (fidelity audit of 2026-09-24, P-1). Implemented the same day: the
+  script now scans this node's own `## Line map` ranges directly, keyed by Fortran
+  name; the only hand-written part is `RealFourWriteSites.txt`, mapping each Fortran
+  name to its C# write site, "not ported", or "not rounded"; and
+  `tests/Particle.Tests/RealFourAccumulatorMappingTests.cs` guards the mapping both
+  ways, proven red on a synthetic fixture and, once, on the real files. Measured the
+  same day: `Binary64` bit-identical, `Original` moves `Zkarm_cor` alone (≤ 8.6e-7
+  relative) → `HISTORY.md#measurements-condensed-2026-10-18`.
+```
+
+"## Corrected model", the paragraph of line 720:
+
+```text
+**Line 720 — withdrawn 2026-10-18** (the flag `Fmkarm2OnAcceptance`, value 4, is
+retired and never reused). The original adds the staged `fmkarm2_loc` to `fmkarm2`
+before the tests of 723–738, so a rejected attempt's Var#2 pocket volumes enter it;
+the `Corrected` model keeps that commit point. `fmkarm_cor` (Var#1, 685–686) and every
+other pocket statistic (QKS, VKS, DP31/41 676–679, QDOKS 711) count rejected attempts
+too: under the flag Var#2 alone counted accepted ones, so the two variants of one
+correction parted on their population, not on their exclusion rule. Where `pdoksmall`
+is 0 in every cell (inpt, PSAN02n) both must equal the uncorrected set: under `Original`
+they do (214.81/214.81 µm, 162.93/162.93 µm at seed 0), under `All` `Dkarm43_cor(2)`
+went to 246.36 µm (+14.7 %) and 189.13 µm (+16.1 %). Staging `fmkarm2_loc` like the
+bridge sums (741–755) is no explicit error against that evidence, and only explicit
+errors are fixed. Paired shifts of the audit: `HISTORY.md#fmkarm2-audit-2026-10-18`.
+```
+
+<a id="corrections-page-rerun-2026-10-18"></a>
+
+## 2026-10-18 — from "## Defects of the original" — the program-run figures of the rows 1616–1627 and 469…, and the row 595 before them, before the re-run of the correction-effects page (U4)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+8b29342: the first run took its "sixteen seeds" as `k << 17`, which are eight distinct
+phases (the streams jump by `seed · 2^80` in a period of 2^100, so seed k equals seed
+k + 8) and understated its standard errors; the re-run uses `k · 2¹⁶`. The two
+Consequence cells that quoted it stood as follows; the row 595 held no program-run
+figure before (its sentence of the audit is unchanged and stays in the row).
+
+Row 1616–1627, `BridgeFrustum`:
+
+> measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation, shift ± its standard error): the fix alone moves `Zkarm` by −3.4 % (HPEPA3), −12.4 % (inpt), −7.0 % (P33), −12.8 % (PSAN02n), −2.7 % (HMX); `Dqmkm2` unmoved
+
+Row 469, 484, 501, …, `ExactConstants`:
+
+> measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`): with Statistics' sites, `da_coef` −0.0086 % (HMX) to −0.0100 % (HPEPA3), a seed-independent setup shift; `Dkarm43`, `Dkarm10`, `Dagg43` +0.04 % to +0.09 %, seen only by the same-seed paired t
+
+The old page's own figures for the same shifts, for the record: `BridgeFrustum` alone,
+`Zkarm` −3.406 ± 0.323 % (HPEPA3), −12.424 ± 0.050 % (inpt), −7.033 ± 0.560 % (P33),
+−12.823 ± 0.069 % (PSAN02n), −2.722 ± 0.199 % (HMX); `ExactConstants` alone, `Dagg43`
++0.080 ± 0.931 %, +0.037 ± 0.047 %, +0.111 ± 1.714 %, +0.040 ± 0.019 %, +0.077 ± 0.240 %
+in the same order; `WindowLowerEdge` alone, `Dqmkm2` −6.951 ± 3.9e-3 %, −2.805 ± 0.011 %,
+−4.377 ± 0.024 %, −3.642 ± 6.8e-3 %, −4.824 ± 0.015 %.
+
 <a id="fmkarm2-on-acceptance-withdrawn-2026-10-18"></a>
 
 ## 2026-10-18 — `Fmkarm2OnAcceptance` withdrawn from the `Corrected` model, the full text of every claim about it
