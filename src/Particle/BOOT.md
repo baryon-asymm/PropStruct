@@ -25,15 +25,16 @@ Line numbers below refer to the original source `PropStructv3.for` (the UTF-8 co
 - **Every side effect of the original, in the same place.** Each accumulator update of
   lines 425–756 happens in the same branch and in the same order relative to the draws
   as in the original, including the updates of attempts that are later rejected, with
-  the exceptions listed under "Decisions where the port departs from a transcription"
-  and, under `Fmkarm2OnAcceptance`, the one moved write of line 720 (`## Corrected
-  model`). This is itself a defect of the original, declared for `## Defects of the
-  original` (2026-09-20): an attempt later ended as `RestartedAfterLoop` by the
+  the exceptions listed under "Decisions where the port departs from a transcription".
+  This is itself a defect of the original, declared for `## Defects of the original`
+  (2026-09-20): an attempt later ended as `RestartedAfterLoop` by the
   acceptance tests of lines 723–738 keeps every histogram, bridge and pocket
-  contribution it made before those tests fired — nothing is undone on rejection;
-  under the `Corrected` model it keeps all of them but the staged `fmkarm2_loc` sum.
+  contribution it made before those tests fired — nothing is undone on rejection,
+  under every model, `Corrected` included.
 
   ⚠ 2026-10-18: was every update in place and nothing undone under every model, now line 720's write moved under `Fmkarm2OnAcceptance` → HISTORY.md#side-effects-invariant-corrected-2026-10-18
+
+  ⚠ 2026-10-18: was line 720's write moved under `Fmkarm2OnAcceptance` (the staged sum not kept), now nothing undone under every model, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 - **`None` is the original.** With `ModelSetup.Corrections` unset (`None`) the node
   computes bit for bit what it computed before the field existed. A flag changes only
   the statements its entry under `## Corrected model` names; the stream of each draw
@@ -206,7 +207,7 @@ row inside `Attempt.Run`, the label it falls under (or "top", before any label).
 | 704–711 | `Attempt.Run` (`Label333`) | `VDOKS` not accumulated, see accumulators |
 | 714–716 | `Attempt.Run` (`Label550`) | |
 | 717–718 | `PocketHistogram.Normalize` | called by the driver |
-| 719–756 | `Attempt.Run` (`Label550`, the post-loop acceptance tests and commit) | line 720's write after line 738, just before 739's test, run only when `ireset == 0` under `Fmkarm2OnAcceptance` (`## Corrected model`) |
+| 719–756 | `Attempt.Run` (`Label550`, the post-loop acceptance tests and commit) | line 720's write before 722's division, the original's commit point under both models (`## Corrected model`, "Line 720") |
 | 758–766 | — | console progress, not ported |
 | 452–458, 490–494, 507–513, 615–619, 655–659, 691–695 | — | GSV ≠ 2 branches, not ported (root: GSV=2 only) |
 
@@ -277,18 +278,19 @@ index of their histograms and are derived by `Statistics`, not accumulated.
 | `Allvdok`, `Vdokstr` | 469, 524, 542 |
 | `Vsmkm`, `Svd`, `VmkmTotal`, `VdokTotal` | 746, 747, 749, 750 |
 | `Vks`, `FmkarmCor` | 677, 685 |
-| `Fmkarm2` | 720 (after 738, on `ireset = 0`, under `Fmkarm2OnAcceptance`) |
+| `Fmkarm2` | 720 |
 | `Dokp41`, `Dokp31` | 707, 708 |
 
 "Committed" updates happen only on `Accepted` in cycles ≥ 1, from the attempt's
 locals: `Vsmkm`, `Svd`, `JammedTotal`, `NnTotal` always; `VmkmTotal` and `VdokTotal`
 only if the attempt counted a Var#1 bridge (line 748); `VmkmTotal2` and `VdokTotal2`
-only if it counted a Var#2 bridge (line 752). Under `Fmkarm2OnAcceptance` `Fmkarm2`
-joins them, added from `fmkarm2_loc` on `Accepted` only; under the `Original` model
-line 720 adds it whatever the tests of 723–738 decide. Every other update happens
-where the original makes it.
+only if it counted a Var#2 bridge (line 752). `Fmkarm2` is not among them: line 720
+adds `fmkarm2_loc` to it before the tests of 723–738, under every model. Every other
+update happens where the original makes it.
 
 ⚠ 2026-10-18: was `Fmkarm2` added before the tests under every model, now committed on acceptance under `Fmkarm2OnAcceptance` → HISTORY.md#fmkarm2-commit-corrected-2026-10-18
+
+⚠ 2026-10-18: was `Fmkarm2` committed on acceptance under `Fmkarm2OnAcceptance`, now added at line 720 under every model, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
 ## Decisions where the port departs from a transcription
 
@@ -421,12 +423,12 @@ bits on any accelerator whose `double` addition is IEEE.
 Root `BOOT.md`, "Model kind". This node owns the internal `[Flags] enum CorrectionSet :
 uint`, its members and their explicit values (API.md, "## Corrected model ✅", the
 contract; never renumbered). The `Corrected` model is `All`; a subset exists
-in-process only, for measurement. This node reads the four members whose entries
+in-process only, for measurement. This node reads the three members whose entries
 follow; the others fix `Statistics`' lines and are read there. A member is named in
 its defect rows' `Corrected` column as `fixed (<Member>)`.
 
 - `ModelSetup.Corrections` (unset = `None`), filled by `Statistics.Setup.Prepare`, is
-  read once at the top of `Attempt.Run`, beside `roundToReal4`, into four `bool`
+  read once at the top of `Attempt.Run`, beside `roundToReal4`, into three `bool`
   locals by bitwise `&` (never `Enum.HasFlag`, a boxing call no kernel compiles).
 - `BridgeWindow.Build` and `BridgeGeometry.Volume` receive their flag as an explicit
   parameter; the present signatures stay as overloads passing `false`:
@@ -474,15 +476,20 @@ the draws and every integer total stay bit-identical. Effect: `volume` alone, in
 `Vsmkm`, `VmkmTotal`, `VmkmTotal2` through `VSMKM1`, `Vmkm_loc`, `Vmkm_loc2`
 (`Zkarm`, `Zkarm_cor`, `epszkarm_n`).
 
-**`Fmkarm2OnAcceptance` — line 720.** The original adds the staged `fmkarm2_loc` to
-`fmkarm2` after the loop but before the tests of 723–738, so a rejected attempt's Var#2
-pocket volumes enter it, while every other staged sum is committed after the tests
-(741–755). One write site, after the four tests and before line 739's `ireset > 0`:
-the loop runs when `ireset == 0` under the flag, always without it; `fmkarm2_loc`, the
-loop's order and its `AddReal4` call are unchanged. Nothing in 722–738 reads
-`Fmkarm2` or `fmkarm2_loc` and nothing there can fail, so the move is bit-identical
-without the flag. Effect: `Fmkarm2` alone (`fmkarm_cor2`, `Dkarm43_cor(2)`,
-`Dkarm43sd_cor(2)`, `Dagg43_cor(2)`); draws, QKS, QKS1 and cycle 0 are untouched.
+**Line 720 — withdrawn 2026-10-18** (the flag `Fmkarm2OnAcceptance`, value 4, is
+retired and never reused). The original adds the staged `fmkarm2_loc` to `fmkarm2`
+before the tests of 723–738, so a rejected attempt's Var#2 pocket volumes enter it;
+the `Corrected` model keeps that commit point. `fmkarm_cor` (Var#1, 685–686) and every
+other pocket statistic (QKS, VKS, DP31/41 676–679, QDOKS 711) count rejected attempts
+too: under the flag Var#2 alone counted accepted ones, so the two variants of one
+correction parted on their population, not on their exclusion rule. Where `pdoksmall`
+is 0 in every cell (inpt, PSAN02n) both must equal the uncorrected set: under `Original`
+they do (214.81/214.81 µm, 162.93/162.93 µm at seed 0), under `All` `Dkarm43_cor(2)`
+went to 246.36 µm (+14.7 %) and 189.13 µm (+16.1 %). Staging `fmkarm2_loc` like the
+bridge sums (741–755) is no explicit error against that evidence, and only explicit
+errors are fixed. Paired shifts of the audit: `HISTORY.md#fmkarm2-audit-2026-10-18`.
+
+⚠ 2026-10-18: was the row of line 720 `fixed (Fmkarm2OnAcceptance)` with the effect measured by `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, now `unchanged` with the audit's paired shifts, the flag withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
 **`WindowLowerEdge` — line 595.** The original sets `DPOC(mindk) = Di·mindk`, one cell
 above the QKS1 cell whose mass the window's first interval carries. Under the flag
@@ -501,19 +508,19 @@ fails the run. The coding task probed the rate (`ACCEPTANCE.md`, 2026-10-18): th
 count per bridge was 109 draws (P33, 2.4·10⁵ bridges), 11.7 times under a tenth of the
 budget, so no proposal to `Simulation` was needed.
 
-Unchanged under `Corrected`, none an explicit error: rejected attempts keep their other
-side effects; no reset between cycles; the QKS1 refresh cadence (a model feature,
-`## Attempt structure`); the dead line 529; the `max ≤ Dmaxxx` edge of line 646; the
-shared stream 6 and the seeds (`Random`'s). The REAL*4 and x87 rows are `not
-reachable`: `Corrected` runs under `Binary64` only; the `3.14159` row, `numeric` too,
-is `ExactConstants`'.
+Unchanged under `Corrected`, none an explicit error: rejected attempts keep their side
+effects, line 720's staged sum included; no reset between cycles; the QKS1 refresh
+cadence (a model feature, `## Attempt structure`); the dead line 529; the `max ≤ Dmaxxx`
+edge of line 646; the shared stream 6 and the seeds (`Random`'s). The REAL*4 and x87
+rows are `not reachable`: `Corrected` runs under `Binary64` only; the `3.14159` row,
+`numeric` too, is `ExactConstants`'.
 
 ## Defects of the original
 
 | Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
 |---|---|---|---|---|---|---|
 | 425–719, 721–756 | algorithm | An attempt later ended as `RestartedAfterLoop` by the acceptance tests of lines 723–738 keeps every histogram, bridge and pocket accumulator update it made before those tests fired: nothing is undone on rejection (`## Invariants`, "Every side effect of the original, in the same place"). The staged `fmkarm2_loc` sum of line 720 is its own row. | not measured | reproduced | none | unchanged |
-| 720 | algorithm | Line 720 adds the attempt's staged `fmkarm2_loc` to `fmkarm2` after the neighbour loop but before the acceptance tests of 723–738, while every other staged sum is committed after them (741–755): a rejected attempt's Var#2 pocket volumes enter `fmkarm2` (`## Corrected model`, "`Fmkarm2OnAcceptance`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation): the fix alone moves only `fmkarm_cor2` and a few `Dagg43_cor`/`Dkarm43_cor` cells, no headline quantity | reproduced | none | fixed (Fmkarm2OnAcceptance) |
+| 720 | algorithm | Line 720 adds the attempt's staged `fmkarm2_loc` to `fmkarm2` after the neighbour loop but before the acceptance tests of 723–738, while the bridge sums are committed after them (741–755): a rejected attempt's Var#2 pocket volumes enter `fmkarm2`. Every pocket statistic does the same (`fmkarm_cor` 685–686, QKS, VKS, DP31/41 676–679, QDOKS 711), so the commit point is not an explicit error (`## Corrected model`, "Line 720"). | measured 2026-10-18 by the four-auditor audit at c32821e (eight seeds `k·2¹⁷`, batched CPU, `Independent`, `Binary64`, `All` with the withdrawn flag against `Original`; paired shifts of `Dkarm43_cor(2)`/`Dagg43_cor(2)`): inpt +14.6 %, PSAN02n +16.0 %, HMX +2.0…+2.2 %, P33 −3.3…−3.5 %, HPEPA3 −9.5…−11.2 %; the fix was withdrawn, the original's commit point stands (`src/Particle/HISTORY.md#fmkarm2-audit-2026-10-18`) | reproduced | none | unchanged |
 | 1616–1627 | algorithm | `VM` computes the bridge volume as a difference of two cones through `tan GA` with `BE = 3.14 − AL − DE` and `3.14` for π; with π the difference is the frustum, but near `R2 = R1`, where both cone heights diverge, the truncated angle collapses the volume, and at `R2 = R1` it turns negative (`## Corrected model`, "`BridgeFrustum`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; batched, `Independent`, `Binary64`, sixteen seeds per reference formulation, shift ± its standard error): the fix alone moves `Zkarm` by −3.4 % (HPEPA3), −12.4 % (inpt), −7.0 % (P33), −12.8 % (PSAN02n), −2.7 % (HMX); `Dqmkm2` unmoved | reproduced | none | fixed (BridgeFrustum) |
 | 469, 484, 501, 524, 542, 643, 648, 665, 677, 685, 702, 747, 750, 754 | numeric | The sphere volumes `π/6·D³` and the Poisson radius `rrL` take the truncated literal `3.14159` for π (`## Constraints`; `## Corrected model`, "`ExactConstants`"). | measured 2026-10-18 (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`): with Statistics' sites, `da_coef` −0.0086 % (HMX) to −0.0100 % (HPEPA3), a seed-independent setup shift; `Dkarm43`, `Dkarm10`, `Dagg43` +0.04 % to +0.09 %, seen only by the same-seed paired t | reproduced | none | fixed (ExactConstants) |
 | 425–767 | algorithm | No accumulator is reset at a cycle boundary beyond the two in-place rewrites `Statistics` makes: a per-cycle quantity printed for cycle `k ≥ 1` already carries every accepted particle of cycles `1..k` ("Totals between cycles"). | not measured | reproduced | none | unchanged |
