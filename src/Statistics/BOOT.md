@@ -10,7 +10,9 @@ distributions by pocket category with their iterative merging, pocket distributi
 moments, matrix densities, the agglomerate coefficient, `pdoksmall` and `Dmaxxx` for the
 next cycle, corrected pocket sizes, bridge sizes, the three variants of the pocket mass
 fraction and the per-cycle convergence values. It runs once per cycle on the host, so it
-is apart from the kernel-compatible `Particle`.
+is apart from the kernel-compatible `Particle`. Under the `Corrected` model kind it also
+fixes the explicit errors of these lines that `## Corrected model` names, and no other
+(root `BOOT.md`, "Model kind").
 
 Line numbers refer to the original source `PropStructv3.for`.
 
@@ -20,34 +22,50 @@ Line numbers refer to the original source `PropStructv3.for`.
   parameters; the only memory of the run is its totals, owned by the caller.
 - **The setup follows the precision kind** (decided 2026-09-23). Under `Original` it
   reproduces the Fortran's REAL*4 storage of the setup plane, exactly the generated set
-  ("## Setup plane"); under `Binary64` it is bit-identical to what it computed before,
-  except `SetupEchoes.Ddokmax` ("## Setup plane", "review"): its stored value moved at
-  the eighth significant digit when the 2026-09-24 review corrected it to read the same
-  store every other fraction bound goes through, with the five reference formulations
-  still bit-identical at seed 0 on every other cell of `results.m`.
+  ("## Setup plane"); under `Binary64` and the `Original` model it is bit-identical
+  to what it computed before, except `SetupEchoes.Ddokmax` ("## Setup plane",
+  "review"): its stored value moved at the eighth significant digit when the
+  2026-09-24 review corrected it to read the same store every other fraction bound
+  goes through, with the five reference formulations still bit-identical at seed 0 on
+  every other cell of `results.m`.
 
   ⚠ 2026-09-26: was this invariant's `Binary64` half stated without exception, a
   hidden deviation (AGENTS.md §12) → HISTORY.md#binary64-half-hidden-deviation-2026-09-26
+
+  ⚠ 2026-10-18: was "under `Binary64`" for every model, now the `Original` model's →
+  HISTORY.md#corrected-setup-binary64-unchanged-2026-10-18
 - **The per-cycle plane follows the precision kind** (decided 2026-09-27, implemented
   2026-10-01, re-implemented from the listing 2026-10-03). Under `Original` `Compute`
   does what the executable's listing does at every site of
   `CyclePlane.listing.generated.txt`, each rounding through `CyclePlaneRounding`
   ("## Report", "The per-cycle plane from the executable's listing"); under `Binary64`
-  it is bit-identical to before.
+  and the `Original` model it is bit-identical to before.
 
   ⚠ 2026-10-03: was the sites of the source-read table `CyclePlane.generated.txt`, now
   the executable's listing, implemented →
   HISTORY.md#per-cycle-plane-source-read-rules-2026-10-03
-- **In-place rewrites of the totals, as the original.** `Compute` rewrites, and later
-  cycles add to the rewritten values: the category merge and shift (lines 911–958) on
-  `Qdoks`, `Dokp41`, `Dokp31`, without clearing the old last row after any merge (its
-  contents then count twice once later cycles rebuild the rows); and in cycles ≥ 1
-  `VdokTotal` and `VdokTotal2` divided by `1 − gdokleft/GGG` (lines 1145, 1150). No
-  other total is written.
-- **The merge loop of the original, literally.** After every pass that merged a pair,
-  all category statistics are recomputed (label 600); the final check of the last row
-  (lines 947–959) merges without recomputing, so the new last row keeps the statistics
-  of before the merge.
+
+  ⚠ 2026-10-18: was "under `Binary64`" for every model, now the `Original` model's →
+  HISTORY.md#corrected-per-cycle-binary64-unchanged-2026-10-18
+- **In-place rewrites of the totals, as the original.** Under the `Original` model
+  `Compute` rewrites, and later cycles add to the rewritten values: the category merge
+  and shift (lines 911–958) on `Qdoks`, `Dokp41`, `Dokp31`, without clearing the old
+  last row after any merge (its contents then count twice once later cycles rebuild the
+  rows); and in cycles ≥ 1 `VdokTotal` and `VdokTotal2` divided by `1 − gdokleft/GGG`
+  (lines 1145, 1150). No other total is written. Under `CategoriesOnCopy` and
+  `VdokTotalOnCopy` (`## Corrected model`) the respective rewrite works on a per-cycle
+  copy and no total is written; under the `Corrected` model `Compute` writes none.
+
+  ⚠ 2026-10-18: was the rewrites stated for every run, now the `Original` model's →
+  HISTORY.md#corrected-in-place-rewrites-2026-10-18
+- **The merge loop of the original, literally**, under the `Original` model. After every
+  pass that merged a pair, all category statistics are recomputed (label 600); the final
+  check of the last row (lines 947–959) merges without recomputing, so the new last row
+  keeps the statistics of before the merge (`CategoriesLastRowRecomputed` returns to
+  label 600 instead, `## Corrected model`).
+
+  ⚠ 2026-10-18: was the loop stated for every run, now the `Original` model's →
+  HISTORY.md#corrected-merge-loop-2026-10-18
 - **Every computed statistic printed is in the report.** Every statistic that
   `results.m` or the screen summary prints comes from the report, in SI units, with
   normalized distributions as fractions per cell. The other printed items are inputs,
@@ -59,13 +77,19 @@ Line numbers refer to the original source `PropStructv3.for`.
 - **IEEE results where the original computes them**, for example accuracies of streams
   not drawn in cycle 0 (`NFQ = NFW = 0`), empty corrected distributions, `DolM2` or
   `DolM3` with no committed Var#1 or Var#2 bridge (0/0), a negative radicand under
-  `**0.5` (`DOKSD` of P2.dat is negative), an all-empty pocket histogram (`QKSS = 0`
-  makes every `Qks1` cell `0.0 / 0.0`): the same `NaN` or `∞` as the original, which
-  runs without floating-point traps. No guard is added.
+  `**0.5` (`DOKSD` of P2.dat is negative under the `Original` model), an all-empty
+  pocket histogram (`QKSS = 0` makes every `Qks1` cell `0.0 / 0.0`): the same `NaN` or
+  `∞` as the original, which runs without floating-point traps. No guard is added, under
+  either model.
 
   ⚠ 2026-09-18: was a `qkssTotal == 0 ? 0.0 : ...` guard on `Qks1` this invariant's own
   "No guard is added" already forbade, now removed → HISTORY.md#pockets-guard-removed-2026-09-18
-- **Double precision, literals as written** under `Binary64`; under `Original` the
+
+  ⚠ 2026-10-18: was P2's `DOKSD` negative for every model, now the `Original` model's
+  → HISTORY.md#corrected-p2-doksd-example-2026-10-18
+- **Double precision, literals as written** under `Binary64` and the `Original` model;
+  under `ExactConstants` the π and ⅓ literals of 1014, 1016, 1704 and 1716 are those
+  constants (`## Corrected model`); under `Original` precision the
   setup plane's literal expressions and the per-cycle plane's inexact literals and
   all-literal subexpressions are binary32 (root BOOT.md, "Fidelity to the original";
   "## Setup plane"; "## Report", R5): `3/3.14` and `24/3.14` (lines 1704, 1716),
@@ -78,19 +102,19 @@ Line numbers refer to the original source `PropStructv3.for`.
 
   ⚠ 2026-10-01: was "under either kind, except the setup plane's own literal
   expressions", now the per-cycle plane's literals binary32 under `Original` too.
-- **The cell centre first** (decided 2026-10-02). Every moment term over histogram
-  cells weights the centre `c = Di·(k − ½)`, formed first: `x·c`, and `(x·c)·c` for a
-  second moment, extending `## Categories`' `c_i` to the report; every other product
-  runs as written. The contract, with its lines and its reason: `API.md`, "## Cycle".
 
-  ⚠ 2026-10-02: the rule's premise in `API.md`, "the original carries it in 80-bit
-  registers, so neither order is the original's", is refuted: the executable multiplies
-  in the written order at 805, 806, 989, 990 and 991, at 53-bit precision. The rule is
-  unchanged; whether to follow the executable's order is a decision for a later session
-  (`API.md`, "## Cycle", the note of the same date).
+  ⚠ 2026-10-18: was "literals as written" under `Binary64` for every model, now the
+  `Original` model's → HISTORY.md#corrected-literals-invariant-2026-10-18
+- **The cell centre first** (decided 2026-10-02), under `Binary64`. Every moment term
+  over histogram cells weights the centre `c = Di·(k − ½)`, formed first: `x·c`, and
+  `(x·c)·c` for a second moment, extending `## Categories`' `c_i` to the report; every
+  other product runs as written. Under `Original` precision the listing's order replaces
+  it (`CyclePlaneOrder`, "## Report"). The contract: `API.md`, "## Cycle".
 
-  ⚠ 2026-10-02, later: decided, under `Original` only and not yet implemented: the
-  listing's order replaces the rule (`API.md`, "## Cycle"); `Binary64` keeps it.
+  ⚠ 2026-10-02: was the rule's premise "neither order is the original's" (refuted:
+  the executable multiplies in the written order, at 53 bits), then "decided, under
+  `Original` only and not yet implemented", implemented 2026-10-03; the two notes
+  moved 2026-10-18 → HISTORY.md#cell-centre-notes-2026-10-18
 - **Array sizes from binary32 values.** `Ddokmax`, `AK4`, `Di` and `Dj` are REAL*4 in
   the original: a value read from the `.dat` or the menu is rounded to binary32, and a
   micrometre value is converted by a binary32 product with the binary32 literal `1e-6`
@@ -169,8 +193,12 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   ⚠ 2026-09-24 (D7): was a `byte`-narrowed pocket-forming flag indexed without a length
   check, now the Fortran's own zero/nonzero test → HISTORY.md#pocket-forming-flag-d7-2026-09-24
 - The size law is uniform in `D` when `JZZ = 2` and uniform in `1/D²` (mass-uniform) for
-  any other value. `DOKSD` (lines 385–386, 399–400, 405) uses the same formula for both
-  laws; only `DOKM` differs.
+  any other value. Under the `Original` model `DOKSD` (lines 385–386, 399–400, 405) uses
+  the same formula for both laws; only `DOKM` differs. Under `DoksdConsistent` the
+  `JZZ = 2` branch takes its own law's second moment (`## Corrected model`).
+
+  ⚠ 2026-10-18: was "uses the same formula for both laws" for every model, now the
+  `Original` model's → HISTORY.md#corrected-doksd-constraint-2026-10-18
 - Unit conversion from micrometres (lines 260–266) is `Input`'s; `Prepare` receives
   metres. Under the `Original` precision kind the setup plane reproduces that conversion
   itself, in binary32, from `Length.AsWritten` ("## Setup plane"); `Input`'s contract
@@ -266,9 +294,10 @@ decision.
 - **REAL*8 stays `double`** — `Z`, `Z1` (`ZX`, `Z11`) and whatever else the declaration
   block makes REAL*8. `Z(J)` is formed in the executable's order: the denominator of
   the non-uniform law is `(l·l)·(u·u)`, rounded once, and `DOK**4` is `(x·x)·(x·x)`
-  (`FractionLaw.Build` under `Original`; the order before, `l·l·u·u`, rounded twice and
-  parted from the executed `PARAM` by 1–3 ulp in `ZX` on 33 of the 49 files and in `Z11`
-  on 16; `ACCEPTANCE.md` A10).
+  (`FractionLaw.Build` under `Original`; `ACCEPTANCE.md` A10).
+
+  ⚠ 2026-10-18: was the old order `l·l·u·u` and its ulp counts told here, now A10's →
+  HISTORY.md#z-order-2026-10-18
 - **Line 378 holds a compiler temporary** (decided 2026-10-02, implemented 2026-10-03,
   `ACCEPTANCE.md` A7). `sLamd = (GGG/PLOT1)*ZSS*PLOT2`: the executable divides once
   into a REAL*4 slot (0x408ABE), then forms `(ZSS·G)·PLOT2` (0x408AC4–0x408AD0), so
@@ -289,22 +318,18 @@ literal fold, is what closes `inpt`'s `epsdokfr[0]` to the original's 2.70e-8.
 ⚠ 2026-09-26: was the two throwaway builds' own intermediate ladder and token counts
 told in full, now the decision and the one figure that decided it → HISTORY.md#why-whole-not-in-pieces-ladder-2026-09-26
 
-**`Dmin` rounds too; `Di`/`Dj` round too, both found 2026-09-23.** Neither has a
-declaration in lines 4–64: REAL*4 by implicit typing, like `gdokns`, and converted from
-micrometres at lines 264–266 exactly as `DDOK`'s own bounds are at 260–263
-(`SetupPlane.generated.txt`'s `dmin`/`di`/`dj` rows, role `input`). `Prepare` rounded
-the fraction bounds but passed `Dmin`, `CellSize` and `CategoryStep` through unrounded:
-on HMX/HPEPA3/P33, whose default `Dmin` equals the default `Di`, this opened a one-ULP
-sliver `Attempt`'s "Dok < Dmin" check (Fortran 478, 533) could land a draw in, and
-separately binned a draw at the lowest fraction bound to `int(D/Di) = 0`, printing a
-nonzero `fmdok[0]` (HMX 0.2–0.3e-10, HPEPA3 ≈3.7e-10) where the original always prints
-zero. Fixed by rounding all three through the same `ToBinary32MetresStored` helper
-(`SetupPlaneTests.DefaultDminRoundsToTheSameBinary32ValueAsTheLowestFractionBound`,
-`.DefaultCellSizeRoundsToTheSameBinary32ValueAsDminSoTheLowestBoundBinsToCellOne`, three
-formulations each, seen red on the violation before the fix, one binary32 ULP apart).
+**`Dmin` rounds too; `Di`/`Dj` round too, both found 2026-09-23.** REAL*4 by implicit
+typing, converted from micrometres at lines 264–266 as `DDOK`'s bounds are at 260–263
+(`SetupPlane.generated.txt`'s `dmin`/`di`/`dj` rows, role `input`): all three go through
+`ToBinary32MetresStored`, so a default `Dmin` equal to the default `Di` is the lowest
+fraction bound's binary32 value and a draw at that bound bins to cell one
+(`SetupPlaneTests`, `ACCEPTANCE.md`).
 
 ⚠ 2026-09-27: was `Dmin` and `Di`/`Dj` told as two paragraphs with their own live-run
 controls, now one fused rule; the controls moved whole → HISTORY.md#dmin-di-dj-rounds-too-fused-2026-09-27
+
+⚠ 2026-10-18: was the closed defect told in full (a `Dmin` sliver, `fmdok[0]` nonzero),
+now the rule → HISTORY.md#dmin-di-dj-defect-story-2026-10-18
 
 **Design decision, 2026-09-24 (owner and orchestrator): the setup plane's membership is
 generated, and one stored setup feeds every consumer.**
@@ -339,6 +364,92 @@ moved: restated where it matters, in the review below → HISTORY.md#ddokmax-ass
 ⚠ 2026-09-24 (review): was `karmcoef = 12.345` and `Ddokmax` read from `Sizes`'s array
 exception, now `karmcoef = 0.03` and read through `ToBinary32MetresStored` → HISTORY.md#setup-plane-review-corrections-2026-09-24
 
+## Corrected model
+
+Decided 2026-10-18 (root `BOOT.md`, "Model kind"; the arbiter's verdict of that day).
+Each fix is one flag of `Particle`'s internal `[Flags]` enum `CorrectionSet`
+(`../Particle/API.md`); `Corrected` sets all, a subset is an in-process measurement
+only, and every rule here holds for each flag alone.
+
+- **The effective set.** `Setup.Prepare`'s new overload (`API.md`, "## Corrected model")
+  stores it in `ModelSetup.Corrections`, where `Compute`, its signature kept, reads it;
+  `FractionLaw.Build`, `Setup.AnalyticSizes`, `Categories.MergeAndDescribe` and
+  `SmallParticles.Probability` take it as an explicit parameter of new overloads, the
+  old ones forwarding `CorrectionSet.None`. Under `PrecisionKind.Original` each,
+  `Prepare`'s store included, replaces it by `None` on entry: that kind reproduces the
+  original, and refusing the pair is `Simulation`'s (root, "Model kind"). `None` is the
+  `Original` model, bit for bit: a fix branches on its flag around the statements it
+  names, and every other statement is shared and unchanged.
+- **A corrected statement stands alone**, outside the listing-driven helpers: it calls
+  no `CyclePlaneRounding`, `CyclePlaneOrder` or `UnrolledSchedule` member, carries no
+  `// Fortran n` citation (`CyclePlaneSiteMapTests` maps each to a listing site; a
+  corrected expression has none), names its flag in a comment, and reads the shared
+  statements' values, plain `double` under `Binary64`. A shared helper may run on other
+  storage (`CategoriesOnCopy`); a constant that differs by model is one folded pair,
+  `exact ? 3.0 / Math.PI : 3.0 / 3.14`; any other difference is an `if` on the flag, the
+  original untouched in its `else`, never a flag-selected local a shared statement reads.
+
+The fixes, `Binary64` only; the expected effects are the arbiter's computations:
+
+- **`ExactConstants`** (1704, 1716, 1014, 1016; also `Particle`'s sites). A literal
+  approximating π or ⅓ is that constant: `FractionLaw.Build`'s `Binary64` coefficients
+  `3.0 / Math.PI`, `24.0 / Math.PI`; `Matrix`'s 1014–1016 as `m = Math.PI / 6.0 *
+  plotsmdok * Gm / s2`, `m *= t3`, `mp = 2.0 * Math.Pow(0.75 / Math.PI * m * t4,
+  1.0 / 3.0)`, `Gm` being `inputs.MetalMassFraction`. Other literals stay. `ZX`, `Z11`
+  move in their last bits only; λ scales by 3.14/π through `ZSS`; `da_coef` moves
+  −0.0086 % (HMX) to −0.0100 % (HPEPA3). The four lines are what a search of the line
+  map's ranges finds (`ACCEPTANCE.md`).
+- **`DoksdConsistent`** (399–400, 405). Under `JZZ = 2` the original subtracts this
+  law's `DOKM²` from the other law's second moment, `Σ GDOK·(l² + lu + u²)/3`.
+  Corrected: that loop also sums `DOK2 += (Math.Pow(u, 6) − Math.Pow(l, 6)) * share[j]
+  / (u − l)` in `j` order, and `DOKSD = 2.0 / 3.0 * DOK2 / DOK3 − DOKM * DOKM`, the
+  mass-weighted variance of a law uniform in `D`, whose mean `0.8·DOK4/DOK3` is. P33's
+  `Dok43sd` 75.45 → 112.66 µm; P2's −5.71e-10 m² (`NaN`) → 8.07 µm; `JZZ ≠ 2` unchanged.
+- **`GdokleftOnce`** (1001–1006). With `k = int(Dmin/Di) + 1`, `b = (k − 1)·Di`, an
+  `SFR = 0` fraction's mass below `b` is in `FMDOK(k)` and again in its `GDOK`.
+  Corrected, on 1004's basis: its term is `GDOKᵢ * (1.0 − φᵢ(b)) * GGG`, `GDOK` as read
+  (`tables.MassShare`), `φᵢ` its mass CDF, 0 for `b ≤ l`, 1 for `b ≥ u`, else
+  `(b⁴ − l⁴)/(u⁴ − l⁴)` (`Math.Pow(x, 4)`) if `JZZ = 2`, `(b − l)/(u − l)` otherwise;
+  1001, 1006 shared. Unchanged under both models, declared: pocket-forming mass in
+  `[b, Dmin)`, counted nowhere when `Dmin` is no multiple of `Di`, a resolution limit of
+  a histogram read at cell edges (rejected). Null on the five references; PSAN02
+  with `--sfr` at `Dmin = 20 µm`: 0.0175 of the oxidizer, 0.0119 of the propellant.
+- **`ZdoksmallCoarseShare`** (1047). `zdoksmall` is a share of `vdokstr`, the drawn
+  coarse oxidizer, which is `GGG − gdokleft` of the propellant, as 1050 and 1053 count
+  it; the original multiplies by `GGG`. Corrected: `zdoksmall[k] = zdoksmall[k] * (ggg −
+  gdokleft)`, `Matrix`'s `gdokleft`. Null where `gdokleft = 0`; P312 at its defaults
+  (`gdokleft` ≈ 0.122); PSAN02 with `--sfr`: `zdoksmall` divided by about 3.4.
+- **`PdoksmallFirstCell`** (1059–1061). The loop starts at 2: `pdoksmall(1)` is never
+  assigned, 0 in the port. Corrected: `pdoksmall[0] = vdoksmall[0] * ddoksmall[0] *
+  karmcoef`, the clamp still from cell 2. Read when `max(Dr, Db) < Di`: P312 at 5 µm.
+- **`VdokTotalOnCopy`** (1145, 1150; 1141 only reads). Every cycle ≥ 1 divides the
+  stored `Vdok_total` cells and `Vdok_total2` by `1 − gdokleft/GGG`, earlier particles
+  again. Corrected: the quotients go into 1146's sum in cell order and into 1151, never
+  stored. Bit-identical in cycle 1; null where `gdokleft = 0`; P312 with `KXX = 3`
+  shows it in `DolM2`, `DolM3`.
+- **`CategoriesOnCopy`** (911–958, 825–829). Every cycle, cycle 0 included, copies rows
+  `1..DPRow` of `Qdoks`, `Dokp41`, `Dokp31`, `DPRow` as line 825 first sets it (it bounds
+  every row a pocket reaches); merge, shift and recomputation run on the copies, so no
+  total is written and no row counts twice.
+- **`CategoriesLastRowRecomputed`** (947–959). After a last-row merge `DPRow −= 1` and
+  the loop returns to label 600, until no last-row check merges; `DPRow` falls by one
+  per merge and stops at 1.
+- **`CategoriesEmptyRowsMerged`** (869–871, 915, 947). A row the 869–870 test gives
+  `Epsydok = 0` (`QDOKSS = 0`, `MDOK3` or `MDOK4 ≤ 1e-30`) never merges. Corrected: it
+  is insufficient in both tests (`empty || Epsydok > EpsDok`), `Epsydok` stays 0; a row
+  of `QDOKSS = 1`, legitimately without variance, is not. The three category flags
+  move the category rows (`DPRow`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `fqdokkarm`)
+  where a merge or an empty row occurs, measured on drawn totals only (`ACCEPTANCE.md`).
+
+  ⚠ 2026-10-18: was "move the category rows of every formulation", now the expectation
+  measured on drawn totals only → HISTORY.md#corrected-category-flags-every-formulation-2026-10-18
+
+**Not fixed** (the arbiter's verdict of 2026-10-18), unchanged under `Corrected`: `DOKM`,
+`DOKSD` from the shares as read (383–388: exact when `ΣGDOK = 1`; an inconsistent input
+fires the warning of 817–818, and normalising it is input handling); the `[b, Dmin)`
+limit; `Epsydok`'s estimator; `pdoksmall` printed at `Ndok − 1` (1386). REAL*4 and x87
+rows are never fixed: `not reachable` where the port reproduces them, else `unchanged`.
+
 ## Line map
 
 This node's Fortran source is `tests/Fixtures/Legacy/PropStructv3.for.txt`, lines
@@ -350,25 +461,29 @@ table, for the ranges it scans, the same pattern `src/Particle/BOOT.md` uses).
 |---|---|---|
 | 267–277 | `Setup.Sizes` | `Ddokmax`, `Ndok`, `Nkarm`, `Ncat` from binary32 values (invariant "Array sizes from binary32 values"), `Nc = 1000` |
 | 376 | `Setup.Prepare` | `GGG = GGG0 − gdokns·GGG0` |
-| 1695–1734 | `FractionLaw.Build` | unnormalized `Z` by law, `ZSS`, normalized `ZX`, cumulative `Z11` with `Z11(NMM+1) = 1`; `Zerror` (1733) not ported |
+| 1695–1734 | `FractionLaw.Build` | unnormalized `Z` by law, `ZSS`, normalized `ZX`, cumulative `Z11` with `Z11(NMM+1) = 1`; `Zerror` (1733) not ported; `ExactConstants` at 1704, 1716 (`## Corrected model`) |
 | 377, 1735–1753, 1755–1757 | `FractionLaw.TryTailDraw` | the **modified** tail probability `alfa` (the original changes the caller's `alfa` in place; it is printed afterwards and gates `Dokb_max`) and the `x`/`x1` pair `Particle.SizeLaw.Sample` needs (`X = Z11(Imax+1) − alfa`, whose own fraction search may pick a fraction other than `Imax`); 1755 is the `if`/`else`'s own `end if`, 1756–1757 are `PARAM`'s `RETURN`/`END` |
 | 1754 | — | `call SIZE`: the driver (`Simulation`, through `Particle.SizeLaw.Sample`, the published member — `../Particle/API.md`, "## Size law"), not this node; `Setup.Prepare` produces the `TailDraw` the call needs and `Setup.CompleteEchoes` consumes its `Dmax` result (API.md, "Setup hand-off") |
 | 378 | `Setup.Prepare` | `λ = (GGG/PLOT1)·ZSS·PLOT2` |
-| 379–406 | `Setup.AnalyticSizes` | `DOKM` by law; `DOKSD` the same for both laws |
+| 379–406 | `Setup.AnalyticSizes` | `DOKM` by law; `DOKSD` the same for both laws under the `Original` model, by law under `DoksdConsistent` (`## Corrected model`) |
 | 771–784 | `CycleStatistics.GeneratorAccuracy` | seven `EPS` values |
 | 789–819 | `CycleStatistics.OxidizerSizes` | `DOK43b`, `DOK43s`, `epsalldok`, `ALLVDOKSO`, `ALLDOK432`, `ALLDOK243`, `FMDOK`, `ALLDOK43`, `ALLDOKsd`, `EPSX1–3`, warning flag |
-| 825–959 | `Categories.MergeAndDescribe` | see `## Categories` |
+| 825–959 | `Categories.MergeAndDescribe` | see `## Categories`; `CategoriesOnCopy`, `CategoriesLastRowRecomputed`, `CategoriesEmptyRowsMerged` (`## Corrected model`) |
 | 963–996 | `CycleStatistics.Pockets` | `QKS1` from `Qks`, `MD3/4`, `DD3/4`, `EPSY` and warning flag, `epsMD3/4`, `VKSO`, `D432`, `D243`, `Dqkarm`, `DP43`, `sdevP43`; `D43` (979) never printed, not ported |
-| 1001–1016 | `CycleStatistics.Matrix` | `gdokleft`, `gdoksfr`, `PLOTsmdok`, `vdokleft`, `PLOTsm`, `mp` |
-| 1021–1065 | `SmallParticles.Probability` | `zdoksmall`, `ddoksmall`, `vdoksmall`, `pdoksmall` (monotone from index 2) |
+| 1001–1016 | `CycleStatistics.Matrix` | `gdokleft`, `gdoksfr`, `PLOTsmdok`, `vdokleft`, `PLOTsm`, `mp`; `GdokleftOnce` at 1004, `ExactConstants` at 1014–1016 (`## Corrected model`) |
+| 1021–1065 | `SmallParticles.Probability` | `zdoksmall`, `ddoksmall`, `vdoksmall`, `pdoksmall` (monotone from index 2; index 1 is 0 under the `Original` model, the 1061 formula under `PdoksmallFirstCell`); `ZdoksmallCoarseShare` at 1047 (`## Corrected model`) |
 | 1066–1074 | `SmallParticles.MaxSize` | `Dmaxxx`; `zdmaxxx` never read, not ported |
 | 1087–1113 | `CycleStatistics.CorrectedPockets` | cycles ≥ 1: `Dkarm43_cor`, `sdevP43_cor`, `Dqkarm_cor`, `Dfmk432`, `sdevP243`, `Dqmkm1`, `Dqmkm2`, `qmcoef` |
 | 1119–1134 | — | `gk0`, `gk1`: output commented out, not ported |
-| 1137–1152 | `CycleStatistics.MassFractions` | cycles ≥ 1: `DolM1`; in-place division and `DolM2`; in-place division and `DolM3`; `Vdok_total0`, `Vdok_total1`, `deltaVdok` (1140–1142) never read, not ported |
+| 1137–1152 | `CycleStatistics.MassFractions` | cycles ≥ 1: `DolM1`; in-place division and `DolM2`; in-place division and `DolM3` (a division on a copy under `VdokTotalOnCopy`, `## Corrected model`); `Vdok_total0`, `Vdok_total1`, `deltaVdok` (1140–1142) never read, not ported |
 | 1168–1175 | `CycleStatistics.Convergence` | the six values `epsy`, `epsmd3`, `epsmd4`, `(ALLDOK43−DokM)/DokM`, `(ALLDOKsd−DokSD)/DokSD`, `1 − DolM2` |
 | 1078–1082, 1154–1167, 1176–1181 | — | cycle bookkeeping, `Simulation` |
 
 In cycle 0 the rows 771–1074 run; the rows for cycles ≥ 1 do not.
+
+⚠ 2026-10-18: was the notes of rows 379–406 and 1021–1065 ("`DOKSD` the same for both
+laws", index 1 unmentioned) for every model, now the `Original` model's, the flags named
+→ HISTORY.md#corrected-line-map-notes-2026-10-18
 
 `FMDOK(k+1) = FMDOK(k) + ALLVDOKSO(k)` with `FMDOK(1) = 0`, so `FMDOK(j)` is the mass
 share of the first `j − 1` cells; `gdokleft` reads `FMDOK(int(Dmin/Di)+1)`.
@@ -418,13 +533,22 @@ Lines 825–959, over the integer totals `Qdoks` and the real totals `Dokp41`, `
    `Dokp31`, `Qdoks` rows added); every later row is shifted from `r+1`. After a
    merge `DPRow −= 1` and step 2 repeats.
 4. Last row (947–959): if `Epsydok(DPRow) > EpsDok` and `DPRow > 1`, rows `DPRow−1` and
-   `DPRow` merge as in the pass and `DPRow −= 1`, **without** returning to step 2.
+   `DPRow` merge as in the pass and `DPRow −= 1`, **without** returning to step 2
+   (under `CategoriesLastRowRecomputed`, returning to it; `## Corrected model`).
 5. The report takes `Dpockets`, `DOKP43`, `qdokkarm` and the `QDOKSO` rows for
    `r = 1..DPRow`.
 
-The merge and shift write into the run's totals (`## Invariants`); the old last row
-keeps its contents after any merge, and later cycles add pockets into rows by their raw
-index `int(RK/Dj)+1`. The original behaves so; it is reproduced.
+Under the `Original` model the merge and shift write into the run's totals
+(`## Invariants`); the old last row keeps its contents after any merge, and later cycles
+add pockets into rows by their raw index `int(RK/Dj)+1`. The original behaves so; it is
+reproduced. Under `CategoriesOnCopy` the same steps run on a per-cycle copy of rows
+`1..DPRow`, the first `DPRow` of step 1 bounding every row a pocket reaches (below), and
+the totals are not written; under `CategoriesEmptyRowsMerged` a row step 2 gives
+`Epsydok = 0` by its empty-row test is insufficient in steps 3 and 4
+(`## Corrected model`).
+
+⚠ 2026-10-18: was the in-place merge and step 4 stated for every model, now the
+`Original` model's → HISTORY.md#corrected-categories-steps-2026-10-18
 
 **`DPRow` never exceeds `Ncat`.** `Ncat = trunc(Ddokmax·AK4/Dj) + 2` (`Setup.Sizes`,
 "## Invariants", "Array sizes from binary32 values"); `DPRow = trunc(DPmax/Dj) + 1`
@@ -606,12 +730,16 @@ the totals in every cycle, and cycle 0's are never printed.
 
 **Decisions where the port departs from a transcription** (declared, §12):
 
-- `pdoksmall(1)`, never assigned by the original, is 0. The original's garbage
-  (0.338E-39 … 0.153E-37 in the archived outputs) is copied forward by the clamp of
-  lines 1062–1064 into the leading cells while they are zero (rc166.m prints six
-  cells of 0.762E-38). The port prints zeros there; the comparison treats reference
+- `pdoksmall(1)`, never assigned by the original, is 0 under the `Original` model
+  (under `PdoksmallFirstCell`, the 1061 formula, `## Corrected model`). The original's
+  garbage (0.338E-39 … 0.153E-37 in the archived outputs) is copied forward by the
+  clamp of lines 1062–1064 into the leading cells while they are zero (rc166.m prints
+  six cells of 0.762E-38). The port prints zeros there; the comparison treats reference
   values below `1e-30` in `pdoksmall` as zero, recorded in the exclusion list of
   `tests/Fixtures` with this evidence.
+
+  ⚠ 2026-10-18: was "is 0" for every model, now the `Original` model's →
+  HISTORY.md#corrected-pdoksmall-first-cell-2026-10-18
 - `pdoksmall` is printed at `Ndok − 1` (Fortran line 1386): the original's own print
   call is the defect; the port failed to reproduce it (printing the full `Ndok`
   instead); the fix below reproduces it, reconciling the prose here with the
@@ -1053,21 +1181,28 @@ on PSAN02n in part → `HISTORY.md#accumulation-consequence-worst-cell-2026-09-2
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
-| 911–958 | algorithm | The category merge and shift (`## Invariants`, "In-place rewrites of the totals, as the original") rewrites `Qdoks`, `Dokp41`, `Dokp31` without clearing the old last row after any merge, so its contents count twice once later cycles rebuild the rows (`## Categories`: "The original behaves so; it is reproduced."). | not measured | reproduced | none |
-| 1021–1065 | dead | `pdoksmall(1)`, never assigned by the original, carries garbage (0.338E-39 … 0.153E-37 in the archived outputs) copied forward by the clamp of lines 1062–1064 into leading cells while they are zero ("Decisions where the port departs from a transcription"). | measured: `rc166.m` prints six leading cells at 0.762E-38; reference values below 1e-30 in `pdoksmall` are treated as zero, recorded in the exclusion list of `tests/Fixtures` with this evidence. | declared, not reproduced | `*: pdoksmall where original < 1e-30` |
-| 1386 | cosmetic | `call arrayprint('pdoksmall',pdoksmall,Ndok-1)` prints one element short of `pdoksmall`'s own `Ndok` dimension, unlike every other `Ndok`-sized array this node reports, which prints the full `Ndok` ("## Report", "Decisions where the port departs from a transcription"). | measured: the printed `pdoksmall` is `Ndok − 1` long on every one of the five reference formulations (32/33, 35/36, 32/33, 32/33, 70/71 against `fmdok`'s own `Ndok`-length print), confirmed against each archive's own `results.m` (`tests/Statistics.Tests/PdoksmallReportLengthTests`). | reproduced | none |
-| 911–959 | numeric | The category merge's threshold comparison, `Epsydok(r) > EpsDok`, is computed and compared in REAL*4 by the original, which gates control flow: a REAL*4 rounding of either side could move a row across the merge threshold and change `DPRow` itself ("Decisions where the port departs from a transcription"). | not measured: the 2026-09-20 row counts (17/18, 59/58) are `Binary64`'s and come from the totals; `MergeThresholdSensitivityTests` shows the mechanism only. Under `Original` since 2026-10-01 `Epsydok` is narrowed at 875 and `EpsDok` is the setup plane's stored value, so both sides are the original's binary32 ("## Report", the merge-threshold bullet). | reproduced | none |
-| 771–1175 | numeric | The per-cycle processing computes in x87 registers and keeps its values in REAL*4 homes, binary32 compiler temporaries and six-fold unrolled partial sums. What it does at each site is read off the executable's own listing, by a checked address map and a generated table, not from the statement structure ("## Report", "The per-cycle plane from the executable's listing"): stores that round, values kept in a register to their last read, homes re-read after a store, temporaries, sums stored every sixth pass and every remainder pass, product order, `**4.`, `**3.` and `**2` as products, literals folded in binary32; line 378's temporary of the setup plane is the same reading ("## Setup plane"). The register-lifetime rules this row and its neighbour held from 2026-09-27 to 2026-10-02 were refuted at the sites of "## Report" and replaced → `src/Statistics/HISTORY.md#defect-rows-771-1175-open-2026-10-03` | measured 2026-10-03: `ListingOracleTests`, an x87 interpreter running the executable's own bytes, finds `Compute` and `Setup.Prepare` bit-equal to it on every output of every cycle and every pre-loop value of its 26 cases, three of them pinned where `DOKM`'s five-fold schedule alone decides (`BK10`, `KB397`, `AK157a`; empty ratchet); `da_coef` prints the original's on 22 of 22 archived formulations (C1, `LegacyDaCoefReproductionTests`); 295 of 295, 2016 of 2016 and 293 of 293 archived outputs (`PerCyclePlaneOutOfSampleControlsTests`); the 39 seed-0 cases unmoved on the regenerated runs (`CyclePlaneSeedZeroControlsTests`); on six path-identical pairs 551 cells still print a different token, attributed by class, not measured per cell (`ACCEPTANCE.md` A3): by the design 15 are the print plane's (`src/Output`) and 536 are fed by the attempt plane's REAL*4 inputs `Dr`, `Db` and `RK` (`src/Particle`), none required to reach zero, the list moving by four cells when the plane followed the listing (C2, `PathIdenticalPairsReportTests`, `ACCEPTANCE.md` A3); the rate 17 of 160 against the original's own 15 of 197, p = 0.103, with every failing cell of the 160 `Original` runs unchanged (147 of them differ in bytes) and `Binary64` byte-identical (A6, `tests/Harness.Tests/RateCriterionTests`) | reproduced | none |
-| 379–406 (`JZZ = 2`) | numeric | The `JZZ = 2` branch of the `DOKM`/`DOKSD` loop is unrolled four-fold and keeps intermediates in REAL*4 compiler temporaries the listing stores: `u − l` in pass 1 of a block and in every remainder pass, `l**5` every pass, `DOK4`/`DOK3` every pass, `DOKSD` after passes 1–3 of a block ("## Setup plane": the schedule is typed, read from the listing; `ACCEPTANCE.md` A12). | measured 2026-10-03 by the oracle's pre-loop run: over the 49 shipped files `CSPX04` was the one that parted (`DOKM` 0x393BAB05 executed against 0x393BAB06 before, `DOKSD` 0x320F1DE8 against 0x320F1DE3), now none does (`tests/Statistics.Tests/PreloopSurveyTests`, `PreloopSurvey.approved.txt`, empty); on 120 drawn loops of one to sixteen fractions the executable and the listing's stores agree on every bit and each store turned off parts from it on 8 to 27 (`cycle_plane_oracle.py selftest`); the five reference formulations are untouched (`P33` is their one `JZZ = 2` file and agreed before) | reproduced | none |
-| 875–879, 975–981, 996, 1016, 1025, 1097, 1105 | numeric | Three runtime routines the listing calls were not read: `_FIIfexp_` (DFORRT) behind `**0.3333` at 1016, `_CIsqrt` (MSVCRT, a system DLL the archive does not ship) behind `_FIsqrt`, the `SQRT` and `**0.5` of 875–879, 975–981, 996, 1097 and 1105, and `_FXAMOD` (DFORRT) behind `mod` at 1025. The port computes `Math.Pow`, `Math.Sqrt` and `a − ⌊a/b⌋·b`, and the oracle stubs the three with the same calls (`CyclePlaneListing.map.txt`, the `call` rows of its `oracle` section), so no check sees a difference there; a correctly rounded square root at 53 bits and an exact `mod` of positive operands are assumptions, a power of a binary32-rounded product showing only at a binary32 tie ("## Report", declared residuals). | not measured | declared, not reproduced | none |
-| 261–277, 825–829, 1021–1065 | numeric | `Ddokmax`, `AK4`, `Di` and `Dj` are REAL*4 in the original; `Ndok`, `Nkarm`, `Ncat` are the exact truncated quotients of those binary32 values plus 2, computed with integer mantissa arithmetic, and the same treatment covers `Categories.cs`'s own `DPRow` (line 825) and `SmallParticles.cs`'s own whole-fraction count `int(real(kilo)/ak2)` (`## Invariants`, "Array sizes from binary32 values"). | measured: printed lengths `Ndok` = 71 (C166, T56), 23 (CSPX01), 20 (P18050), 62 (PSAN01), which `double` operands miss; the worst-case `DPRow` quotient sits no closer than 1.68e-5 from an integer boundary (HMX, C166, T56) against a binary32 relative epsilon near 6e-8, so no printed length moves; every formulation's own `AK2` is an exact integer (2.0), so the whole-fraction count carries no rounding risk for the archive. | reproduced | none |
-| 718, 963–996 | numeric | `QKS1` is stored in REAL*4 at line 718 of the particle loop, `QKS/real(QKSS)`, and read by the plane; the executable loads `QKSS` (INTEGER*8) exactly with `fild qword` and divides each cell by it, rounding only the quotient (0x40B7FA–0x40B8AF, read from the excerpt, not run), which `CycleStatistics.Pockets` computes as `r32(q / QKSS)` and the oracle injects as `f32(q / QKSS)`. The reading before 2026-10-03, `f32(q / f32(QKSS))`, was a different expression above 2^24 ("## Report", declared residuals). | measured 2026-10-03: the injection and `Compute` agree bit for bit on every cycle of the oracle's cases, and at 2^24 + 1 `Compute`'s cells are the exact quotient rounded once and one binary32 unit from the rounded-divisor reading (`tests/Statistics.Tests/Qks1NormalisationTests`); 110 of the 175 archived outputs print a `QKSS` above 2^24, among the references HMX 42 596 514 and HPEPA3 24 649 481, where the rounded-divisor reading would have moved 56 % and 48 % of the cells by a unit; nothing moves | reproduced | none |
-| 792–797, 1704, 1716, 1723, 1725, 1727 | numeric | `epsdokfr`/`epsalldok(kilo)` mixes REAL*4 (`GDOK`, `DDOK`, `ZS`, `epsalldok`) with REAL*8 (`ZX`/`Z`) in the fraction-share normalization and the accuracy comparison, so the mathematically-exact-zero case `NMM = 1` does not cancel to zero (`## Report`, "Decisions where the port departs from a transcription"). | measured: `epsdokfr[0]` is bit-for-bit `0.270E-07` across the `inpt` reference run and all 32 lagged/independent replicas (`tests/Fixtures/references/inpt/results.m.txt`, `tests/Fixtures/replicas-{lagged,independent}/inpt/*.m.txt`) — unchanged despite each replica's different accepted-particle and attempt counts, ruling out an accumulated-count cause — and independently `0.263E-07` on `p350` (`tests/Fixtures/Legacy/outputs/r4.m.txt`, unrelated fraction bounds and run size); both values sit at the scale of one REAL*4 rounding unit near 1 (2⁻²⁴ ≈ 5.96e-8), the signature of a fixed precision floor rather than a formulation-specific coincidence. Beyond the cosmetic `epsdokfr` reading, the same REAL*4 chain (`ZS`, the literal-folded coefficients) moves the fraction thresholds `Z11`/`ZX` and λ themselves under `PrecisionKind.Original`, `Binary64` the default and unaffected ("## Setup plane"; `tests/Statistics.Tests/SetupPlaneTests`). | reproduced | none |
-| `src/Particle/BOOT.md`, "## Accumulators", `Allvdok`'s own row | numeric | `Allvdok`'s REAL*4 saturation (`Particle`'s own table) reaches `Allvdokso`/"fmdok" and `Alldok432`/`Dok43all[1]` directly (789–819), and `pdoksmall` (1050–1053) through `gdokleft`, itself fed by the internal cumulative `fmdok` array Fortran's own `FMDOK` recurrence builds — never the printed "fmdok", a different, per-cell field ("## Report", "REAL*4 accumulation, carried through"). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Re-measured 2026-09-21 at the original's own per-draw granularity (⚠ "## Report", "REAL*4 accumulation, carried through"; supersedes the 2026-09-20 figures below): against `StatisticalCriterion.Compare`'s own band for each formulation's worst reachable cell, `fmdok` is large enough to matter on three of five formulations (HPEPA3 1921%, PSAN02n 201%, HMX 3143%) and rules out on the other two (inpt 1.0%, P33 1.7%); `Dok43all[1]` is large enough to matter on HPEPA3 (403%) and HMX (111%), inconclusive on PSAN02n (15%), and rules out on inpt (0.1%) and P33 (0.6%) — table and method in `## Report` (`tests/Statistics.Tests/AccumulationConsequenceTests.AllvdokErrorPropagatesToAllvdoksoAndAlldok432`); `pdoksmall` via `gdokleft` is unaffected by this re-measurement, still 0% of band on all five formulations — an exact zero driven by the real Allvdok shape, not by the epsilon magnitude (`## Report`, `src/Statistics/HISTORY.md#gdokleft-allvdok-reachable-cell-bound`, `tests/Statistics.Tests/AccumulationConsequenceTests.AllvdokErrorPropagatesToPdoksmallThroughGdokleft`, `.AllvdokErrorPropagationThroughGdokleftIsWiredWhenTheReachableCellIsNonzero`). | reproduced | none |
-| `src/Particle/BOOT.md`, "## Accumulators", `Vdokstr`'s own row | numeric | `Vdokstr`'s REAL*4 saturation (`Particle`'s own table) reaches `pdoksmall` (1021–1065) through `zdoksmall`/`ddoksmall`/`vdoksmall`, the dominant channel of the three quantities under suspicion; `VdokTotal`/`VdokTotal2` (1137–1152) reach only `DolM2`/`DolM3`, never `gdokleft`, `vdokleft` or `pdoksmall` — the chain handed down for verification named them on that path, and the port's own line map shows they are not ("## Report", "REAL*4 accumulation, carried through"). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Re-measured 2026-09-21 at the original's own per-draw granularity (⚠ "## Report", "REAL*4 accumulation, carried through"; supersedes the 2026-09-20 figures below): against `StatisticalCriterion.Compare`'s own band for each formulation's worst reachable, perturbable cell, `pdoksmall` is now large enough to matter on HPEPA3 (587%, was: rules out at 1.8%) and HMX (2029%, was: inconclusive at 22.6%), rules out on P33 (2.1%), the channel is structurally closed for `inpt` (its own real distribution carries no draws inside the window `Ak2` lets the model read), and for PSAN02n reaches only the array's own dropped, unprinted tail cell, leaving nothing to explain for any printed cell — table and method in `## Report` (`tests/Statistics.Tests/AccumulationConsequenceTests.VdokstrErrorPropagatesToPdoksmall`, `.VdokTotalAndVdokTotal2DoNotReachPdoksmallFmdokOrDok43all`). | reproduced | none |
-| 671–703 | numeric | `DPmax_cor`'s own per-attempt update (`Particle`'s own accumulator, `Particle/API.md`, "Real-valued record") is gated by two `pdoksmall`-dependent checks ("Var#1"/"Var#2", lines 683, 699) inside the same attempt that updates the unconditional `DPmax` (line 673, no gate); a `pdoksmall` value that differs from the original's — the row above — flips whether one of the rare largest-radius pockets clears the gate, without ever touching `DPmax` itself ("## Report", the resolved escalation). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Measured: HMX's own archived `fmkarm_cor`/`fmkarm_cor2`/`fqkarm_cor` print at 88 elements (`int(DPmax_cor/Di) + 2`) against the port's 82 — six cells, three orders of magnitude past a rounding-boundary flip; absent on the other four reference formulations, where the port's `DPmax_cor`-driven length matches the archive exactly (`tests/Output.Tests/PocketPrintLengthTests`). Confirmed, not merely fitted, by a dose-response measurement on HMX at `N`, `N/10`, `N/100` (`--n` override, `run_original.py`/`run_port.py`): the length matches exactly (56/56, 77/77) at the two reduced `N` where `pdoksmall`'s worst considered cell is within 0.24%/3.1% of the original, and misses only at the shipped `N`, where that cell has diverged 64.6% — the length parts company exactly where `pdoksmall` does ("## Report" above, the dated dose-response table). | reproduced | none |
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
+| 911–958 | algorithm | The category merge and shift (`## Invariants`, "In-place rewrites of the totals, as the original") rewrites `Qdoks`, `Dokp41`, `Dokp31` without clearing the old last row after any merge, so its contents count twice once later cycles rebuild the rows (`## Categories`: "The original behaves so; it is reproduced.", "## Corrected model", `CategoriesOnCopy`). | measured 2026-10-18 under `CategoriesOnCopy`, a synthetic two-cycle chain on the listing oracle's drawn totals (26 cases, each cycle's draw taken as that cycle's particles, added to the first cycle's merged rows under `None` and to its unmerged rows under the flag; not a Monte Carlo run): the first cycle merged rows in 22, and `DPRow` of the second cycle moves in 4 of them (HPEPA10 18 → 10, P3b 7 → 6, CSPX04a 4 → 3, KB396 1 → 2), `Dokp43`'s first row by −1.3 % to +1.7 % over the 22; of the references PSAN02n `Qdokkarm`'s first row +5.6 %, `Dokp43` +1.0 %, HMX −0.06 %, −0.02 %, HPEPA3 unmoved (no merge in its draw), P33 and `inpt` not in the oracle (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`); in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`; sixteen seeds) the fix alone moves `DPRow` +22 % (HPEPA3), +83 % (P33), +2.9 % (PSAN02n), not inpt or HMX | reproduced | none | fixed (CategoriesOnCopy) |
+| 1021–1065 | dead | `pdoksmall(1)`, never assigned by the original, carries garbage (0.338E-39 … 0.153E-37 in the archived outputs) copied forward by the clamp of lines 1062–1064 into leading cells while they are zero ("Decisions where the port departs from a transcription"). | measured: `rc166.m` prints six leading cells at 0.762E-38; reference values below 1e-30 in `pdoksmall` are treated as zero, recorded in the exclusion list of `tests/Fixtures` with this evidence. Under `PdoksmallFirstCell` (`## Corrected model`) the cell is assigned: on totals of P312's own mass CDF at `Dmin` 5 µm `pdoksmall(1)` is 0 under `None` and 0.191 under the flag (`tests/Statistics.Tests/CorrectedCycleEvidenceTests`). | declared, not reproduced | `*: pdoksmall where original < 1e-30` | fixed (PdoksmallFirstCell) |
+| 1386 | cosmetic | `call arrayprint('pdoksmall',pdoksmall,Ndok-1)` prints one element short of `pdoksmall`'s own `Ndok` dimension, unlike every other `Ndok`-sized array this node reports, which prints the full `Ndok` ("## Report", "Decisions where the port departs from a transcription"). | measured: the printed `pdoksmall` is `Ndok − 1` long on every one of the five reference formulations (32/33, 35/36, 32/33, 32/33, 70/71 against `fmdok`'s own `Ndok`-length print), confirmed against each archive's own `results.m` (`tests/Statistics.Tests/PdoksmallReportLengthTests`). | reproduced | none | unchanged |
+| 911–959 | numeric | The category merge's threshold comparison, `Epsydok(r) > EpsDok`, is computed and compared in REAL*4 by the original, which gates control flow: a REAL*4 rounding of either side could move a row across the merge threshold and change `DPRow` itself ("Decisions where the port departs from a transcription"). | not measured: the 2026-09-20 row counts (17/18, 59/58) are `Binary64`'s and come from the totals; `MergeThresholdSensitivityTests` shows the mechanism only. Under `Original` since 2026-10-01 `Epsydok` is narrowed at 875 and `EpsDok` is the setup plane's stored value, so both sides are the original's binary32 ("## Report", the merge-threshold bullet). | reproduced | none | not reachable |
+| 771–1175 | numeric | The per-cycle processing computes in x87 registers and keeps its values in REAL*4 homes, binary32 compiler temporaries and six-fold unrolled partial sums. What it does at each site is read off the executable's own listing, by a checked address map and a generated table, not from the statement structure ("## Report", "The per-cycle plane from the executable's listing"): stores that round, values kept in a register to their last read, homes re-read after a store, temporaries, sums stored every sixth pass and every remainder pass, product order, `**4.`, `**3.` and `**2` as products, literals folded in binary32; line 378's temporary of the setup plane is the same reading ("## Setup plane"). The register-lifetime rules this row and its neighbour held from 2026-09-27 to 2026-10-02 were refuted at the sites of "## Report" and replaced → `src/Statistics/HISTORY.md#defect-rows-771-1175-open-2026-10-03` | measured 2026-10-03: `ListingOracleTests`, an x87 interpreter running the executable's own bytes, finds `Compute` and `Setup.Prepare` bit-equal to it on every output of every cycle and every pre-loop value of its 26 cases, three of them pinned where `DOKM`'s five-fold schedule alone decides (`BK10`, `KB397`, `AK157a`; empty ratchet); `da_coef` prints the original's on 22 of 22 archived formulations (C1, `LegacyDaCoefReproductionTests`); 295 of 295, 2016 of 2016 and 293 of 293 archived outputs (`PerCyclePlaneOutOfSampleControlsTests`); the 39 seed-0 cases unmoved on the regenerated runs (`CyclePlaneSeedZeroControlsTests`); on six path-identical pairs 551 cells still print a different token, attributed by class, not measured per cell (`ACCEPTANCE.md` A3): by the design 15 are the print plane's (`src/Output`) and 536 are fed by the attempt plane's REAL*4 inputs `Dr`, `Db` and `RK` (`src/Particle`), none required to reach zero, the list moving by four cells when the plane followed the listing (C2, `PathIdenticalPairsReportTests`, `ACCEPTANCE.md` A3); the rate 17 of 160 against the original's own 15 of 197, p = 0.103, with every failing cell of the 160 `Original` runs unchanged (147 of them differ in bytes) and `Binary64` byte-identical (A6, `tests/Harness.Tests/RateCriterionTests`) | reproduced | none | not reachable |
+| 379–406 (`JZZ = 2`) | numeric | The `JZZ = 2` branch of the `DOKM`/`DOKSD` loop is unrolled four-fold and keeps intermediates in REAL*4 compiler temporaries the listing stores: `u − l` in pass 1 of a block and in every remainder pass, `l**5` every pass, `DOK4`/`DOK3` every pass, `DOKSD` after passes 1–3 of a block ("## Setup plane": the schedule is typed, read from the listing; `ACCEPTANCE.md` A12). | measured 2026-10-03 by the oracle's pre-loop run: over the 49 shipped files `CSPX04` was the one that parted (`DOKM` 0x393BAB05 executed against 0x393BAB06 before, `DOKSD` 0x320F1DE8 against 0x320F1DE3), now none does (`tests/Statistics.Tests/PreloopSurveyTests`, `PreloopSurvey.approved.txt`, empty); on 120 drawn loops of one to sixteen fractions the executable and the listing's stores agree on every bit and each store turned off parts from it on 8 to 27 (`cycle_plane_oracle.py selftest`); the five reference formulations are untouched (`P33` is their one `JZZ = 2` file and agreed before) | reproduced | none | not reachable |
+| 875–879, 975–981, 996, 1016, 1025, 1097, 1105 | numeric | Three runtime routines the listing calls were not read: `_FIIfexp_` (DFORRT) behind `**0.3333` at 1016, `_CIsqrt` (MSVCRT, a system DLL the archive does not ship) behind `_FIsqrt`, the `SQRT` and `**0.5` of 875–879, 975–981, 996, 1097 and 1105, and `_FXAMOD` (DFORRT) behind `mod` at 1025. The port computes `Math.Pow`, `Math.Sqrt` and `a − ⌊a/b⌋·b`, and the oracle stubs the three with the same calls (`CyclePlaneListing.map.txt`, the `call` rows of its `oracle` section), so no check sees a difference there; a correctly rounded square root at 53 bits and an exact `mod` of positive operands are assumptions, a power of a binary32-rounded product showing only at a binary32 tie ("## Report", declared residuals). | not measured | declared, not reproduced | none | unchanged |
+| 261–277, 825–829, 1021–1065 | numeric | `Ddokmax`, `AK4`, `Di` and `Dj` are REAL*4 in the original; `Ndok`, `Nkarm`, `Ncat` are the exact truncated quotients of those binary32 values plus 2, computed with integer mantissa arithmetic, and the same treatment covers `Categories.cs`'s own `DPRow` (line 825) and `SmallParticles.cs`'s own whole-fraction count `int(real(kilo)/ak2)` (`## Invariants`, "Array sizes from binary32 values"). | measured: printed lengths `Ndok` = 71 (C166, T56), 23 (CSPX01), 20 (P18050), 62 (PSAN01), which `double` operands miss; the worst-case `DPRow` quotient sits no closer than 1.68e-5 from an integer boundary (HMX, C166, T56) against a binary32 relative epsilon near 6e-8, so no printed length moves; every formulation's own `AK2` is an exact integer (2.0), so the whole-fraction count carries no rounding risk for the archive. | reproduced | none | unchanged |
+| 1014, 1016, 1704, 1716 | numeric | The truncated literals 3.14 (in 3/3.14 and 24/3.14, 1704, 1716) and 3.14159 (1014, 1016) stand for π, and the exponent 0.3333 (1016) for ⅓ ("## Corrected model", `ExactConstants`). | measured 2026-10-18 under `ExactConstants`: `ZSS`, so λ, is the `None` value times 3.14/π, and `mp` (`da_coef`) moves by −8.6e-5 to −1.15e-4 relative on the constructed cycle of each of the 49 shipped files (`tests/Statistics.Tests/ExactConstantsTests`). | reproduced | none | fixed (ExactConstants) |
+| 399–400, 405 | algorithm | Under JZZ = 2 the DOKSD loop sums the mass-uniform law's second moment, Σ GDOK·(l² + lu + u²)/3, and line 405 subtracts this law's DOKM², so DOKSD is neither law's variance ("## Constraints", the size-law bullet; "## Corrected model", `DoksdConsistent`). | measured 2026-10-18 under `DoksdConsistent`: P33's `Dok43sd` 75.45 → 112.66 µm and P2's from `NaN` (−5.71e-10 m²) to 8.07 µm (`tests/Statistics.Tests/DoksdConsistentTests`). | reproduced | none | fixed (DoksdConsistent) |
+| 1001–1006 | algorithm | gdokleft = FMDOK(int(Dmin/Di)+1)·GGG + Σ_{SFR=0} GDOK·GGG counts an SFR = 0 fraction's mass below b = int(Dmin/Di)·Di twice; pocket-forming mass in [b, Dmin), when Dmin is no multiple of Di, is counted nowhere, a resolution limit both models keep ("## Corrected model", `GdokleftOnce`). | measured 2026-10-18 under `GdokleftOnce`: PSAN02 read with its pocket-forming flags at `Dmin` 20 µm, `Di` 10 µm: `gdokleft` 0.0119 lower, 0.0175 of the oxidizer (`tests/Statistics.Tests/GdokleftOnceTests`). | reproduced | none | fixed (GdokleftOnce) |
+| 1047 | algorithm | zdoksmall, a share of the drawn coarse oxidizer vdokstr, is scaled by GGG instead of GGG − gdokleft, the share 1050 and 1053 give that oxidizer ("## Corrected model", `ZdoksmallCoarseShare`). | measured 2026-10-18 under `ZdoksmallCoarseShare`, on totals of P312's own mass CDF at its defaults (`gdokleft` 0.122): a cell of `pdoksmall` moves by at most 21.6 % relative (`tests/Statistics.Tests/CorrectedCycleEvidenceTests`). | reproduced | none | fixed (ZdoksmallCoarseShare) |
+| 1145, 1150 | algorithm | Every cycle ≥ 1 divides the stored Vdok_total cells and Vdok_total2 by 1 − gdokleft/GGG in place, so each later cycle divides the earlier cycles' particles again (## Invariants, "In-place rewrites of the totals, as the original"; "## Corrected model", `VdokTotalOnCopy`). | measured 2026-10-18 under `VdokTotalOnCopy`, on constant totals of P312's own mass CDF (`gdokleft` 0.122): `None`'s `DolM2` and `DolM3` are the flag's times 0.774 in cycle 2 and 0.599 in cycle 3, the divisor 1 − gdokleft/GGG and its square, cycle 1 equal (`tests/Statistics.Tests/VdokTotalOnCopyTests`). | reproduced | none | fixed (VdokTotalOnCopy) |
+| 947–959 | algorithm | The last-row merge does not return to label 600: the new last row keeps the statistics of before the merge and is never checked again (## Invariants, "The merge loop of the original, literally"; "## Corrected model", `CategoriesLastRowRecomputed`). | measured 2026-10-18 under `CategoriesLastRowRecomputed`, on the listing oracle's drawn totals, 61 cycle draws of 26 cases, each a fresh state (not a Monte Carlo run): 10 of the 61 move the report, `DPRow` in two, both KB396 (2 → 1), and where a last-row merge left a row whose statistics were those of an empty row (`Dokp43` 0) the flag reports its quotient (P18050 0 → 1.56e-4, PSAN02 0 → 4.21e-4, KB396 0 → 2.57e-4), elsewhere by under 0.3 %; none of the references in the oracle, PSAN02n, HMX and HPEPA3, moves (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`); in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no headline shift: 22 differing cells on P33, `DPRow` −2.1 ± 1.4 % | reproduced | none | fixed (CategoriesLastRowRecomputed) |
+| 869–871, 915, 947 | algorithm | A category row with QDOKSS = 0, or MDOK3 or MDOK4 ≤ 1e-30, gets Epsydok = 0 and so survives every merge test ("## Categories"; "## Corrected model", `CategoriesEmptyRowsMerged`). | measured 2026-10-18 under `CategoriesEmptyRowsMerged`, on the listing oracle's drawn totals, 61 cycle draws of 26 cases, each a fresh state (not a Monte Carlo run): 13 of the 61 move the report, `DPRow` falling by 1 to 10 (BK10 33 → 27, AK157a 65 → 55) and an empty row's `Dokp43` of 0 becoming the merged row's quotient (HPEPA10, P18050, PSAN02, KB396, AK157a, HPEPA3 cycle 1: 0 → 2.6e-4 to 5.8e-4); of the references in the oracle HPEPA3 moves, 26 → 23 and 23 → 18 rows, PSAN02n and HMX do not (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`); in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`) no differing cell on the five references, 28 on PSAN02 read with its pocket-forming flags | reproduced | none | fixed (CategoriesEmptyRowsMerged) |
+| 718, 963–996 | numeric | `QKS1` is stored in REAL*4 at line 718 of the particle loop, `QKS/real(QKSS)`, and read by the plane; the executable loads `QKSS` (INTEGER*8) exactly with `fild qword` and divides each cell by it, rounding only the quotient (0x40B7FA–0x40B8AF, read from the excerpt, not run), which `CycleStatistics.Pockets` computes as `r32(q / QKSS)` and the oracle injects as `f32(q / QKSS)`. The reading before 2026-10-03, `f32(q / f32(QKSS))`, was a different expression above 2^24 ("## Report", declared residuals). | measured 2026-10-03: the injection and `Compute` agree bit for bit on every cycle of the oracle's cases, and at 2^24 + 1 `Compute`'s cells are the exact quotient rounded once and one binary32 unit from the rounded-divisor reading (`tests/Statistics.Tests/Qks1NormalisationTests`); 110 of the 175 archived outputs print a `QKSS` above 2^24, among the references HMX 42 596 514 and HPEPA3 24 649 481, where the rounded-divisor reading would have moved 56 % and 48 % of the cells by a unit; nothing moves | reproduced | none | not reachable |
+| 792–797, 1704, 1716, 1723, 1725, 1727 | numeric | `epsdokfr`/`epsalldok(kilo)` mixes REAL*4 (`GDOK`, `DDOK`, `ZS`, `epsalldok`) with REAL*8 (`ZX`/`Z`) in the fraction-share normalization and the accuracy comparison, so the mathematically-exact-zero case `NMM = 1` does not cancel to zero (`## Report`, "Decisions where the port departs from a transcription"). | measured: `epsdokfr[0]` is bit-for-bit `0.270E-07` across the `inpt` reference run and all 32 lagged/independent replicas (`tests/Fixtures/references/inpt/results.m.txt`, `tests/Fixtures/replicas-{lagged,independent}/inpt/*.m.txt`) — unchanged despite each replica's different accepted-particle and attempt counts, ruling out an accumulated-count cause — and independently `0.263E-07` on `p350` (`tests/Fixtures/Legacy/outputs/r4.m.txt`, unrelated fraction bounds and run size); both values sit at the scale of one REAL*4 rounding unit near 1 (2⁻²⁴ ≈ 5.96e-8), the signature of a fixed precision floor rather than a formulation-specific coincidence. Beyond the cosmetic `epsdokfr` reading, the same REAL*4 chain (`ZS`, the literal-folded coefficients) moves the fraction thresholds `Z11`/`ZX` and λ themselves under `PrecisionKind.Original`, `Binary64` the default and unaffected ("## Setup plane"; `tests/Statistics.Tests/SetupPlaneTests`). | reproduced | none | not reachable |
+| `src/Particle/BOOT.md`, "## Accumulators", `Allvdok`'s own row | numeric | `Allvdok`'s REAL*4 saturation (`Particle`'s own table) reaches `Allvdokso`/"fmdok" and `Alldok432`/`Dok43all[1]` directly (789–819), and `pdoksmall` (1050–1053) through `gdokleft`, itself fed by the internal cumulative `fmdok` array Fortran's own `FMDOK` recurrence builds — never the printed "fmdok", a different, per-cell field ("## Report", "REAL*4 accumulation, carried through"). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Re-measured 2026-09-21 at the original's own per-draw granularity (⚠ "## Report", "REAL*4 accumulation, carried through"; supersedes the 2026-09-20 figures below): against `StatisticalCriterion.Compare`'s own band for each formulation's worst reachable cell, `fmdok` is large enough to matter on three of five formulations (HPEPA3 1921%, PSAN02n 201%, HMX 3143%) and rules out on the other two (inpt 1.0%, P33 1.7%); `Dok43all[1]` is large enough to matter on HPEPA3 (403%) and HMX (111%), inconclusive on PSAN02n (15%), and rules out on inpt (0.1%) and P33 (0.6%) — table and method in `## Report` (`tests/Statistics.Tests/AccumulationConsequenceTests.AllvdokErrorPropagatesToAllvdoksoAndAlldok432`); `pdoksmall` via `gdokleft` is unaffected by this re-measurement, still 0% of band on all five formulations — an exact zero driven by the real Allvdok shape, not by the epsilon magnitude (`## Report`, `src/Statistics/HISTORY.md#gdokleft-allvdok-reachable-cell-bound`, `tests/Statistics.Tests/AccumulationConsequenceTests.AllvdokErrorPropagatesToPdoksmallThroughGdokleft`, `.AllvdokErrorPropagationThroughGdokleftIsWiredWhenTheReachableCellIsNonzero`). | reproduced | none | not reachable |
+| `src/Particle/BOOT.md`, "## Accumulators", `Vdokstr`'s own row | numeric | `Vdokstr`'s REAL*4 saturation (`Particle`'s own table) reaches `pdoksmall` (1021–1065) through `zdoksmall`/`ddoksmall`/`vdoksmall`, the dominant channel of the three quantities under suspicion; `VdokTotal`/`VdokTotal2` (1137–1152) reach only `DolM2`/`DolM3`, never `gdokleft`, `vdokleft` or `pdoksmall` — the chain handed down for verification named them on that path, and the port's own line map shows they are not ("## Report", "REAL*4 accumulation, carried through"). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Re-measured 2026-09-21 at the original's own per-draw granularity (⚠ "## Report", "REAL*4 accumulation, carried through"; supersedes the 2026-09-20 figures below): against `StatisticalCriterion.Compare`'s own band for each formulation's worst reachable, perturbable cell, `pdoksmall` is now large enough to matter on HPEPA3 (587%, was: rules out at 1.8%) and HMX (2029%, was: inconclusive at 22.6%), rules out on P33 (2.1%), the channel is structurally closed for `inpt` (its own real distribution carries no draws inside the window `Ak2` lets the model read), and for PSAN02n reaches only the array's own dropped, unprinted tail cell, leaving nothing to explain for any printed cell — table and method in `## Report` (`tests/Statistics.Tests/AccumulationConsequenceTests.VdokstrErrorPropagatesToPdoksmall`, `.VdokTotalAndVdokTotal2DoNotReachPdoksmallFmdokOrDok43all`). | reproduced | none | not reachable |
+| 671–703 | numeric | `DPmax_cor`'s own per-attempt update (`Particle`'s own accumulator, `Particle/API.md`, "Real-valued record") is gated by two `pdoksmall`-dependent checks ("Var#1"/"Var#2", lines 683, 699) inside the same attempt that updates the unconditional `DPmax` (line 673, no gate); a `pdoksmall` value that differs from the original's — the row above — flips whether one of the rare largest-radius pockets clears the gate, without ever touching `DPmax` itself ("## Report", the resolved escalation). | Reproduced by `PrecisionKind.Original` since 2026-09-21; the figures below are `Binary64`'s. Measured: HMX's own archived `fmkarm_cor`/`fmkarm_cor2`/`fqkarm_cor` print at 88 elements (`int(DPmax_cor/Di) + 2`) against the port's 82 — six cells, three orders of magnitude past a rounding-boundary flip; absent on the other four reference formulations, where the port's `DPmax_cor`-driven length matches the archive exactly (`tests/Output.Tests/PocketPrintLengthTests`). Confirmed, not merely fitted, by a dose-response measurement on HMX at `N`, `N/10`, `N/100` (`--n` override, `run_original.py`/`run_port.py`): the length matches exactly (56/56, 77/77) at the two reduced `N` where `pdoksmall`'s worst considered cell is within 0.24%/3.1% of the original, and misses only at the shipped `N`, where that cell has diverged 64.6% — the length parts company exactly where `pdoksmall` does ("## Report" above, the dated dose-response table). | reproduced | none | not reachable |
 
 ## Acceptance criteria
 
@@ -1077,5 +1212,10 @@ on PSAN02n in part → `HISTORY.md#accumulation-consequence-worst-cell-2026-09-2
 
 - No reading of per-particle records: only the run's totals.
 - No formatting, no µm scaling of output.
-- No clearing or copying of the totals behind the caller's back: the in-place rewrites
-  of `## Invariants` are the only writes.
+- No clearing or copying of the totals behind the caller's back: under the `Original`
+  model the in-place rewrites of `## Invariants` are the only writes; the one copy is
+  the per-cycle copy of `CategoriesOnCopy` and `VdokTotalOnCopy`, which writes none.
+
+  ⚠ 2026-10-18: was "the in-place rewrites … are the only writes" for every model, now
+  the `Original` model's → HISTORY.md#corrected-taboo-totals-2026-10-18
+- No listing-driven helper call in a corrected statement (`## Corrected model`).

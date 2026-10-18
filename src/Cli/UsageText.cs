@@ -29,6 +29,7 @@ internal static class UsageText
           --mode reference|batched          --accelerator auto|cpu|cuda
           --layout original|independent     --batch <n>          --seed <n>
           --precision binary64|original       (original: sequential only)
+          --model original|corrected          (corrected: binary64 only)
           --output <path>                   --json <path>        --quiet
           --attempts-per-launch <n>         --max-attempts-per-particle <n>
           --neighbour-budget <n>            --record-budget-bytes <n>
@@ -38,6 +39,10 @@ internal static class UsageText
         its setup plane and its per-cycle plane (binary64 is the default and matches every
         prior run; `double` is still accepted as an older spelling of binary64);
         --precision original is refused with batched mode.
+
+        --model corrected fixes the original's explicit errors, each marked fixed in
+        docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct); original, the
+        default, is the original's model.
 
         Model parameters, the original's menu (canonical name, alias):
           --dmin <d>            --di <d> (--cell-size)      --dj <d> (--category-step)

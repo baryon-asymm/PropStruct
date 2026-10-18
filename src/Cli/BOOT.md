@@ -184,7 +184,8 @@ which is worse than an awkward name.
 
 Run options, which the original had no menu for, carry descriptive names only:
 `--mode reference|batched`, `--accelerator auto|cpu|cuda`, `--layout original|independent`,
-`--precision binary64|original`, `--batch <n>`, `--seed <n>`, `--output <path>`,
+`--precision binary64|original`, `--model original|corrected` (designed and implemented 2026-10-18,
+"## Corrected model"), `--batch <n>`, `--seed <n>`, `--output <path>`,
 `--json <path>`, `--quiet`, and the budgets `--attempts-per-launch`,
 `--max-attempts-per-particle`, `--neighbour-budget`, `--record-budget-bytes`, plus
 `--continued-streams` (accepted only with `--mode batched --batch 1`; otherwise an
@@ -250,9 +251,9 @@ the binary32 echoes `Statistics` derives from the value as written.
 
 `run` prints one line per finished cycle to **stderr** (`cycle k of K, particles n`) from
 the `IProgress<CycleProgress>` of `Simulation`, and one summary line at the end (mode,
-accelerator, batch size, layout, seed, total attempts, elapsed, and the full path of
-every file written). `--quiet` suppresses the progress and the summary, never an error.
-No carriage-return animation. Stdout carries nothing for `run`, so that a shell redirect
+accelerator, batch size, layout, under `Corrected` the model, seed, total attempts,
+elapsed, and the full path of every file written). `--quiet` suppresses the progress
+and the summary, never an error. No carriage-return animation. Stdout carries nothing for `run`, so that a shell redirect
 of stdout is empty on success; `devices`, `defaults` and the help and version texts
 print to stdout. Numbers on stderr are formatted with the invariant culture as well; no
 number of `results.m` is formatted here, that is `Output`'s.
@@ -293,79 +294,38 @@ through the token. Exit code 130 is tested that way: sending a real Ctrl+C to a 
 process is unreliable in a test runner, and a flaky test is worse than a declared gap —
 there is no process-level Ctrl+C test, by decision.
 
+## Corrected model
+
+Designed and implemented 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+[Simulation](../Simulation/API.md), "## Model kind"); the fixes are the library's, and
+this node only names the option.
+
+- **The flag.** `--model original|corrected`, canonical name only, no alias: a
+  `FlagCatalog` entry with owner `SimulationOptions`, property
+  `nameof(SimulationOptions.Model)`, `FlagKind.Enum`, values `original` →
+  `ModelKind.Original` and `corrected` → `ModelKind.Corrected`; `RunOptionsBuilder`
+  sets it as it sets `Precision`. The default is `SimulationOptions`' own, `original`
+  ("Defaults are the original's"), so every existing command line runs as before.
+  `--model`, not `--kind` or `--variant`: `--ivar` is the original's calculation
+  variant, and the value says which model, not how faithfully it is computed.
+- **No flag for the seam.** `SimulationOptions.Corrections` is internal; the reflected
+  flag coverage reads public properties only, so it neither needs nor admits a flag,
+  and a subset of the fixes never reaches a file the tool writes.
+- **The refusal is the library's.** `--model corrected --precision original` is refused
+  by `Simulator.Create` as `InvalidSetup`; the existing branch echoes its message, which
+  names both halves, and exits 2 ("The tool validates form, never meaning").
+- **Usage.** The run options gain the line `--model original|corrected
+  (corrected: binary64 only)` and one sentence: `corrected` fixes the original's
+  explicit errors, each marked fixed in docs/ORIGINAL-DEFECTS.md
+  (github.com/baryon-asymm/PropStruct), the page the footer line of `results.m` cites the
+  same way; `original`, the default, is the original's model.
+- **The summary.** Under `Corrected` the summary line gains ` model=Corrected` after
+  `layout=…`; under `Original` it is the line it was, byte for byte. Progress lines
+  are unchanged.
+
 ## Acceptance criteria
 
-- [x] 2026-09-20: every property of `ModelParameters` **and of `SimulationOptions`** has
-      a flag, and every flag has a property: the two lists are produced by reflection
-      inside the test and compared both ways, never typed
-      (`tests/Cli.Tests/ReflectedFlagCoverageTests`). `SimulationOptions.Parameters` is
-      the one property deliberately without a flag (`FlagCatalog.DeliberatelyUnflagged`,
-      asserted to hold exactly that one entry with its reason).
-- [x] 2026-09-20: `propstruct defaults` prints exactly `ModelParameters.Default`, compared
-      property by property by the same reflected list, canonical name and aliases in two
-      columns (`tests/Cli.Tests/ReflectedFlagCoverageTests.DefaultsReportMatchesModelParametersDefaultPropertyByProperty`).
-- [x] 2026-09-20: each of the six exit codes is produced by a test, each by its own
-      cause; 130 is produced in-process through the cancellation token
-      (`tests/Cli.Tests/ExitCodeTests`).
-- [x] 2026-09-20: every diagnostic of the enumeration is produced by a test: the test
-      enumerates the enumeration, so a new diagnostic without a test turns it red
-      (`tests/Cli.Tests/DiagnosticCoverageTests.EveryDiagnosticEnumMemberHasAProducingCommandLine`).
-- [x] 2026-09-20: the tool performs no semantic validation of its own: a value the
-      library refuses comes back as `InvalidSetup` and exits 2, shown by a test that
-      passes an out-of-range parameter — `--dmin 1000` on the `inpt`-shaped baseline
-      formulation, far beyond its largest fraction bound
-      (`tests/Cli.Tests/InvalidSetupTests`).
-- [x] 2026-09-20: `--help`, `--help` after each verb and `--version` print to stdout and
-      exit 0 (`tests/Cli.Tests/ProgramTextAndExitCodeTests`).
-- [x] 2026-09-20: `propstruct run` on a reference formulation (`inpt`) writes a
-      `results.m` byte-identical to the one the library writes for the same options
-      (`Output`), time line excluded (`tests/Cli.Tests/ResultsMByteIdenticalTests`,
-      `Category=Long`).
-- [x] 2026-09-20: a `.dat` with `GSV ≠ 2` is refused with a message naming the line,
-      exit 2 (`tests/Cli.Tests/ExitCodeTests.ExitTwoAMalformedInputFileNamesTheLine`,
-      against `tests/Fixtures/cases/input/bad-gsv.dat`).
-- [x] 2026-09-20: `--dmin 10e-6` and `--dmin 10` produce different `ModelParameters`,
-      and the first equals the default: asserted on `Length.AsWritten`
-      (`tests/Cli.Tests/LengthAsWrittenTests`). (`10e-6` and `0.00001` are the same
-      run: the flag carries the parsed `double`, not the text — same file,
-      `TenEMinusSixAndZeroPointZeroZeroZeroZeroOneAreTheSameRun`.)
-- [x] 2026-09-20: every diagnostic of the parser is asserted by text, not by exit code
-      alone (`tests/Cli.Tests/DiagnosticCoverageTests`, `tests/Cli.Tests/ParserTests`).
-- [x] 2026-09-20: the tool is proven not to read the console: with stdin closed, every
-      verb still finishes (`tests/Cli.Tests/StdinClosedTests`, a real process run with
-      its standard input closed); the claim itself is a source-level scan for no
-      reachable `Console.Read*`/`Console.In` under `src/Cli`
-      (`tests/Cli.Tests/SourceCodeTests.NoConsoleReadAppearsUnderSrcCli`) — a closed
-      stdin alone makes `Console.ReadLine` return `null` rather than block, so it
-      cannot by itself tell "never reads" from "reads once and moves on".
-- [x] 2026-09-20: Escalation (AGENTS.md §11, found while choosing an `InvalidSetup`-
-      triggering value for `tests/Cli.Tests/InvalidSetupTests`) raised and closed by the
-      owning node: `ModelParameters.Default with { NnMax = 0.0 }` now fails the setup
-      with `RunStatus.InvalidSetup`, so the tool exits 2
-      (`src/Statistics/BOOT.md`, `SetupStatus.InvalidNnWindow`).
-
-  ⚠ 2026-09-20: this item first claimed that such a run "crashes the whole host
-      process", and called it a violation of the root invariant "Failures are values".
-      Measured by the owning node: nothing crashes. `NnMax ≤ 0` makes the post-loop
-      acceptance test fail for every finite `nn`, so no particle is ever accepted and
-      the run spends the whole per-particle attempt cap — four minutes on one particle,
-      then a correct `AttemptCapExceeded`. The invariant held; what failed was the
-      time it took to say so, and under a test timeout that is indistinguishable from a
-      dead process. The observation was right, its diagnosis was not: an escalation
-      states what was seen, and this one stated a cause it had not measured.
-- [x] 2026-09-21: `--precision` reaches `SimulationOptions.Precision` and no other
-      property, its default (`binary64`, spelled `double` until 2026-09-24) leaves every existing invocation unchanged, and
-      `--precision original` combined with batched mode exits 2 naming both halves of
-      the conflict, through the existing `InvalidSetup` route with no new branch
-      (`tests/Cli.Tests/ReflectedFlagCoverageTests`, `FlagRoundTripTests` — both already
-      generic over `FlagCatalog`, so the new flag needed no new test code there —
-      and `tests/Cli.Tests/InvalidSetupTests.PrecisionOriginalWithBatchedModeExitsTwoNamingBothHalves`).
-      Run against `src/Simulation`'s own finished implementation once it merged onto
-      this branch (an agent's working branch): 135 of 135 `tests/Cli.Tests`
-      cases green, `PropStruct.sln`'s fast set (`Category!=Long`) green throughout.
-
-⚠ 2026-09-24: cited test names renamed for CA1707, meaning unchanged, no criterion
-re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
+→ [ACCEPTANCE.md](ACCEPTANCE.md)
 
 ## Taboos
 

@@ -58,4 +58,139 @@ public class BridgeGeometryTests
             Assert.Equal(0.0, volume);
         }
     }
+
+    // The geometry of the BridgeFrustum cases (ACCEPTANCE.md), Volume's own arguments in metres:
+    // r1 = 50 um, rk = 40 um, a = 5 um; R2/R1 is the case. `bb` is positive at all three ratios,
+    // so the volume is computed rather than the JJ = 0 return taken, and the original comes out
+    // 69 times short at 0.998 and -1.17e-13 m^3 at 1 (computed 2026-10-18).
+    private const double R1 = 50e-6;
+    private const double Rk = 40e-6;
+    private const double A = 5e-6;
+
+    private static readonly double[] Ratios = [0.6, 0.998, 1.0];
+
+    private const int SimpsonIntervals = 4000;
+
+    /// <summary>
+    /// <c>BridgeFrustum</c>, right: the volume under the flag equals an independent numerical
+    /// quadrature of the same solid, within 1e-9 relative, at <c>R2/R1</c> of 0.6, 0.998 and 1,
+    /// at the gap <c>a = 5 µm</c> and at the clamped gap <c>a = 0</c> that every jammed
+    /// neighbour reaches (Fortran lines 572-576, <c>AA &lt;= 0</c> gives <c>AA = 0</c>), where
+    /// the two caps meet at one point of the axis. The solid is the frustum between the two
+    /// chord circles less the two caps; the quadrature integrates its cross-section (an area,
+    /// <c>π·ρ(z)²</c> less the caps' own discs) along the axis of the two spheres, with the chord
+    /// circles placed from the coordinates of the triangle of the three centres, so it shares
+    /// no formula with <see cref="BridgeGeometry"/>.
+    /// </summary>
+    [Theory]
+    [InlineData(0.6, A)]
+    [InlineData(0.998, A)]
+    [InlineData(1.0, A)]
+    [InlineData(0.6, 0.0)]
+    [InlineData(0.998, 0.0)]
+    [InlineData(1.0, 0.0)]
+    public void BridgeFrustumMatchesAnIndependentQuadratureOfTheSolid(double ratio, double gap)
+    {
+        var quadrature = QuadratureOfTheBridge(R1, ratio * R1, Rk, gap);
+
+        var jj = BridgeGeometry.Volume(R1, ratio * R1, Rk, gap, true, out var volume, out _);
+
+        Assert.True(jj);
+        Assert.True(quadrature > 0.0, $"ratio {ratio}, gap {gap}: the quadrature is {quadrature}.");
+        Assert.True(
+            Math.Abs(volume - quadrature) <= 1e-9 * quadrature,
+            $"ratio {ratio}, gap {gap}: volume {volume} against the quadrature {quadrature}.");
+    }
+
+    /// <summary>
+    /// <c>BridgeFrustum</c>, red: the original's difference of cones has a negative volume at
+    /// <c>R2 = R1</c> and is more than ten times short of the same quadrature at
+    /// <c>R2/R1 = 0.998</c> (the old signature and the flag unset are the same call).
+    /// </summary>
+    [Fact]
+    public void TheOriginalVolumeIsNegativeAtEqualRadiiAndMoreThanTenTimesShortNearThem()
+    {
+        Assert.True(BridgeGeometry.Volume(R1, R1, Rk, A, false, out var atEqualRadii, out _));
+        Assert.True(atEqualRadii < 0.0, $"R2 = R1: the original volume is {atEqualRadii}.");
+
+        var nearEqual = 0.998 * R1;
+        Assert.True(BridgeGeometry.Volume(R1, nearEqual, Rk, A, out var original, out _));
+        var quadrature = QuadratureOfTheBridge(R1, nearEqual, Rk, A);
+        Assert.True(
+            original * 10.0 < quadrature,
+            $"R2/R1 = 0.998: the original volume {original} against the quadrature {quadrature}.");
+    }
+
+    /// <summary>
+    /// <c>JJ</c> and <c>bb</c> are bit-equal with the flag set and unset on every case, the two
+    /// <c>JJ = 0</c> returns included: every case of <c>bridge_geometry_volume.json</c> and the
+    /// three radius ratios above, at the gap above and at the clamped gap 0.
+    /// </summary>
+    [Fact]
+    public void JjAndBbAreBitEqualUnderBothVolumesOnEveryCase()
+    {
+        var cases = FormulaCaseFiles.ReadBridgeGeometryCases()
+            .Select(c => (c.R1, c.R2, c.Rk, c.A))
+            .Concat(Ratios.Select(ratio => (R1, ratio * R1, Rk, A)))
+            .Concat(Ratios.Select(ratio => (R1, ratio * R1, Rk, A: 0.0)))
+            .ToArray();
+
+        Assert.Contains(cases, c => c.A >= 2.0 * c.Rk);
+        foreach (var (r1, r2, rk, a) in cases)
+        {
+            var jjOriginal = BridgeGeometry.Volume(r1, r2, rk, a, false, out _, out var bbOriginal);
+            var jjFrustum = BridgeGeometry.Volume(r1, r2, rk, a, true, out _, out var bbFrustum);
+
+            Assert.Equal(jjOriginal, jjFrustum);
+            Assert.Equal(BitConverter.DoubleToInt64Bits(bbOriginal), BitConverter.DoubleToInt64Bits(bbFrustum));
+        }
+    }
+
+    /// <summary>
+    /// The volume of the bridge between spheres of radii <paramref name="r1"/> &gt;= <paramref name="r2"/>
+    /// a gap <paramref name="a"/> apart, with a tangent pocket sphere of radius <paramref name="rk"/>:
+    /// the frustum between the two circles where the pocket touches the spheres, less the two
+    /// spherical caps, by composite Simpson quadrature of the cross-section along the axis.
+    /// </summary>
+    private static double QuadratureOfTheBridge(double r1, double r2, double rk, double a)
+    {
+        // Centres on the axis: A at 0, C at ac; the pocket's centre B at (bx, by) from the triangle.
+        var ab = r1 + rk;
+        var bc = r2 + rk;
+        var ac = r1 + r2 + a;
+        var bx = (ab * ab + ac * ac - bc * bc) / (2.0 * ac);
+        var by = Math.Sqrt(ab * ab - bx * bx);
+
+        // The circle where the pocket touches sphere 1 (the point of AB at distance r1 from A) and
+        // sphere 2 (the point of CB at distance r2 from C): axial position and radius.
+        var z1 = r1 * bx / ab;
+        var rho1 = r1 * by / ab;
+        var z2 = ac - r2 * (ac - bx) / bc;
+        var rho2 = r2 * by / bc;
+
+        double CrossSection(double z)
+        {
+            var rho = rho1 + (rho2 - rho1) * (z - z1) / (z2 - z1);
+            var area = rho * rho;
+            area -= z <= r1 ? r1 * r1 - z * z : 0.0;
+            area -= z >= ac - r2 ? r2 * r2 - (ac - z) * (ac - z) : 0.0;
+            return Math.PI * area;
+        }
+
+        // The caps start at r1 and at ac - r2, where the integrand is not smooth: integrate the
+        // three pieces apart.
+        return Simpson(CrossSection, z1, r1) + Simpson(CrossSection, r1, ac - r2) + Simpson(CrossSection, ac - r2, z2);
+    }
+
+    private static double Simpson(Func<double, double> f, double lower, double upper)
+    {
+        var h = (upper - lower) / SimpsonIntervals;
+        var sum = f(lower) + f(upper);
+        for (var i = 1; i < SimpsonIntervals; i++)
+        {
+            sum += (i % 2 == 0 ? 2.0 : 4.0) * f(lower + i * h);
+        }
+
+        return sum * h / 3.0;
+    }
 }

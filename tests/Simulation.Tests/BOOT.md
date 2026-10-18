@@ -15,6 +15,7 @@ The definition of what "`Simulation` is ready" means.
 | L0/L1 | `RunDiagnostics.AttemptsPerLaunch` is the effective budget (1 in reference mode, the option otherwise), not the option unconditionally; a smaller budget forces more launches on a formulation needing more than one attempt | `SmallFormulation`/HPEPA3 at budgets 1, 1024 and reference mode | ✅ 2026-09-28: `AttemptsPerLaunchDiagnosticsTests` |
 | L2 | reference mode on HPEPA3 reproduces the reference's printed counters | `tests/Fixtures/references/HPEPA3/results.m.txt` through `tests/Harness` | ✅ 2026-09-19: `Hpepa3CounterTests` (figures in `src/Simulation/BOOT.md`, "## Counter check") |
 | L2 | the statistical criterion on the five reference formulations, realigned again 2026-09-24 to root's rate-based pass condition (root BOOT.md, "the pass condition compares failure rates, not single runs") | link 1 no longer lives here at all — it is a *rate* over sixteen seeds, owned by `tests/Harness.Tests/RateCriterionTests` over the pregenerated `tests/Fixtures/rate-table.json`; this node keeps only an exact seed-0 snapshot (a change detector, not a reproduction claim) and link 3: batched `Binary64` against sequential `Binary64`, statistically, on the port's own replicas, CPU accelerator and CUDA (`StatisticalCriterion.TwoSampleBiasOfSets`, `tests/Harness/API.md`) | ✅ 2026-10-01: `StatisticalCriterionTests`, 40 cases (30 `Category=Long`: 20 seed-0 snapshot, 10 link 3), all pass — see "## Statistical criterion measurement (2026-09-24)" below. The 2026-09-23 ratchet-based measurement (link 1 as a per-run comparison against the original's own replicas, retired the same day audit D5 named it) is superseded, `HISTORY.md#statistical-criterion-measurement-2026-09-23-link-1`. |
+| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 33 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-18: `OriginalModelGuardTests`, 34 cases (33 `Category=Long`), "## The Original-model guard" |
 
 ⚠ 2026-09-19: the ✅ marks of this table were first dated 2026-09-18 by a session that
 ended at a usage limit, and two of them did not hold when this session started. The
@@ -237,7 +238,9 @@ makes, not a claim that CUDA agrees with the CPU accelerator cell for cell.
 
 - [Simulation](../../src/Simulation/API.md) — what is being checked.
 - [Input](../../src/Input/API.md) — reading the formulations.
-- [Statistics](../../src/Statistics/API.md) — `CycleReport`, for the reflection check.
+- [Statistics](../../src/Statistics/API.md) — `CycleReport`, for the reflection check;
+  `Setup.Prepare`, whose `ModelSetup` ratios `ModelKindTests` compares with the result's.
+- [Particle](../../src/Particle/API.md) — `CorrectionSet`, the seam's flags.
 - [Execution](../../src/Execution/API.md) — `AcceleratorKind`, `BatchStatus` for the
   status mapping check.
 - [Output](../../src/Output/API.md) — writes the port's `results.m` for the criterion
@@ -258,68 +261,7 @@ Outside the tree: xunit.
 
 ## Acceptance criteria
 
-- [x] Every row of the levels table is green, with a date and the names of the tests.
-      (2026-09-24: the statistical-criterion row realigned again — the seed-0 ratchet
-      retired for an exact snapshot, link 1's own reproduction claim moved to
-      `tests/Harness.Tests/RateCriterionTests` as a rate over sixteen seeds,
-      "## Statistical criterion measurement (2026-09-24)" above. "Green" here means
-      "the seed-0 output has not moved since approval, and link 3 still agrees", not
-      "the underlying science has no open question" — link 2's own still-missing HMX
-      multi-seed measurement (root BOOT.md) is unaffected by this task and remains
-      exactly as root records it.)
-- [x] Every check is proven non-degenerate by a recorded mutation (AGENTS.md §13).
-      (2026-09-19, "## Mutations" below; 2026-09-23 adds link 3's CPU positive control;
-      later the same day, link 3's CUDA row adds its own positive control and its own
-      mutation of the row itself, same section; 2026-09-24 adds the line-map coverage
-      row's own mutation and the seed-0 snapshot's own one-character-edit proof, same
-      section — the ratchet's own former proof moved to `HISTORY.md` with the rest of
-      the retired link-1 text; 2026-09-28 adds `AttemptsPerLaunchDiagnosticsTests`' two
-      echo mutations, its own positive control, and the JSON round trip's own
-      `[JsonIgnore]` mutation in `tests/Output.Tests`, same section.)
-- [x] 2026-10-03: the per-cycle plane under `Original` passes its controls, frozen
-      before its code (`src/Statistics/BOOT.md`, "## Report"), on the seed-0 rate runs
-      against the original's archived `results.m` and the frozen pre-change runs
-      `Snapshots/CyclePlaneBaseline` (rate runs of 514a157, byte copies)
-      (`CyclePlaneSeedZeroControlsTests`, 39 cases): P1 `da_coef` on all five, P2 HMX
-      `epsx(1..4)`, P3 P33 `epsx(1..6)`, P4 HMX `epsalldok` and `epsdok(2)` and P33
-      `epsalldok`, P5 inpt `epsdok43_n[0..4]` print the original's value; N1 HMX
-      `epsdokfr` still does; N2 no cell the baseline printed exactly is lost; N4 no
-      counter or printed length moves except onto the original's, and HMX's and P33's
-      generator counters equal the original's. Red: the port read from the baseline
-      fails the 19 positive controls it missed; read from the `Binary64` run, N2 fails on
-      all five, N4 on HMX, HPEPA3 and PSAN02n, the counters on HMX. Reverted, green.
-
-      ⚠ 2026-10-01: `Snapshots/SeedZeroResultsM.approved.txt` re-approved: the ten
-      `Original` hashes moved, the ten `Binary64` ones are unchanged (the rate table's
-      keyed diff: 160 `Binary64` runs byte-identical, no counter moved in any run).
-
-      ⚠ 2026-10-03: re-approved again, the plane following the executable's listing
-      (x87 A, stage 4): nine of the ten `Original` hashes moved, the ten `Binary64` ones
-      are unchanged, and the 39 cases above hold on the regenerated seed-0 runs.
-
-      ⚠ 2026-10-03: was dated 2026-10-01; the 39 cases were re-run on the regenerated
-      seed-0 runs and hold (`src/Statistics/ACCEPTANCE.md`, A5, A6), so that is the date
-      of this evidence, one date for one piece of evidence (AGENTS.md §6).
-- [x] 2026-10-02: the stored port output of each cycle-plane pair is what the port
-      prints now (`CyclePlanePairsTieTests`, six pairs, `Category=Long`: reference mode,
-      `Original` layout, seed 1, `Original` precision, every parameter read from
-      `tests/Fixtures/cycle-plane-pairs/provenance.json`), so the ratchet of
-      `tests/Statistics.Tests/PathIdenticalPairsReportTests` cannot go stale. Red on
-      `epsx1`'s rounding at 814 removed (five of six), reverted, green.
-
-- [x] `LineMapCoverageTests` reads `tests/Fixtures/cases/source/executable_lines.json`
-      and is red once on a line the map no longer covers (stage S2, 2026-10-04: the row
-      `297–342` of `src/Simulation/BOOT.md`'s line map cut to `297–341`: red, naming
-      line 342 by number; reverted, green; 133 cases of the fast set with the original
-      absent).
-
-  ⚠ 2026-10-04: was "red once on a line removed from the list", which no mutation can
-  meet: a shorter list asks the map for less. Reformulated as above.
-- [x] 2026-10-04: Every fact that returns when no CUDA accelerator is available calls
-      `Harness`'s `CudaRequirement.FailIfRequired`, found by a text check and not typed
-      here (`CudaRequirementWiringTests`), and fails under `PROPSTRUCT_REQUIRE_CUDA=1` on a
-      machine where CUDA is refused: 6 facts of this node, 1 of them in the fast set, red
-      with `PROPSTRUCT_NO_CUDA=1` and the variable set, green without it (stage S4).
+→ [ACCEPTANCE.md](ACCEPTANCE.md)
 
 ## Mutations
 
@@ -409,6 +351,23 @@ which record carries a field or its value.
 from method names, no change of meaning); the old → new map is
 `tests/test-renames-2026-09-24.txt`. No criterion's date moved.
 
+### Model kind (2026-10-18)
+
+Each applied alone to `src/Simulation`, run against `ModelKindTests` (and the named
+guard), seen red, reverted:
+
+| Mutation | Red |
+|---|---|
+| the `Corrected` with `Original` precision refusal removed | `CorrectedWithOriginalPrecisionIsRefusedInReferenceModeNamingBothHalves` |
+| `Corrected` mapped to `CorrectionSet.None` | `CorrectedPrintsTheConsistentDoksdOfP33`, `ASingleFlagSeamRunDiffersFromOriginalWhereThatFlagIsVisible` |
+| `Original` mapped to `CorrectionSet.All` | `OriginalPrintsTheArchivedDoksdOfP33`, `CorrectedWithNoFlagSetEqualsTheOriginalRunNormalised`, the single-flag control, the guard's `ResultAndResultsMMatchApprovedHashes` |
+| the seam refused for `Original` no more; the seam's out-of-`All` test disabled | `TheSeamIsRefusedUnderOriginal`; both cases of `TheSeamIsRefusedForABitOutsideAll` |
+| `Ak1` copied under `Original` too | `AnOriginalRunsResultsAndJsonCarryNoModelLabel` |
+| `RunDiagnostics.Model` fixed at `Original` | `ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`, `CorrectedWithBinary64RunsToCompletionInBothModesAndBothLayouts`, the degenerate case under `Corrected` |
+| `SimulationOptions.Model` defaulting to `Corrected` | `TheSurfaceHasTheExplicitValuesTheDefaultAndBodyInitProperties` |
+| the `Enum.IsDefined` check of the validator removed (T13) | the three cases of `AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck` |
+| each `CorrectionSet` flag applied under `Original`, one at a time (T13) | the cases of `ACCEPTANCE.md`'s per-flag table |
+
 ## Budget ladder (2026-10-01)
 
 Task C3 of the budget decision (`src/Simulation/BOOT.md`, "## Budget selection rule
@@ -428,6 +387,68 @@ F3), so this record, not the GREEN rows, bounds the staleness of the coarser QKS
 refresh. The null-budget red of the echo assertion is the test author's record, not re-run.
 The ladder theory was deleted when the default moved (C5); it stays reproducible at
 3ea6471.
+
+## The Original-model guard
+
+Added 2026-10-18 before any `Corrected` model code, so that every merge proves `Original`
+unchanged: the seed-0 snapshot's mechanism in a file of its own, since
+`SeedZeroResultsM.approved.txt` is digested into `rate-table.json` (`SnapshotSha256`).
+`OriginalModelGuardTests` reads `Snapshots/OriginalModelGuard.approved.txt`, written by
+`dotnet run --project tests/RateTableTool -- original-model-guard`: per case the id, the
+SHA-256 of `results.m` (time line cut) and of the `ResultsJson` text of the whole
+`SimulationResult` (`Elapsed`, `Accelerator` constants): every double round-tripped, where
+`results.m` prints four to eight digits.
+
+Cases (`OriginalModelGuard.Cases`, `tests/RateTableTool`), seed 0, CPU: the twenty seed-0
+cases (`seed0/...`); the five references batched, `Independent`, `Binary64` (`batched/...`);
+nine reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5 µm, 3 cycles,
+`HomogenizedOxidizerFraction` 0.1), `PSAN02` (SFR read, `Dmin` 20 µm; then 3 cycles; then
+`Di` 10 µm too), `P33`, `P2` (`extra/...`), the paths the references leave dark (`Gdokleft`
+is 0 there), at `ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print
+`NaN`, which `ResultsMFile` does not parse, so the runner does not. 34 cases, 7 m 26 s to
+generate in Release.
+
+`PSAN02-sfr-dmin20-di10` (2026-10-18, T13): `PSAN02-sfr-dmin20` keeps the default `Di`, and
+`1.9999999999999998e-05 / 1e-05` truncates to 1, so its `b` is 10 µm, `φ(b)` is 0 and
+`GdokleftOnce` cannot move a bit there (the per-flag table in `ACCEPTANCE.md` shows no case
+saw it); with `Di` 10 µm `b` is 20 µm. Its line was generated with the product code of the
+original port: `src/` checked out at `ac1fc20` (the tree removed and checked out again from
+that commit), the generator built and run in Release, `src/` restored from `HEAD`. The
+regenerated file differs from the committed one by that one added line, and the 34 cases
+pass at the head, `Original` unchanged.
+
+## Correction-effects measurement
+
+Added 2026-10-18 (task T12): what each correction of `CorrectionSet` does to each printed
+quantity, before any release. Hand-run, not a readiness row: `CorrectionEffectsMeasurement`
+carries `Category=Long` (out of the fast set and CI) and `Category=Measurement` (selects it
+alone; the first hand-run category of this node, `API.md`, "## Category of the hand-run
+measurement"). Its pages are generated into `Measurements/corrections-2026-10-18.md` and its
+folder, never typed.
+
+- **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
+  seam `SimulationOptions.Corrections`, the flags read from the enum
+  (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
+  and budgets, seeds `k * 2^17`. CUDA not used: other sessions share the GPU.
+- **Cases**: the five references, 16 seeds; four extras for the fixes the references do not
+  show, 8 seeds: `P312` defaults, `Dmin` 5 µm, three cycles, and `PSAN02` read with its SFR at
+  `Dmin` 20 µm, `Di` 10 µm. `P312` runs at 100 particles per cycle (40 for three cycles,
+  from 5000): it draws about 16000 attempts a particle. The seed counts follow a one-seed
+  timing run.
+- **Per quantity and arm**: shift in per cent of the `Original` mean with its standard error,
+  Welch t, paired t over the shared seeds, and `TwoSampleBiasOfSets`' differing cells at
+  `α = 10⁻³`; the arm tables are read beside the comparison's floor.
+- **Controls**: the seam with `None` equals `Original` (`ModelKindTests`). Negative: `Original`
+  even against odd seeds. Positive: `WindowLowerEdge` in reference mode over `k = 0..7`,
+  `DoksdConsistent` on P33, `ExactConstants` on `Setup.Lambda`.
+- **Floor** (measured 2026-10-18): the negative control is not clean. `TwoSampleBiasOfSets`
+  has no count floor or print resolution, so cells one half prints and the other does not, and
+  cells printed more coarsely than their spread, differ with infinite or huge t: 0 to 9 cells in
+  1200 to 7000, listed in `control-negative-*.md`. The fact asserts the floor under one per cent.
+- **The store** `Measurements/cache/` (ignored by git, `MeasuredRunStore`) lets a run too long for
+  one command be made in slices; it records each build's fingerprint and does not compare it,
+  since a rebuild of unchanged source changes it. Delete it before a run that is to be evidence.
+
 
 ## Taboos
 

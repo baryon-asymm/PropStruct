@@ -1,3 +1,4 @@
+using System.Globalization;
 using PropStruct.Input;
 using PropStruct.Simulation;
 
@@ -21,6 +22,9 @@ public static class ResultsMWriter
     /// </summary>
     public static void Write(Formulation formulation, ModelParameters parameters, SimulationResult result, string path)
     {
+        ArgumentNullException.ThrowIfNull(result);
+        RequireCorrectedRatios(result);
+
         using var writer = new StreamWriter(path, append: false);
         Write(formulation, parameters, result, writer);
     }
@@ -32,6 +36,7 @@ public static class ResultsMWriter
         ArgumentNullException.ThrowIfNull(parameters);
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(writer);
+        RequireCorrectedRatios(result);
 
         WriteHeader(writer, formulation, parameters, result.StoredSetup, result.Header.TailProbabilityModified);
         WriteResults(writer, result);
@@ -172,12 +177,13 @@ public static class ResultsMWriter
         Line(w, " % Medium number of conditions breakings:");
 
         var conditions = counters.Conditions;
+        var correctedLabels = CorrectedConditionLabels(result);
         var fiPlusN = fi + nbase; // Fortran 1248, 1249, 1250, 1251, 1252
         Line(w, " %    1) Dok > Dmax      :" + R(conditions[0] / fiPlusN)); // Fortran 1248
         Line(w, " %    2) Dok < Dmin      :" + R(conditions[1] / fiPlusN)); // Fortran 1249
-        Line(w, " %    3) Dbase < 0.5Dok  :" + R(conditions[2] / fiPlusN)); // Fortran 1250
-        Line(w, " %    4) Dbase > 2.0Dok  :" + R(conditions[3] / fiPlusN)); // Fortran 1251
-        Line(w, " %    5) l > 4.7Dbase    :" + R(conditions[4] / fiPlusN)); // Fortran 1252
+        Line(w, " %    3) " + ConditionLabel("Dbase < 0.5Dok  ", correctedLabels?[0]) + ":" + R(conditions[2] / fiPlusN)); // Fortran 1250
+        Line(w, " %    4) " + ConditionLabel("Dbase > 2.0Dok  ", correctedLabels?[1]) + ":" + R(conditions[3] / fiPlusN)); // Fortran 1251
+        Line(w, " %    5) " + ConditionLabel("l > 4.7Dbase    ", correctedLabels?[2]) + ":" + R(conditions[4] / fiPlusN)); // Fortran 1252
         Line(w, " %    6) Nkarm = 0       :" + R(conditions[5] / fi)); // Fortran 1253
         Line(w, " %    7) Nmkm < 2        :" + R(conditions[6] / fi)); // Fortran 1254
         Line(w, " %    8) Nkarm/Nmkm < min:" + R(conditions[7] / fi)); // Fortran 1255
@@ -205,7 +211,14 @@ public static class ResultsMWriter
         Line(w, " % Accuracy of Dok fractions distribution function modeling:");
         WriteArray(w, "epsdokfr", accuracy.Epsalldok.AsSpan());
         Line(w, " % Total fraction of homogenized oxidizer:");
-        Line(w, " fineoxy_fr =" + R(result.StoredSetup.HomogenizedOxidizerFraction + local.Gdokleft / header.Ggg) + " ;"); // Fortran 1286
+        var fineoxyFraction = result.StoredSetup.HomogenizedOxidizerFraction + local.Gdokleft / header.Ggg; // Fortran 1286
+        if (IsCorrected(result))
+        {
+            var gdokns = result.StoredSetup.HomogenizedOxidizerFraction;
+            fineoxyFraction = gdokns + (1.0 - gdokns) * local.Gdokleft / header.Ggg;
+        }
+
+        Line(w, " fineoxy_fr =" + R(fineoxyFraction) + " ;");
         Blank(w);
         Line(w, " %________________Pockets parameters___________________");
         Line(w, " % Accuracy of pockets distribution function modeling:");
@@ -290,7 +303,7 @@ public static class ResultsMWriter
         WriteArray(w, "fqkarm_cor", Scale(Take(histograms.FqkarmCorNormalized, dpCorLength), cellSize)); // Fortran 1364
         Blank(w);
         Line(w, " % <MKM/Dok>");
-        Line(w, " % Density distribution function of MKM/Dok between Dok particles (step = 0.01)");
+        Line(w, " % Density distribution function of MKM/Dok between Dok particles (step = " + Fqmkm1Step(result) + ")");
         WriteArray(w, "fqmkm1", Take(histograms.Qmkm1Normalized, agglomerates.Qmkm1Nmax + 2)); // Fortran 1370
         Line(w, " % Density distribution function of MKM/Dok between pockets (step = 0.01)");
         WriteArray(w, "fqmkm2", Take(histograms.Qmkm2Normalized, agglomerates.Qmkm2Nmax + 2)); // Fortran 1373
@@ -372,6 +385,11 @@ public static class ResultsMWriter
         // --streams/--mode rather than shown the bare enum name.
         Line(w, StreamLayoutCommentLine(result.Diagnostics.Streams));
         Line(w, ExecutionModeCommentLine(result.Diagnostics.Mode));
+        if (ModelCommentLine(result.Diagnostics.Model) is { } modelLine)
+        {
+            Line(w, modelLine);
+        }
+
         Line(w, " % __________________________");
         Line(w, " hold on");
         Line(w, " plot(Di:Di:Di*size(fmkarm,2),fmkarm)");
@@ -424,6 +442,85 @@ public static class ResultsMWriter
         ExecutionMode.Batched =>
             " % Execution mode: batched mode; freezes the pocket histogram for the whole launch, unlike the original's own sequence.",
         _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, $"Unhandled {nameof(ExecutionMode)}."),
+    };
+
+    private static bool IsCorrected(SimulationResult result) => result.Diagnostics.Model == ModelKind.Corrected;
+
+    /// <summary>
+    /// The <c>Corrected</c> comment ending of the <c>fqmkm1</c> line (BOOT.md, "## Corrected model", "<c>fqmkm1</c>'s
+    /// step"): <c>qmkm1</c> is binned at 0.001 (Fortran 628), the original's comment says 0.01.
+    /// </summary>
+    private static string Fqmkm1Step(SimulationResult result) => IsCorrected(result) ? "0.001" : "0.01";
+
+    /// <summary>
+    /// Refuses a <c>Corrected</c> result whose stored setup lacks one of the three condition ratios, naming the
+    /// member (API.md, "## Errors"); an <c>Original</c> result is not examined.
+    /// </summary>
+    private static void RequireCorrectedRatios(SimulationResult result)
+    {
+        if (!IsCorrected(result))
+        {
+            return;
+        }
+
+        var setup = result.StoredSetup;
+        if (setup.Ak1 is null)
+        {
+            throw new ArgumentException($"A Corrected result needs {nameof(StoredSetup)}.{nameof(StoredSetup.Ak1)}.", nameof(result));
+        }
+
+        if (setup.Ak2 is null)
+        {
+            throw new ArgumentException($"A Corrected result needs {nameof(StoredSetup)}.{nameof(StoredSetup.Ak2)}.", nameof(result));
+        }
+
+        if (setup.Ak4 is null)
+        {
+            throw new ArgumentException($"A Corrected result needs {nameof(StoredSetup)}.{nameof(StoredSetup.Ak4)}.", nameof(result));
+        }
+    }
+
+    /// <summary>
+    /// The labels of conditions 3 to 5 under <c>Corrected</c>, from the stored ratios (BOOT.md, "## Corrected
+    /// model", "The condition labels"); <c>null</c> under <c>Original</c>, which keeps its literals.
+    /// </summary>
+    private static string[]? CorrectedConditionLabels(SimulationResult result)
+    {
+        if (!IsCorrected(result))
+        {
+            return null;
+        }
+
+        var setup = result.StoredSetup;
+        return
+        [
+            "Dbase < " + Ratio(setup.Ak1) + "Dok",
+            "Dbase > " + Ratio(setup.Ak2) + "Dok",
+            "l > " + Ratio(setup.Ak4) + "max(Dbase,Dok)",
+        ];
+    }
+
+    private static string Ratio(double? value) => value!.Value.ToString("0.0##", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// The label field of a condition line: the <c>Original</c> literal as it stands (already padded to 16
+    /// characters), or the <c>Corrected</c> label padded to 16 when shorter, as the original pads
+    /// <c>Nkarm/Nmkm &lt; min</c>.
+    /// </summary>
+    private static string ConditionLabel(string original, string? corrected) =>
+        corrected is null ? original : corrected.PadRight(original.Length);
+
+    /// <summary>
+    /// The footer line of the <c>Corrected</c> model, verbatim (API.md, "## Corrected model", the code
+    /// block under "The footer line"): no <c>=</c> and no digit, so it stays a comment excluded from the structural comparison; no
+    /// line, <c>null</c>, under <c>Original</c>.
+    /// </summary>
+    private static string? ModelCommentLine(ModelKind model) => model switch
+    {
+        ModelKind.Original => null,
+        ModelKind.Corrected =>
+            " % Model kind: corrected; the explicit errors of the original marked fixed in the Corrected column of docs/ORIGINAL-DEFECTS.md (github.com/baryon-asymm/PropStruct) are fixed.",
+        _ => throw new ArgumentOutOfRangeException(nameof(model), model, $"Unhandled {nameof(ModelKind)}."),
     };
 
     /// <summary>

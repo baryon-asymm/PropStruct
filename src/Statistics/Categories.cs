@@ -11,6 +11,23 @@ namespace PropStruct.Statistics;
 /// </summary>
 internal static class Categories
 {
+    /// <summary>
+    /// Fortran lines 825-959 under <see cref="CorrectionSet.None"/>: the original's model, writing the merge into the run's totals.
+    /// </summary>
+    public static CategoriesStatus MergeAndDescribe(
+        int ndok, int ncat, double cellSize, double categoryStep, double epsDok, double dpMax,
+        AccumulatorLayout layout, Span<long> integerTotals, Span<double> realTotals, PrecisionKind precision,
+        out int dpRow, out double[] dpockets, out double[] dokp43, out double[] qdokkarm, out double[][] qdokso)
+        => MergeAndDescribe(ndok, ncat, cellSize, categoryStep, epsDok, dpMax, layout, integerTotals, realTotals, precision,
+            CorrectionSet.None, out dpRow, out dpockets, out dokp43, out qdokkarm, out qdokso);
+
+    /// <summary>
+    /// The overload of the member above that takes the model's <see cref="CorrectionSet"/> (BOOT.md, "## Corrected
+    /// model"): under <see cref="PrecisionKind.Original"/> it is replaced by <see cref="CorrectionSet.None"/> on entry, and
+    /// under <see cref="CorrectionSet.None"/> every output and every written total is the old overload's, bit for bit.
+    /// With <see cref="CorrectionSet.CategoriesOnCopy"/> the merge, shift and recomputation run on copies of the rows
+    /// <c>1..DPRow</c> of <c>Qdoks</c>, <c>Dokp41</c> and <c>Dokp31</c>, so the totals are not written.
+    /// </summary>
     /// <param name="ndok">Ndok, the oxidizer-size array width: the column count of each category row's own <c>Qdoks</c>/<c>Qdokso</c> (BOOT.md, "## Categories").</param>
     /// <param name="ncat">Ncat, the category-row array capacity that <paramref name="dpRow"/> is checked against (BOOT.md, "## Categories", "`DPRow` never exceeds `Ncat`").</param>
     /// <param name="cellSize">Di, the oxidizer-size histogram cell size: the category rows are Dj-wide, but each row's own Ndok columns are Di-wide (Fortran `Di*(Iks-0.5)`, lines 853-854, 863-866, 893, 899).</param>
@@ -20,6 +37,7 @@ internal static class Categories
     /// <param name="layout">The offsets of <c>Qdoks</c>, <c>Dokp41</c> and <c>Dokp31</c> within <paramref name="integerTotals"/>/<paramref name="realTotals"/>.</param>
     /// <param name="integerTotals">The run's integer totals; <c>Qdoks</c> is read, and its rows are merged or shifted in place (BOOT.md, "## Invariants", "In-place rewrites of the totals, as the original").</param>
     /// <param name="realTotals">The run's real totals; <c>Dokp41</c> and <c>Dokp31</c> are read, and their rows are merged or shifted in place, the same way as <paramref name="integerTotals"/>.</param>
+    /// <param name="corrections">The model's correction set (BOOT.md, "## Corrected model"); see the summary.</param>
     /// <param name="precision">The run's precision kind: under <see cref="PrecisionKind.Original"/> the sites of lines 825-959 that <c>CyclePlane.listing.generated.txt</c> names round through <see cref="CyclePlaneRounding"/>; under <see cref="PrecisionKind.Binary64"/> nothing changes.</param>
     /// <param name="dpRow">DPRow after every merge: the number of category rows the returned arrays actually use.</param>
     /// <param name="dpockets">Dpockets, the merged rows' own radii (BOOT.md, "## Categories", step 1/3/4).</param>
@@ -36,8 +54,14 @@ internal static class Categories
     public static CategoriesStatus MergeAndDescribe(
         int ndok, int ncat, double cellSize, double categoryStep, double epsDok, double dpMax,
         AccumulatorLayout layout, Span<long> integerTotals, Span<double> realTotals, PrecisionKind precision,
+        CorrectionSet corrections,
         out int dpRow, out double[] dpockets, out double[] dokp43, out double[] qdokkarm, out double[][] qdokso)
     {
+        if (precision == PrecisionKind.Original)
+        {
+            corrections = CorrectionSet.None;
+        }
+
         var rounding = new CyclePlaneRounding(precision);
         var order = new CyclePlaneOrder(precision);
         var row = (int)Binary32.TruncatedQuotient(dpMax, categoryStep) + 1;
@@ -51,6 +75,18 @@ internal static class Categories
             return CategoriesStatus.CategoryCountExceedsCapacity;
         }
 
+        // The rows the merge reads and rewrites: the run's totals themselves, as the original, or under
+        // CategoriesOnCopy a copy of the rows 1..DPRow, which no later cycle sees.
+        var qdoks = integerTotals[layout.Qdoks..];
+        var dokp41Rows = realTotals[layout.Dokp41..];
+        var dokp31Rows = realTotals[layout.Dokp31..];
+        if (corrections.HasFlag(CorrectionSet.CategoriesOnCopy))
+        {
+            qdoks = qdoks[..(row * ndok)].ToArray();
+            dokp41Rows = dokp41Rows[..row].ToArray();
+            dokp31Rows = dokp31Rows[..row].ToArray();
+        }
+
         var dpocketsWorking = new double[ncat];
         for (var r = 0; r < row; r++)
         {
@@ -60,6 +96,7 @@ internal static class Categories
         var mdok3 = new double[ncat];
         var mdok4 = new double[ncat];
         var epsydok = new double[ncat];
+        var empty = new bool[ncat];
         var dokp43Working = new double[ncat];
         var qdokkarmWorking = new double[ncat];
         var qdoksoWorking = new double[ncat][];
@@ -71,33 +108,33 @@ internal static class Categories
         double CellCentre(int zeroBasedCell) => cellSize * (zeroBasedCell + 0.5);
 
         // Span<T> is a ref-like type and cannot be captured by a local function's closure
-        // (CS9108); integerTotals/realTotals are threaded through as explicit parameters
+        // (CS9108); the three row spans are threaded through as explicit parameters
         // instead of being captured.
-        void MergeRow(int target, int source, Span<long> integers, Span<double> reals)
+        void MergeRow(int target, int source, Span<long> integers, Span<double> dokp41, Span<double> dokp31)
         {
             dpocketsWorking[target] = dpocketsWorking[source];
             for (var i = 0; i < ndok; i++)
             {
-                integers[layout.Qdoks + target * ndok + i] += integers[layout.Qdoks + source * ndok + i];
+                integers[target * ndok + i] += integers[source * ndok + i];
             }
 
-            reals[layout.Dokp41 + target] = rounding.Store(reals[layout.Dokp41 + target] + reals[layout.Dokp41 + source]); // Fortran 918, 950
-            reals[layout.Dokp31 + target] = rounding.Store(reals[layout.Dokp31 + target] + reals[layout.Dokp31 + source]); // Fortran 919, 951
+            dokp41[target] = rounding.Store(dokp41[target] + dokp41[source]); // Fortran 918, 950
+            dokp31[target] = rounding.Store(dokp31[target] + dokp31[source]); // Fortran 919, 951
         }
 
-        void ShiftRow(int target, int source, Span<long> integers, Span<double> reals)
+        void ShiftRow(int target, int source, Span<long> integers, Span<double> dokp41, Span<double> dokp31)
         {
             dpocketsWorking[target] = dpocketsWorking[source];
             for (var i = 0; i < ndok; i++)
             {
-                integers[layout.Qdoks + target * ndok + i] = integers[layout.Qdoks + source * ndok + i];
+                integers[target * ndok + i] = integers[source * ndok + i];
             }
 
-            reals[layout.Dokp41 + target] = reals[layout.Dokp41 + source];
-            reals[layout.Dokp31 + target] = reals[layout.Dokp31 + source];
+            dokp41[target] = dokp41[source];
+            dokp31[target] = dokp31[source];
         }
 
-        void Recompute(Span<long> integers, Span<double> reals)
+        void Recompute(Span<long> integers, Span<double> dokp41, Span<double> dokp31)
         {
             Array.Clear(mdok3, 0, ncat);
             Array.Clear(mdok4, 0, ncat);
@@ -113,13 +150,13 @@ internal static class Categories
                 var rowSum = 0L;
                 for (var i = 0; i < ndok; i++)
                 {
-                    rowSum += integers[layout.Qdoks + r * ndok + i];
+                    rowSum += integers[r * ndok + i];
                 }
 
                 for (var i = 0; i < ndok; i++)
                 {
                     // QDOKS1 (848) and QDOKSO (897) are the same quotient, each read by a later block.
-                    qdoksoWorking[r][i] = rowSum == 0 ? 0.0 : rounding.Store(integers[layout.Qdoks + r * ndok + i] / (double)rowSum); // Fortran 848, 897
+                    qdoksoWorking[r][i] = rowSum == 0 ? 0.0 : rounding.Store(integers[r * ndok + i] / (double)rowSum); // Fortran 848, 897
                 }
 
                 for (var i = 0; i < ndok; i++)
@@ -139,7 +176,8 @@ internal static class Categories
                 }
 
                 var tiny = rounding.Literal(1e-30); // Fortran 869
-                epsydok[r] = rowSum == 0 || mdok3[r] <= tiny || mdok4[r] <= tiny
+                empty[r] = rowSum == 0 || mdok3[r] <= tiny || mdok4[r] <= tiny;
+                epsydok[r] = empty[r]
                     ? 0.0
                     : rounding.Store(3.0 * Math.Sqrt(rounding.Temporary(1.0 / rowSum) * (ddok4 / (mdok4[r] * mdok4[r]) + ddok3 / (mdok3[r] * mdok3[r])))); // Fortran 875
 
@@ -148,48 +186,60 @@ internal static class Categories
                     qdokkarmWorking[r] = rounding.Store(qdokkarmWorking[r] + order.Linear(qdoksoWorking[r][i], cellSize, i + 0.5)); // Fortran 899
                 }
 
-                var dokp31 = reals[layout.Dokp31 + r];
-                dokp43Working[r] = dokp31 <= rounding.Literal(1e-30) ? 0.0 : rounding.Store(reals[layout.Dokp41 + r] / dokp31); // Fortran 902, 905
+                var dokp31Row = dokp31[r];
+                dokp43Working[r] = dokp31Row <= rounding.Literal(1e-30) ? 0.0 : rounding.Store(dokp41[r] / dokp31Row); // Fortran 902, 905
             }
         }
+
+        var lastRowReturns = corrections.HasFlag(CorrectionSet.CategoriesLastRowRecomputed);
+        var emptyRowsMerge = corrections.HasFlag(CorrectionSet.CategoriesEmptyRowsMerged);
+
+        // CategoriesEmptyRowsMerged: a row the empty-row test gave Epsydok = 0 is as insufficient as one over the threshold;
+        // a row of one particle, legitimately without variance, is not empty.
+        bool Insufficient(int r) => epsydok[r] > epsDok || emptyRowsMerge && empty[r];
 
         while (true)
         {
-            Recompute(integerTotals, realTotals);
-            if (row <= 1)
+            Recompute(qdoks, dokp41Rows, dokp31Rows);
+            if (row > 1)
             {
-                break;
-            }
-
-            var shiftFlag = false;
-            for (var r = 0; r < row - 1; r++)
-            {
-                if (!shiftFlag)
+                var shiftFlag = false;
+                for (var r = 0; r < row - 1; r++)
                 {
-                    if (epsydok[r] > epsDok)
+                    if (!shiftFlag)
                     {
-                        MergeRow(r, r + 1, integerTotals, realTotals);
-                        shiftFlag = true;
+                        if (Insufficient(r))
+                        {
+                            MergeRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
+                            shiftFlag = true;
+                        }
+                    }
+                    else
+                    {
+                        ShiftRow(r, r + 1, qdoks, dokp41Rows, dokp31Rows);
                     }
                 }
-                else
+
+                if (shiftFlag)
                 {
-                    ShiftRow(r, r + 1, integerTotals, realTotals);
+                    row -= 1;
+                    continue;
                 }
             }
 
-            if (!shiftFlag)
+            if (row > 1 && Insufficient(row - 1))
             {
-                break;
+                MergeRow(row - 2, row - 1, qdoks, dokp41Rows, dokp31Rows);
+                row -= 1;
+
+                // CategoriesLastRowRecomputed: back to the top of the loop, as label 600, until no last-row check merges.
+                if (lastRowReturns)
+                {
+                    continue;
+                }
             }
 
-            row -= 1;
-        }
-
-        if (row > 1 && epsydok[row - 1] > epsDok)
-        {
-            MergeRow(row - 2, row - 1, integerTotals, realTotals);
-            row -= 1;
+            break;
         }
 
         dpRow = row;

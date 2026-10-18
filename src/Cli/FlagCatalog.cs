@@ -64,6 +64,12 @@ internal static class FlagCatalog
                 ["double"] = PrecisionKind.Binary64,
                 ["original"] = PrecisionKind.Original,
             }),
+        new FlagDefinition(FlagOwner.SimulationOptions, nameof(SimulationOptions.Model), "--model", Array.Empty<string>(), FlagKind.Enum,
+            EnumValues: new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["original"] = ModelKind.Original,
+                ["corrected"] = ModelKind.Corrected,
+            }),
         new FlagDefinition(FlagOwner.SimulationOptions, nameof(SimulationOptions.BatchSize), "--batch", Array.Empty<string>(), FlagKind.PositiveInteger),
         new FlagDefinition(FlagOwner.SimulationOptions, nameof(SimulationOptions.Seed), "--seed", Array.Empty<string>(), FlagKind.UnsignedLong),
         new FlagDefinition(FlagOwner.SimulationOptions, nameof(SimulationOptions.RecordBudgetBytes), "--record-budget-bytes", Array.Empty<string>(), FlagKind.PositiveLong),

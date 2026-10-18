@@ -310,8 +310,10 @@ internal static class Program
         var attempts = diagnostics.TotalAttempts.ToString(CultureInfo.InvariantCulture);
         var elapsed = diagnostics.Elapsed.ToString("c", CultureInfo.InvariantCulture);
 
+        var model = diagnostics.Model == ModelKind.Corrected ? $" model={diagnostics.Model}" : string.Empty;
+
         return $"mode={diagnostics.Mode} accelerator={diagnostics.Accelerator.Kind} batch={batch} " +
-               $"layout={diagnostics.Streams} seed={seed} attempts={attempts} elapsed={elapsed} files={files}";
+               $"layout={diagnostics.Streams}{model} seed={seed} attempts={attempts} elapsed={elapsed} files={files}";
     }
 
     private static string InformationalVersion() =>

@@ -22,6 +22,18 @@ internal static class BridgeGeometry
     /// reads them.
     /// </summary>
     public static bool Volume(double r1, double r2, double rk, double a, out double volume, out double bb)
+        => Volume(r1, r2, rk, a, false, out volume, out bb);
+
+    /// <summary>
+    /// <see cref="Volume(double, double, double, double, out double, out double)"/> with the
+    /// <see cref="CorrectionSet.BridgeFrustum"/> flag as <paramref name="bridgeFrustum"/>:
+    /// under it the volume after the <c>bb &lt; 0</c> test is the frustum between the two
+    /// chord circles less the two caps, with <see cref="Math.PI"/> (BOOT.md, "## Corrected
+    /// model"); the swap, both <c>JJ = 0</c> returns, <c>cosA</c>, <c>cosD</c>, <c>q1</c>,
+    /// <c>q2</c>, <c>al</c>, <c>de</c> and <paramref name="bb"/> are shared, so the return
+    /// value, <paramref name="bb"/> and every draw are bit-identical under either value.
+    /// </summary>
+    public static bool Volume(double r1, double r2, double rk, double a, bool bridgeFrustum, out double volume, out double bb)
     {
         if (r2 > r1)
         {
@@ -52,14 +64,25 @@ internal static class BridgeGeometry
             return false;
         }
 
-        var be = ApproximatePi - al - de;
-        var ga = al + be / 2.0;
         var r1A = r1 * Math.Sin(al);
         var r2A = r2 * Math.Sin(de);
-        var q1M = r1A * Math.Tan(ga);
-        var q2M = r2A * Math.Tan(ga);
         var h1 = r1 - q1;
         var h2 = r2 - q2;
+
+        if (bridgeFrustum)
+        {
+            // The frustum between the chord circles less the caps, in this order of operations.
+            var l = ac - q1 - q2;
+            volume = Math.PI / 3.0 * l * (r1A * r1A + r1A * r2A + r2A * r2A)
+                - Math.PI * h1 * h1 * (r1 - h1 / 3.0)
+                - Math.PI * h2 * h2 * (r2 - h2 / 3.0);
+            return true;
+        }
+
+        var be = ApproximatePi - al - de;
+        var ga = al + be / 2.0;
+        var q1M = r1A * Math.Tan(ga);
+        var q2M = r2A * Math.Tan(ga);
         var v1 = ApproximatePi * h1 * h1 * (r1 - h1 / 3.0);
         var v2 = ApproximatePi * h2 * h2 * (r2 - h2 / 3.0);
 

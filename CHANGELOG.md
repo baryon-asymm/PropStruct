@@ -6,7 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- The model kind of a run: `Original`, the default, the original's model exactly as
+  before, and `Corrected`, which fixes the explicit errors of the original program and
+  nothing else; each fix is a row marked `fixed` in `docs/ORIGINAL-DEFECTS.md`.
+  `Corrected` runs under the `Binary64` precision kind only, in both modes and layouts.
+  The command line takes `--model original|corrected`.
+- The defect report's seventh column, `Corrected`: `fixed`, `unchanged` or
+  `not reachable`.
+- Under `Corrected` only: `results.m` gains a footer line naming the model, the `fqmkm1`
+  step comment reads `(step = 0.001)`, the condition labels 3–5 carry the run's AK
+  ratios, and `fineoxy_fr` is the share of the whole oxidizer; the JSON result carries
+  `RunDiagnostics.Model` and `StoredSetup.Ak1`, `Ak2`, `Ak4`. An `Original` run's
+  `results.m` and JSON are byte for byte as in 0.1.0.
+
+### Known limitations
+- The `Corrected` model has no external reference: the statistical agreement with the
+  original is a claim about the `Original` model.
 
 ## [0.1.0] - 2026-10-06
 

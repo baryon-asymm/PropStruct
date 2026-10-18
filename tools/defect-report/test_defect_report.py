@@ -79,8 +79,8 @@ Inherited from the parent ([BOOT.md](../BOOT.md)).
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
 {rows}
 
 ## Acceptance criteria
@@ -94,9 +94,10 @@ Inherited from the parent ([BOOT.md](../BOOT.md)).
 
 NODE_API = "# API.md - {name}\n\nWhat {name} offers outward.\n"
 
-ONE_ROW = "| 100 | dead | leaves X unassigned | not measured | declared, not reproduced | none |"
+ONE_ROW = ("| 100 | dead | leaves X unassigned | not measured | declared, not reproduced "
+           "| none | unchanged |")
 MEASURED_ROW = ("| 200 | statistics | biases Y | measured: `tests/Fixtures` records a 3% shift "
-                "| reproduced | none |")
+                "| reproduced | none | unchanged |")
 
 
 class DefectReportTest(unittest.TestCase):
@@ -152,7 +153,7 @@ class DefectReportTest(unittest.TestCase):
         boot.write_text(
             boot.read_text(encoding="utf-8").replace(
                 "| Fortran | Kind | What the original does | Consequence | The port "
-                "| Differing cells |\n|---|---|---|---|---|---|\n" + ONE_ROW,
+                "| Differing cells | Corrected |\n|---|---|---|---|---|---|---|\n" + ONE_ROW,
                 "Prose instead of a table.",
             ),
             encoding="utf-8",
@@ -184,11 +185,12 @@ class DefectReportTest(unittest.TestCase):
         boot.write_text(
             boot.read_text(encoding="utf-8").replace(
                 ONE_ROW,
-                "| 100 | dead | leaves X unassigned | not measured | declared, not reproduced |",
+                "| 100 | dead | leaves X unassigned | not measured | declared, not reproduced "
+                "| none |",
             ),
             encoding="utf-8",
         )
-        self.assertFormatError("has 5 cells, expected 6", "a")
+        self.assertFormatError("has 6 cells, expected 7", "a")
 
     def test_an_unknown_kind_is_an_error(self) -> None:
         boot = self.root / "a" / "BOOT.md"
@@ -293,6 +295,131 @@ class DefectReportTest(unittest.TestCase):
         )
         self.assertEqual(defect_report.DeclaredCell(("*",), "pdoksmall", None, None, None), cells[1])
 
+    # ------------------------------------------------------- the 'Corrected' column
+
+    def set_corrected(self, node: str, old: str, new: str) -> None:
+        """Replace the 'Corrected' cell of the node's one row (old must be that cell)."""
+        boot = self.root / node / "BOOT.md"
+        text = boot.read_text(encoding="utf-8")
+        self.assertEqual(1, text.count("| " + old + " |\n"))
+        boot.write_text(text.replace("| " + old + " |\n", "| " + new + " |\n"), encoding="utf-8")
+
+    def test_an_old_six_column_header_is_an_error(self) -> None:
+        boot = self.root / "a" / "BOOT.md"
+        boot.write_text(
+            boot.read_text(encoding="utf-8").replace(
+                "| Differing cells | Corrected |\n|---|---|---|---|---|---|---|\n" + ONE_ROW,
+                "| Differing cells |\n|---|---|---|---|---|---|\n"
+                "| 100 | dead | leaves X unassigned | not measured "
+                "| declared, not reproduced | none |",
+            ),
+            encoding="utf-8",
+        )
+        self.assertFormatError("header must be exactly", "a")
+
+    def test_an_unknown_corrected_value_is_an_error(self) -> None:
+        self.set_corrected("a", "unchanged", "mostly unchanged")
+        self.assertFormatError("unknown 'Corrected' value 'mostly unchanged'", "a")
+
+    def test_an_empty_corrected_value_is_an_error(self) -> None:
+        self.set_corrected("a", "unchanged", "")
+        self.assertFormatError("unknown 'Corrected' value ''", "a")
+
+    def test_not_reachable_on_a_non_numeric_row_is_an_error(self) -> None:
+        self.set_corrected("a", "unchanged", "not reachable")
+        self.assertFormatError("allowed only on a 'numeric' row, this row is 'dead'", "a")
+
+    def test_not_reachable_on_a_row_the_port_does_not_reproduce_is_an_error(self) -> None:
+        for port in ("declared, not reproduced", "open"):
+            with self.subTest(port=port):
+                self.write("a/BOOT.md", NODE_BOOT.format(
+                    name="a",
+                    rows="| 100 | numeric | rounds in REAL*4 | not measured | {} | none "
+                         "| not reachable |".format(port)))
+                self.assertFormatError(
+                    "allowed only where 'The port' is 'reproduced', this row's is "
+                    "{!r}".format(port), "a")
+
+    def test_unchanged_is_accepted_on_a_numeric_row_the_port_does_not_reproduce(self) -> None:
+        self.write("a/BOOT.md", NODE_BOOT.format(
+            name="a",
+            rows="| 100 | numeric | rounds in REAL*4 | not measured "
+                 "| declared, not reproduced | none | unchanged |"))
+        defects = [defect for defect in self.collect() if defect.node == "a"]
+        self.assertEqual(["unchanged"], [defect.corrected for defect in defects])
+
+    def test_not_reachable_on_a_numeric_row_is_accepted(self) -> None:
+        self.write("a/BOOT.md", NODE_BOOT.format(
+            name="a",
+            rows="| 100 | numeric | rounds in REAL*4 | not measured | reproduced | none "
+                 "| not reachable |",
+        ))
+        defects = [defect for defect in self.collect() if defect.node == "a"]
+        self.assertEqual(["not reachable"], [defect.corrected for defect in defects])
+        self.assertEqual([()], [defect.corrections for defect in defects])
+
+    def test_a_malformed_fixed_value_is_an_error(self) -> None:
+        for malformed in ("fixed", "fixed ()", "fixed (1Bad)", "fixed (A,B)", "fixed (A, )",
+                          "fixed (A-B)", "fixed A", "Fixed (A)", "fixed (A) extra"):
+            with self.subTest(malformed=malformed):
+                self.write("a/BOOT.md", NODE_BOOT.format(
+                    name="a", rows=ONE_ROW.replace("unchanged", malformed)))
+                self.assertFormatError("unknown 'Corrected' value", "a")
+
+    def test_a_fixed_value_naming_a_member_twice_is_an_error(self) -> None:
+        self.set_corrected("a", "unchanged", "fixed (A, B, A)")
+        self.assertFormatError("names a member twice", "a")
+
+    def test_a_good_fixed_value_is_parsed_into_corrections(self) -> None:
+        self.set_corrected("a", "unchanged", "fixed (A, Bridge_2, _c)")
+        defects = {defect.node: defect for defect in self.collect()}
+        self.assertEqual("fixed (A, Bridge_2, _c)", defects["a"].corrected)
+        self.assertEqual(("A", "Bridge_2", "_c"), defects["a"].corrections)
+        self.assertEqual(("unchanged", ()), (defects["b"].corrected, defects["b"].corrections))
+
+    def test_a_fixed_value_is_accepted_on_any_kind(self) -> None:
+        for kind in defect_report.KINDS:
+            with self.subTest(kind=kind):
+                self.write("a/BOOT.md", NODE_BOOT.format(
+                    name="a",
+                    rows="| 100 | {} | does X | not measured | open | none "
+                         "| fixed (A) |".format(kind)))
+                defects = [defect for defect in self.collect() if defect.node == "a"]
+                self.assertEqual([("A",)], [defect.corrections for defect in defects])
+
+    def test_the_page_shows_the_column_and_counts_the_rows_by_value(self) -> None:
+        self.write("a/BOOT.md", NODE_BOOT.format(
+            name="a",
+            rows="| 100 | numeric | rounds in REAL*4 | not measured | reproduced | none "
+                 "| not reachable |\n"
+                 "| 101 | numeric | rounds again | not measured | reproduced | none "
+                 "| not reachable |\n"
+                 "| 102 | algorithm | drops a term | not measured | open | none "
+                 "| fixed (A, B) |\n"
+                 "| 103 | dead | leaves X unassigned | not measured | open | none "
+                 "| fixed (C) |\n"
+                 "| 104 | cosmetic | misprints | not measured | open | none "
+                 "| unchanged |",
+        ))
+        content = defect_report.render(self.collect(), datetime.date(2026, 9, 20))
+        # Node b's one row is 'unchanged' too: 2 unchanged, 2 not reachable, 2 fixed.
+        self.assertIn("By `Corrected`: 2 unchanged, 2 not reachable, 2 fixed.", content)
+        self.assertIn("| The port | Corrected |", content)
+        self.assertIn("| open | fixed (A, B) |", content)
+        self.assertIn("| reproduced | not reachable |", content)
+
+    def test_the_declared_json_does_not_carry_the_corrected_column(self) -> None:
+        self.set_corrected("a", "unchanged", "fixed (A)")
+        boot = self.root / "a" / "BOOT.md"
+        boot.write_text(
+            boot.read_text(encoding="utf-8").replace("| none |", "| `*: X` |"),
+            encoding="utf-8",
+        )
+        document = json.loads(defect_report.declared_differences(self.collect()))
+        self.assertEqual(1, len(document["rows"]))
+        self.assertEqual({"node", "fortran", "kind", "port", "entries"},
+                         set(document["rows"][0].keys()))
+
     # ------------------------------------------------------------- rendering
 
     def test_rendering_is_idempotent(self) -> None:
@@ -303,7 +430,8 @@ class DefectReportTest(unittest.TestCase):
     def test_kinds_are_ordered_algorithm_first(self) -> None:
         self.write("a/BOOT.md", NODE_BOOT.format(
             name="a",
-            rows="| 999 | algorithm | changes the answer | not measured | reproduced | none |",
+            rows="| 999 | algorithm | changes the answer | not measured | reproduced | none "
+                 "| unchanged |",
         ))
         defects = self.collect()
         content = defect_report.render(defects, datetime.date(2026, 9, 20))
@@ -313,8 +441,10 @@ class DefectReportTest(unittest.TestCase):
     def test_rows_are_ordered_by_first_fortran_line_inside_a_kind(self) -> None:
         self.write("a/BOOT.md", NODE_BOOT.format(
             name="a",
-            rows="| 500 | dead | second in Fortran order | not measured | reproduced | none |\n"
-                 "| 50 | dead | first in Fortran order | not measured | reproduced | none |",
+            rows="| 500 | dead | second in Fortran order | not measured | reproduced | none "
+                 "| unchanged |\n"
+                 "| 50 | dead | first in Fortran order | not measured | reproduced | none "
+                 "| unchanged |",
         ))
         defects = [defect for defect in self.collect() if defect.node == "a"]
         content = defect_report.render(defects, datetime.date(2026, 9, 20))
@@ -366,9 +496,44 @@ class DefectReportTest(unittest.TestCase):
         stale_date = output.read_text(encoding="utf-8").replace(
             datetime.date.today().isoformat(), "2020-01-01",
         )
-        output.write_text(stale_date, encoding="utf-8")
+        output.write_bytes(stale_date.encode("utf-8"))
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(0, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+
+    def test_check_reads_a_crlf_page_as_stale(self) -> None:
+        """Red once: the old writer's output, write_text on Windows, is the same page
+        with CRLF, and --check must fail it, naming the CR bytes."""
+        output = self.root / "docs" / "ORIGINAL-DEFECTS.md"
+        declared = self.root / "docs" / "declared-differences.json"
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, defect_report.main([str(self.root), "--output", str(output)]))
+        output.write_bytes(output.read_bytes().replace(b"\n", b"\r\n"))
+        with contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()) as captured:
+            self.assertEqual(1, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+        self.assertIn("CR bytes", captured.getvalue())
+
+        output.write_bytes(output.read_bytes().replace(b"\r\n", b"\n"))
+        declared.write_bytes(declared.read_bytes().replace(b"\n", b"\r\n"))
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(1, defect_report.main([str(self.root), "--output", str(output), "--check"]))
+
+    def test_the_writer_emits_no_carriage_return_on_any_platform(self) -> None:
+        """Right once: a regenerated page and twin hold LF only, and regenerating over
+        CRLF files repairs them so that --check is green again."""
+        output = self.root / "docs" / "ORIGINAL-DEFECTS.md"
+        declared = self.root / "docs" / "declared-differences.json"
+        arguments = [str(self.root), "--output", str(output)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, defect_report.main(arguments))
+            output.write_bytes(output.read_bytes().replace(b"\n", b"\r\n"))
+            declared.write_bytes(declared.read_bytes().replace(b"\n", b"\r\n"))
+            self.assertEqual(0, defect_report.main(arguments))
+            self.assertEqual(0, defect_report.main(arguments + ["--check"]))
+        for path in (output, declared):
+            content = path.read_bytes()
+            self.assertIn(b"\n", content)
+            self.assertNotIn(b"\r", content, path.name)
 
     def test_check_without_a_page_yet_is_an_error_not_a_write(self) -> None:
         output = self.root / "docs" / "ORIGINAL-DEFECTS.md"
@@ -418,6 +583,15 @@ class RealTreeTest(unittest.TestCase):
                     "algorithm row from {} has no place and is not 'not measured': {}".format(
                         defect.node, defect.consequence),
                 )
+
+    def test_the_summary_line_of_the_real_page_counts_every_row(self) -> None:
+        defects = defect_report.collect(str(self.ROOT))
+        content = defect_report.render(defects, datetime.date(2026, 9, 20))
+        counted = re.search(
+            r"^By `Corrected`: (\d+) unchanged, (\d+) not reachable, (\d+) fixed\.$",
+            content, re.MULTILINE)
+        self.assertIsNotNone(counted)
+        self.assertEqual(len(defects), sum(int(number) for number in counted.groups()))
 
     def test_rendering_the_real_tree_is_idempotent(self) -> None:
         defects = defect_report.collect(str(self.ROOT))

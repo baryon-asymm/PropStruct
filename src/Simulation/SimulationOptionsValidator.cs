@@ -1,4 +1,5 @@
 using PropStruct.Execution;
+using PropStruct.Particle;
 
 namespace PropStruct.Simulation;
 
@@ -67,6 +68,19 @@ internal static class SimulationOptionsValidator
             throw new ArgumentException("PocketRedrawBudget must be positive.", nameof(options));
         }
 
+        if (!Enum.IsDefined(options.Model))
+        {
+            throw new ArgumentException($"Model {(int)options.Model} is not a {nameof(ModelKind)} member.", nameof(options));
+        }
+
+        if (options.Corrections is { } corrections
+            && (options.Model == ModelKind.Original || (corrections & ~CorrectionSet.All) != CorrectionSet.None))
+        {
+            throw new ArgumentException(
+                "Corrections is a seam of the Corrected model: it needs Model = Corrected and holds no bit outside CorrectionSet.All.",
+                nameof(options));
+        }
+
         if (options.Mode == ExecutionMode.Reference && options.Accelerator == AcceleratorKind.Cuda)
         {
             throw new ArgumentException("Reference mode needs the CPU accelerator; Cuda was requested.", nameof(options));
@@ -86,6 +100,11 @@ internal static class SimulationOptionsValidator
         if (options.Streams == StreamLayout.Original && options.Mode == ExecutionMode.Batched)
         {
             throw new SimulationFailedException(RunStatus.InvalidSetup, LayoutRefusalMessage(options));
+        }
+
+        if (options.Model == ModelKind.Corrected && options.Precision == PrecisionKind.Original)
+        {
+            throw new SimulationFailedException(RunStatus.InvalidSetup, ModelRefusalMessage(options));
         }
     }
 
@@ -112,4 +131,11 @@ internal static class SimulationOptionsValidator
         $"particle boundaries in a way batched execution does not carry, so it is refused with " +
         $"SimulationOptions.Mode = {options.Mode} (root BOOT.md, \"Two stream layouts\"); " +
         $"use {nameof(ExecutionMode.Reference)} instead.";
+
+    /// <summary>The model kind's refusal (BOOT.md, "## Corrected model", "The refusal"): names the requested model and the requested precision kind.</summary>
+    private static string ModelRefusalMessage(SimulationOptions options) =>
+        $"SimulationOptions.Model is {nameof(ModelKind.Corrected)}, which has no binary32 reference to reproduce, " +
+        $"so it is refused with SimulationOptions.Precision = {options.Precision} " +
+        $"(root BOOT.md, \"Model kind is an option of every run\"); " +
+        $"use {nameof(PrecisionKind.Binary64)} instead.";
 }

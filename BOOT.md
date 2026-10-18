@@ -34,8 +34,11 @@ arithmetic among them. Both are the same program, and each run says which it was
 Not goals of version 1: the original's generators GSV=1 and GSV=3 (every shipped
 formulation uses GSV=2); byte-exact replay of the original executable, whose REAL*4
 storage `Original` reproduces but whose sample path parts from the port's at the first
-REAL*4-sensitive branch; interactive input; graphics; any change of the model itself.
-Defects of the original are reproduced or declared, never silently fixed.
+REAL*4-sensitive branch; interactive input; graphics. Defects of the original are
+reproduced or declared, never silently fixed; the `Corrected` model kind fixes its explicit
+errors, openly and as an option (`## Invariants`, "Model kind").
+
+⚠ 2026-10-18: was "any change of the model itself" a not-goal, now the `Corrected` model kind → HISTORY.md#purpose-corrected-model-2026-10-18
 
 ⚠ 2026-10-04: was "packaging and publishing" a not-goal and the original's archive at `legacy/PropStructV3.zip`, now delivered and kept outside the repository (`## Delivery`) → HISTORY.md#delivery-decided-2026-10-04
 
@@ -128,6 +131,16 @@ Defects of the original are reproduced or declared, never silently fixed.
   move its own headline answers by five to seven per cent on HPEPA3, which the
   statistical criterion's band, six to nine standard deviations wide, does not see.
 
+- **Model kind is an option of every run, and `Original` is the default** (decided
+  2026-10-18, owner). `Original` is the original's model, bit for bit as before the option
+  (`tests/Simulation.Tests`, the seed-zero guard). `Corrected` fixes the original's explicit
+  errors — what its own code shows to be an error, not a modelling choice — and nothing
+  else, each a row marked `fixed` in `docs/ORIGINAL-DEFECTS.md`. It is a parameter of the
+  one particle program, setup and per-cycle computation, not a second implementation; it
+  runs under `Binary64` only (refused with a status under `Original` precision), in both
+  modes and layouts; recorded in the result and, under `Corrected` only, in a `results.m`
+  footer (`src/Simulation`, "## Corrected model"). It has no external reference.
+
 - **The original generator, bit for bit.** GSV=2 is the multiplicative congruential
   generator modulo 2¹²⁸ with the original multiplier and the six seeds exactly as
   written in the source (`Random`); its 128-bit state sequence is reproduced exactly.
@@ -160,8 +173,10 @@ Defects of the original are reproduced or declared, never silently fixed.
   the six original streams continued across particles and cycles: the same decisions
   in the same order as the Fortran. The pocket histogram QKS1 is refreshed after every
   attempt that completes the neighbour loop (attempts abandoned inside the loop skip
-  the refresh, as in the original); rejected attempts keep all their side effects;
-  accumulators are never reset between cycles.
+  the refresh, as in the original); rejected attempts keep all their side effects, but
+  `fmkarm2`'s under `Corrected` (`src/Particle`); no accumulator is reset between cycles.
+
+  ⚠ 2026-10-18: was "rejected attempts keep all their side effects" under every model, now all but `fmkarm2`'s under `Corrected` → HISTORY.md#reference-mode-side-effects-corrected-2026-10-18
 - **Batched mode freezes only QKS1, per launch** (decided 2026-09-17, refined the same
   day). Within one launch of the particle kernel the normalized pocket histogram is
   fixed; before each launch, the first of a batch and every relaunch of its unfinished
@@ -186,12 +201,14 @@ Defects of the original are reproduced or declared, never silently fixed.
   figures are measured, recorded and never loosened to go green.
 - **The port agrees with the original statistically** (decided 2026-09-17), by the
   criterion in `## Constraints`, on the reference formulations, **under the `Original`
-  precision kind**. Under `Binary64` it differs by design wherever the original's REAL*4
+  model and precision kinds**. Under `Binary64` it differs by design wherever the original's REAL*4
   storage degrades the original's own answer ("Precision kind" above). Batched and CUDA
   runs are held to reference `Binary64` on the port's own seeds instead (link 3 of the
   acceptance criterion "The `Original` accumulation kind reproduces…").
 
   ⚠ 2026-09-24: was stated without the precision kind, now under `Original` only → HISTORY.md#statistical-agreement-under-original
+
+  ⚠ 2026-10-18: was "under the `Original` precision kind", now the `Original` model too → HISTORY.md#statistical-agreement-original-model-2026-10-18
 
 - **No hidden state.** Numerical routines take every input, generator state and
   scratch area through parameters; numerical nodes hold no mutable static field.
@@ -248,7 +265,10 @@ the fixture generator scripts; the original program, outside the repository
     rounding of literals is not reproduced, except in the setup and per-cycle planes
     under the `Original` precision kind ("Precision kind" above), where a REAL*4 literal
     is its binary32 value and a literal expression is folded in binary32; the attempt
-    plane's literals stay as written under either kind;
+    plane's literals stay as written under either kind; under the `Corrected` model a
+    literal approximating π or 1/3 is that constant, `12.56636` excepted;
+
+    ⚠ 2026-10-18: was "stay as written" under every model, now exact under `Corrected` → HISTORY.md#literals-corrected-model-2026-10-18
 
     ⚠ 2026-09-23: was "the REAL*4 rounding of literals is not reproduced", without exception, now reproduced for the setup plane's literal expressions under `Original` → HISTORY.md#literals-setup-plane
 
@@ -268,7 +288,9 @@ the fixture generator scripts; the original program, outside the repository
   is stale. A row is an index into its node's own prose, never a retelling; its
   consequence is a measured effect with its place, or `not measured`, never a guess.
   The table's sixth column, `Differing cells`, is assembled into the machine-readable
-  twin `docs/declared-differences.json` (`tools/defect-report/API.md`).
+  twin `docs/declared-differences.json` (`tools/defect-report/API.md`). Its seventh,
+  `Corrected`, says what the `Corrected` model does with the defect: `fixed` (naming the
+  flag that carries the fix), `unchanged` or `not reachable`.
 
 - **Execution model:** a cycle is `N` accepted base particles; cycle 0 is the warm-up,
   cycles 1..KXX follow; a cycle runs as batches of `B` particles (default: the whole
@@ -298,12 +320,8 @@ the fixture generator scripts; the original program, outside the repository
     clock-seeded) are kept as a cross-check, not as a pass condition;
   - every scalar and histogram cell printed in `results.m` is compared with a
     per-quantity threshold at the family-wise level `α = 10⁻³` per formulation and per
-    report, over each report's machine-counted `m` — three reports (`Compare`, the
-    tail-row mean, the adaptive index-matched comparison), so a run's nominal level is
-    ≤ 3·10⁻³: a Student-t band `t · sd_R · √(1 + 1/R)` for continuous quantities, a
-    predictive interval from the counts for count-like cells, floors from the print
-    resolution; categories whose index meaning shifts between runs are compared on
-    canonical axes. The exact rules are `tests/Harness`'s;
+    report, over each report's machine-counted `m` — three reports, so a run's nominal
+    level is ≤ 3·10⁻³; the bands, floors and canonical axes are `tests/Harness`'s;
 
     ⚠ 2026-09-27: was one family-wise level per formulation, now per report → `tests/Harness/BOOT.md`, "## Null rate of the original"
 
@@ -334,30 +352,11 @@ the fixture generator scripts; the original program, outside the repository
     ⚠ 2026-09-26: was the null rate over "each reference against all `R`, both layouts" and the port failing "9 of 160", now the lagged layout for the references and 23 of 160 over the whole criterion → HISTORY.md#statistical-criterion-null-rate-wording
 
   ⚠ 2026-09-17: was GSV=3 replicas with a Student band and a Poisson floor for every quantity, now lagged/independent replicas with the per-quantity rules above → HISTORY.md#statistical-criterion-gsv3-replicas-withdrawn
-- **Known bias of the original's seeds** (measured 2026-09-17, HPEPA3; the per-quantity
-  table for every reference formulation is produced by `tests/Harness`). Mechanism:
-  within one attempt, the position inside its fraction of neighbour n+1 is the fraction
-  draw of neighbour n, so consecutive neighbour sizes are dependent, and the distance
-  draw of neighbour n is, to a correlation of 0.999994, the fraction draw of neighbour
-  n+1 (stream 3's transposed seed limb, see "Execution model", ⚠ 2026-09-19), so a
-  neighbour's size depends on the previous neighbour's distance. Which of the two
-  carries how much of the bias is not measured: the experiment that removed the whole
-  shift made streams 4 and 5 independent, which cut both ties at once. The pocket and
-  bridge quantities are biased, by an amount and even a sign that depend on the
-  formulation: lagged against independent replicas, `Dkarm43(1)` differs by −10.9 % on
-  PSAN02n and +6.1 % on P33 (difference of means; five quantities in `ACCEPTANCE.md`).
-
-  The oxidizer **size moments** are unaffected: every one of them agrees between the
-  layouts on every reference formulation, at the magnitudes `Dok43all` shows (0.05 % at
-  most). The oxidizer size **distribution** is not: see the correction below. Results of
-  the original, archived or new, carry this bias; the `Independent` layout does not. The
-  per-quantity test is `tests/Harness`'s.
-
-  ⚠ 2026-09-20: was "only the oxidizer size distribution … is unaffected", now the moments unaffected and the distribution not (`epsdokfr` item withdrawn 2026-09-23) → HISTORY.md#known-bias-oxidizer-distribution
-
-  ⚠ 2026-09-27: was that withdrawal read as "an artefact of the independent replica set", drifting with the replica number; the drift is not significant at `α` (Spearman ρ = 0.546, p ≈ 0.03), so it rests on the port's own seeds alone → `tests/Harness/HISTORY.md#set-comparison-epsdokfr-evidence-2026-09-27`
-
-  ⚠ 2026-09-17: was the mass-type quantities (`Dkarm43`, `Zkarm`, the oxidizer size) read as agreeing within about one run's spread, now withdrawn → HISTORY.md#known-bias-mass-type-quantities-withdrawn
+- **Known bias of the original's seeds** (measured 2026-09-17): the `Original` layout's
+  lagged streams bias the pocket and bridge quantities, by an amount and even a sign that
+  depend on the formulation; the oxidizer size moments are unaffected; the `Independent`
+  layout carries no such bias. Mechanism, figures and corrections: `tests/Harness/BOOT.md`,
+  "## Known bias of the original's seeds" (moved there on 2026-10-18, §15).
 - **Performance:** CUDA and CPU batched mode are measured against the original in
   `tests/Benchmarks`, recorded and never asserted; the figures of record and the
   attempt-budget default they led to are that node's (E-B, adopted 2026-10-01). Decided
@@ -403,7 +402,10 @@ the fixture generator scripts; the original program, outside the repository
   its three generated classifications name.
 - No CUDA type outside `Execution`.
 - No silent fix of a defect of the original: reproduce it or declare it in the node's
-  `BOOT.md` with the Fortran line.
+  `BOOT.md` with the Fortran line; a fix exists only under the `Corrected` model, its row
+  marked `fixed`.
+
+  ⚠ 2026-10-18: was no fix under any model, now a declared fix under `Corrected` → HISTORY.md#taboo-silent-fix-2026-10-18
 - No loosening of a tolerance, no change of `α` or `R`, no entry in the exclusion list
   without computed evidence.
 - No reading of the Fortran source from a node that does not declare it as its

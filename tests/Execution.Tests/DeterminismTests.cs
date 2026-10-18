@@ -1,3 +1,4 @@
+using PropStruct.Particle;
 using PropStruct.Random;
 using Xunit;
 
@@ -6,7 +7,9 @@ namespace PropStruct.Execution.Tests;
 /// <summary>
 /// L2 (BOOT.md): the same batch on the CPU accelerator is bit-identical with 1, 4 and 16 threads, and
 /// between two runs (root BOOT.md, "Deterministic under every schedule"; acceptance criterion "The same
-/// configuration run twice, and with 1, 4 and 16 CPU threads, gives bit-identical results").
+/// configuration run twice, and with 1, 4 and 16 CPU threads, gives bit-identical results"), once under the
+/// <c>Original</c> model and once under the <c>Corrected</c> one (<see cref="CorrectionSet.All"/>; BOOT.md,
+/// "The model kind rides in <c>ModelSetup</c>").
 /// </summary>
 [Collection(LongClassesSerialTests.Name)]
 public sealed class DeterminismTests
@@ -18,12 +21,23 @@ public sealed class DeterminismTests
 
     [Fact]
     [Trait("Category", "Long")] // ~30s: a real HPEPA3 cycle 0 (100000 particles) plus four cycle-1 batches
-    public void TheSameBatchIsBitIdenticalAcrossThreadCountsAndRepeatedRuns()
+    public void TheSameBatchIsBitIdenticalAcrossThreadCountsAndRepeatedRuns() =>
+        AssertBitIdenticalAcrossThreadCountsAndRepeatedRuns(CorrectionSet.None);
+
+    [Fact]
+    [Trait("Category", "Long")] // ~30s, as the Original case
+    public void TheSameBatchIsBitIdenticalAcrossThreadCountsAndRepeatedRunsUnderTheCorrectedModel() =>
+        AssertBitIdenticalAcrossThreadCountsAndRepeatedRuns(CorrectionSet.All);
+
+    private static void AssertBitIdenticalAcrossThreadCountsAndRepeatedRuns(CorrectionSet corrections)
     {
         // One engine drives cycle 0 (its own thread count does not matter: it only produces the shared
         // starting point every configuration below is loaded with) and hands back the cycle-1-ready state.
         using var warmup = Engine.Create(AcceleratorKind.Cpu, RecordBudgetBytes, cpuThreads: 16);
-        var ready = ReferenceFormulationDriver.PrepareThroughCycle0(warmup, StreamLayout.Independent, seed: 0UL, "HPEPA3");
+        var ready = ReferenceFormulationDriver.PrepareThroughCycle0(warmup, StreamLayout.Independent, seed: 0UL, "HPEPA3",
+            corrections: corrections);
+        // The set must have reached the setup every engine below loads, or the Corrected case would repeat the Original one.
+        Assert.Equal(corrections, ready.Setup.Corrections);
 
         // Five configurations: 1 thread twice (proving "two runs" bit-identical), then 4 and 16 threads
         // once each, all compared against the first.

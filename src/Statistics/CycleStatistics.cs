@@ -11,10 +11,10 @@ namespace PropStruct.Statistics;
 /// 1084-1175 (<c>IF(IPRIS.EQ.0) GOTO 700</c>, line 1078): the fields of
 /// <see cref="CycleReport"/> that line range alone computes are <see cref="double.NaN"/>
 /// for <c>cycleIndex == 0</c> (BOOT.md, "## Report"). <c>categoriesStatus</c> carries
-/// <see cref="Categories.MergeAndDescribe"/>'s own status through unchanged: on anything
+/// <c>Categories.MergeAndDescribe</c>'s own status through unchanged: on anything
 /// but <see cref="CategoriesStatus.Ok"/> the returned <see cref="CycleReport"/>'s own
 /// category fields (<c>DpRow</c>, <c>Dpockets</c>, <c>Dokp43</c>, <c>Qdokkarm</c>,
-/// <c>Qdokso</c>) are the empty defaults <see cref="Categories.MergeAndDescribe"/>
+/// <c>Qdokso</c>) are the empty defaults <c>Categories.MergeAndDescribe</c>
 /// itself returns in that case, and the totals are left unread and unwritten by that
 /// call (root BOOT.md, "Failures are values": this node reports the status, the driver
 /// turns it into an exception).
@@ -56,6 +56,11 @@ internal static class CycleStatistics
         var rounding = new CyclePlaneRounding(setup.Kind);
         var order = new CyclePlaneOrder(setup.Kind);
 
+        // The Original precision kind reproduces the original and is never combined with a fix (BOOT.md,
+        // "## Corrected model", "The effective set"): the stored set is None there already, replaced here
+        // too for a setup built by hand.
+        var corrections = setup.Kind == PrecisionKind.Original ? CorrectionSet.None : setup.Corrections;
+
         GeneratorAccuracy(rounding, layout, integerTotals, realTotals,
             out var eps1, out var eps2, out var eps3, out var eps4, out var eps5, out var eps6, out var eps7);
 
@@ -65,20 +70,20 @@ internal static class CycleStatistics
             out var oxidizerWarning, out var fmdok);
 
         categoriesStatus = Categories.MergeAndDescribe(ndok, setup.Ncat, di, setup.CategoryStep, epsDok, realTotals[layout.DpMax],
-            layout, integerTotals, realTotals, setup.Kind,
+            layout, integerTotals, realTotals, setup.Kind, corrections,
             out var dpRow, out var dpockets, out var dokp43, out var qdokkarm, out var qdokso);
 
         Pockets(rounding, order, setup, layout, integerTotals, realTotals, epsDok,
             out var qkss, out var epsy, out var epsmd4, out var epsmd3, out var pocketWarning,
             out var vkso, out var d432, out var dqkarm, out var dp43, out var sdevp43, out var qks1);
 
-        Matrix(rounding, setup, tables, inputs, echoes.OxidizerMassFractionEffective, fmdok,
+        Matrix(rounding, setup, tables, inputs, corrections, echoes.OxidizerMassFractionEffective, fmdok,
             out var gdokleft, out var vdokleft, out var plotsmdok, out var plotsm, out var mp);
 
         var vdokstr = realTotals.Slice(layout.Vdokstr, ndok).ToArray();
         var pdoksmall = SmallParticles.Probability(
             ndok, di, setup.Ak2, echoes.OxidizerMassFractionEffective, gdokleft, setup.PocketCoefficient,
-            inputs.OxidizerDensity, inputs.PropellantDensity, vdokstr, setup.Kind);
+            inputs.OxidizerDensity, inputs.PropellantDensity, vdokstr, setup.Kind, corrections);
         Array.Copy(pdoksmall, nextPdoksmall, ndok);
         nextDmaxxx = SmallParticles.MaxSize(ndok, di, echoes.Ddokmax, setup.PocketCoefficient, setup.BridgeCoefficient, pdoksmall, setup.Kind);
 
@@ -109,7 +114,7 @@ internal static class CycleStatistics
                 out dkarm43Cor, out sdevp43Cor, out dqkarmCor, out dfmk432, out sdevp243,
                 out dqmkm1, out dqmkm2, out qmcoef);
 
-            MassFractions(rounding, setup, layout, realTotals, echoes.OxidizerMassFractionEffective, inputs.OxidizerDensity,
+            MassFractions(rounding, setup, layout, realTotals, corrections, echoes.OxidizerMassFractionEffective, inputs.OxidizerDensity,
                 gdokleft, plotsmdok, plotsm, vdokleft, out dolM1, out dolM2, out dolM3);
 
             Convergence(rounding, echoes, epsy, epsmd3, epsmd4, alldok43, alldoksd, dolM2,
@@ -401,7 +406,8 @@ internal static class CycleStatistics
     /// 2026-09-24").
     /// </summary>
     private static void Matrix(
-        CyclePlaneRounding rounding, in ModelSetup setup, SetupTables tables, SetupInputs inputs, double ggg, double[] fmdok,
+        CyclePlaneRounding rounding, in ModelSetup setup, SetupTables tables, SetupInputs inputs, CorrectionSet corrections,
+        double ggg, double[] fmdok,
         out double gdokleft, out double vdokleft, out double plotsmdok, out double plotsm, out double mp)
     {
         var di = setup.CellSize;
@@ -413,11 +419,21 @@ internal static class CycleStatistics
 
         // 1004: the register sum is added unrounded into 1006.
         var gdoksfr = 0.0;
+        var below = fmdokIndex * di;
         for (var i = 0; i < setup.FractionCount; i++)
         {
             if (tables.PocketForming[i] == 0)
             {
-                gdoksfr += tables.MassShare[i] * ggg;
+                if ((corrections & CorrectionSet.GdokleftOnce) != 0)
+                {
+                    // GdokleftOnce: the mass of this fraction below b is already in FMDOK, so only the rest counts.
+                    var countedInFmdok = MassCumulative(setup.SizeLaw, tables.Bounds[2 * i], tables.Bounds[2 * i + 1], below);
+                    gdoksfr += tables.MassShare[i] * (1.0 - countedInFmdok) * ggg;
+                }
+                else
+                {
+                    gdoksfr += tables.MassShare[i] * ggg;
+                }
             }
         }
 
@@ -436,9 +452,41 @@ internal static class CycleStatistics
         var eta = inputs.AggregatedOxideFraction;
         var t3 = rounding.Temporary(1.0 + rounding.Fold(3.0 * rounding.Literal(0.016)) * eta / (rounding.Fold(2.0 * rounding.Literal(0.027)) + rounding.Fold(3.0 * rounding.Literal(0.016)) * (1.0 - eta))); // Fortran 1015
         var t4 = rounding.Temporary((1.0 - eta) / 2000.0 + eta / 3000.0); // Fortran 1016
+        if (corrections.HasFlag(CorrectionSet.ExactConstants))
+        {
+            // ExactConstants: pi and one third at 1014 and 1016, on the shared T3, T4 and S2.
+            var exactMass = Math.PI / 6.0 * plotsmdok * inputs.MetalMassFraction / s2;
+            exactMass *= t3;
+            mp = 2.0 * Math.Pow(0.75 / Math.PI * exactMass * t4, 1.0 / 3.0);
+            return;
+        }
+
         var mpRegister = rounding.Fold(rounding.Literal(3.14159) / 6.0) * plotsmdok * inputs.MetalMassFraction / s2; // Fortran 1014
         mpRegister *= t3; // 1015
         mp = rounding.Store(2.0 * Math.Pow(rounding.Fold(0.75 / rounding.Literal(3.14159)) * mpRegister * t4, rounding.Literal(0.3333))); // Fortran 1016
+    }
+
+    /// <summary>
+    /// The share of a fraction's mass below <paramref name="size"/> (<c>GdokleftOnce</c>, BOOT.md, "## Corrected model"):
+    /// 0 at or below the lower bound, 1 at or above the upper one, between them the mass CDF of the fraction's law,
+    /// <c>(b^4 - l^4)/(u^4 - l^4)</c> for the law uniform in <c>D</c> (<c>JZZ = 2</c>) and <c>(b - l)/(u - l)</c> for the
+    /// other.
+    /// </summary>
+    private static double MassCumulative(int sizeLaw, double lower, double upper, double size)
+    {
+        if (size <= lower)
+        {
+            return 0.0;
+        }
+
+        if (size >= upper)
+        {
+            return 1.0;
+        }
+
+        return sizeLaw == 2
+            ? (Math.Pow(size, 4) - Math.Pow(lower, 4)) / (Math.Pow(upper, 4) - Math.Pow(lower, 4))
+            : (size - lower) / (upper - lower);
     }
 
     /// <summary>Fortran lines 1087-1113 (cycles &gt;= 1 only).</summary>
@@ -510,10 +558,14 @@ internal static class CycleStatistics
         }
     }
 
-    /// <summary>Fortran lines 1137-1152 (cycles &gt;= 1 only): in-place division of <c>VdokTotal</c> (per cell) and <c>VdokTotal2</c> (scalar) by <c>1 - gdokleft/GGG</c>, as the original (BOOT.md, "In-place rewrites of the totals").</summary>
+    /// <summary>
+    /// Fortran lines 1137-1152 (cycles &gt;= 1 only): in-place division of <c>VdokTotal</c> (per cell) and <c>VdokTotal2</c>
+    /// (scalar) by <c>1 - gdokleft/GGG</c>, as the original (BOOT.md, "In-place rewrites of the totals"); under
+    /// <see cref="CorrectionSet.VdokTotalOnCopy"/> the quotients feed the sums and are stored nowhere.
+    /// </summary>
     private static void MassFractions(
         CyclePlaneRounding rounding, in ModelSetup setup, AccumulatorLayout layout, Span<double> realTotals,
-        double ggg, double plot1, double gdokleft, double plotsmdok, double plotsm, double vdokleft,
+        CorrectionSet corrections, double ggg, double plot1, double gdokleft, double plotsmdok, double plotsm, double vdokleft,
         out double dolM1, out double dolM2, out double dolM3)
     {
         var ndok = setup.Ndok;
@@ -538,7 +590,11 @@ internal static class CycleStatistics
         for (var i = 0; i < ndok; i++)
         {
             var updated = rounding.Store(realTotals[layout.VdokTotal + i] / divisor); // Fortran 1145
-            realTotals[layout.VdokTotal + i] = updated; // in-place rewrite, as the original (BOOT.md).
+            if (!corrections.HasFlag(CorrectionSet.VdokTotalOnCopy))
+            {
+                realTotals[layout.VdokTotal + i] = updated; // in-place rewrite, as the original (BOOT.md).
+            }
+
             vdokTotalSum += updated;
         }
 
@@ -546,7 +602,10 @@ internal static class CycleStatistics
 
         // 1150's store is what 1151 reads, and what the next cycle reads.
         var vdokTotal2 = rounding.Store(realTotals[layout.VdokTotal2] / divisor); // Fortran 1150
-        realTotals[layout.VdokTotal2] = vdokTotal2;
+        if (!corrections.HasFlag(CorrectionSet.VdokTotalOnCopy))
+        {
+            realTotals[layout.VdokTotal2] = vdokTotal2; // in-place rewrite, as the original (BOOT.md).
+        }
 
         dolM3 = rounding.Store(realTotals[layout.VmkmTotal2] * (1.0 - vdokleft) / (t2 * (vdokTotal2 * plot1) / ggg / plotsm)); // Fortran 1151
     }

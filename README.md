@@ -100,6 +100,18 @@ result and `results.m` record both.
 The original's defects are reproduced or declared, one row each, in
 [docs/ORIGINAL-DEFECTS.md](docs/ORIGINAL-DEFECTS.md).
 
+## The Corrected model
+
+A third choice, the model kind, is `Original` by default: the original's model exactly
+as before. `Corrected` (`Model = ModelKind.Corrected`, `propstruct run … --model
+corrected`) fixes the original program's explicit errors and nothing else — each one a
+row marked `fixed` in the `Corrected` column of
+[docs/ORIGINAL-DEFECTS.md](docs/ORIGINAL-DEFECTS.md) — and labels its output: a footer
+line in `results.m`, `RunDiagnostics.Model` in the result. It computes under `Binary64`
+only (refused with `--precision original`), in both modes and layouts, and has no
+external reference to agree with: the comparison with the original above is the
+`Original` model's.
+
 ## Platform and CUDA
 
 Windows x64. The CPU accelerator needs nothing beyond the package. CUDA additionally

@@ -152,7 +152,7 @@ jobs:
         shell: powershell
         env:
           PROPSTRUCT_REQUIRE_CUDA: '1'
-        run: dotnet test PropStruct.sln --configuration Release --no-build --filter "Category!=Legacy"
+        run: dotnet test PropStruct.sln --configuration Release --no-build --filter "Category!=Legacy&Category!=Measurement"
 
       - name: Upload bit-snapshot diagnostics
         if: failure()

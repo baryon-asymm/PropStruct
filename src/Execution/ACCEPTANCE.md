@@ -112,3 +112,35 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
       formulations, time line aside, hashes equal between the commit and its parent
       (and the parent again); a control, HMX at seed 1, differs. Evidence and the
       SHA-256 of the logs: `tests/Benchmarks/HISTORY.md#ship-window-2026-10-03`.
+
+### Corrected model (designed 2026-10-18, `BOOT.md`, its tiers under `Corrected`)
+
+- [x] CUDA against the CPU host-thread path under `CorrectionSet.All`, per reference
+      formulation, measured and recorded as its own table in `BOOT.md` with tiers
+      derived by the `Original` table's rule, and within them; the `Original` table and
+      `TierTableTests`' `Original` rows unedited and green. Red once: a tier set below
+      the observed figure fails. 2026-10-18, `TierTableTests`
+      (`CudaAgreesWithTheCpuAcceleratorOnAWholeCycleBatchUnderTheCorrectedModel`,
+      Release, three runs identical, the third under `PROPSTRUCT_REQUIRE_CUDA=1`; the
+      table is "## GPU/CPU tiers under `Corrected`" in `BOOT.md`); the `Original` theory
+      reran green with its figures digit for digit; red, a relative tier of 1E-15 and a
+      share tier of -1 on HPEPA3, `tests/Execution.Tests/BOOT.md`, "## Mutations".
+- [x] The same `Corrected` batch on the CPU is bit-identical with 1, 4 and 16 threads
+      and between two runs (`DeterminismTests` with a `Corrected` case). 2026-10-18,
+      `DeterminismTests.TheSameBatchIsBitIdenticalAcrossThreadCountsAndRepeatedRunsUnderTheCorrectedModel`;
+      red, the 16-thread configuration loaded with `Corrections = None`; right, the
+      set reaching the attempts, `CorrectedModelReachesTheEnginesTests` (positive
+      control, relative effect 1.0, `tests/Execution.Tests/BOOT.md`, "## Mutations").
+- [x] The host-thread path equals the ILGPU-kernel oracle bit for bit under
+      `CorrectionSet.All` (`HostThreadOracleTests` with a `Corrected` case), and
+      reference mode equals a continued batch with `attemptsPerLaunch = 1` under it
+      (`ReferenceModeEqualsContinuedBatchTests` with a `Corrected` case). 2026-10-18,
+      `HostThreadOracleTests.HostThreadsEqualsTheIlgpuCpuAcceleratorOracleBitForBitUnderTheCorrectedModel`
+      and
+      `ReferenceModeEqualsContinuedBatchTests.ReferenceModeEqualsContinuedBatchBitForBitUnderTheCorrectedModel`,
+      both in the fast set; red, the second engine of each loaded with
+      `Corrections = None` (`tests/Execution.Tests/BOOT.md`, "## Mutations").
+      Both run cycle 0, where of the attempt's four flags only `ExactConstants` acts
+      (Fortran 581 skips the window, 719 line 720); the cycle-1 kernel coverage under
+      `All` is `tests/Particle.Tests`' `HostEqualsCpuAcceleratorTests` and the `Long`
+      determinism and tier facts (final review, 2026-10-18).

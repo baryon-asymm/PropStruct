@@ -27,21 +27,25 @@ public class HostEqualsCpuAcceleratorTests : IClassFixture<CpuHost>
     }
 
     [Theory]
-    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1)]   // accepted, cycle 1, pockets and bridges
-    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 0)]   // accepted, cycle 0
-    [InlineData(2.0, 0.2, 1.0, 0.1, 10.0, 1)]   // restarted after loop (no pocket)
-    public void RunMatchesOnHostAndTheCpuAccelerator(double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag)
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, 0u, 1e9)]   // accepted, cycle 1, pockets and bridges
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 0, 0u, 1e9)]   // accepted, cycle 0
+    [InlineData(2.0, 0.2, 1.0, 0.1, 10.0, 1, 0u, 1e9)]   // restarted after loop (no pocket)
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.BridgeFrustum, 1e9)] // the frustum volume on the kernel path
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.All, 1e9)]           // the Corrected model on the kernel path
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, (uint)CorrectionSet.All, 1e-9)]          // rejected by line 735 under All: Fmkarm2 not committed
+    [InlineData(1.0, 0.1, 1.0, 0.1, 10.0, 1, 0u, 1e-9)]                               // rejected by line 735 under None: Fmkarm2 committed
+    public void RunMatchesOnHostAndTheCpuAccelerator(double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag, uint corrections, double nnMax)
     {
         var acc = _host.Accelerator;
 
-        using var hostScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag);
+        using var hostScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag, corrections: (CorrectionSet)corrections, nnMax: nnMax);
         var hostStreams = OriginalSeeds.Streams;
         var hostOutcome = hostScenario.Run(ref hostStreams);
         var hostIntegerTotals = hostScenario.AllIntegerTotals();
         var hostRecord = hostScenario.AllRecords();
         var hostScratch = hostScenario.AllScratch();
 
-        using var kernelScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag);
+        using var kernelScenario = Scenario.Build(acc, size, cellSize, lambda, ak3, ak4, cycleFlag, corrections: (CorrectionSet)corrections, nnMax: nnMax);
         using var streamsBuffer = acc.Allocate1D(new[] { OriginalSeeds.Streams });
         using var outcomeBuffer = acc.Allocate1D<byte>(1);
 

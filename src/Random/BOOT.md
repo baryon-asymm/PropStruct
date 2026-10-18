@@ -226,11 +226,11 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
-| 52–63 | statistics | The six seeds are the source's own limbs, unchanged: streams 6, 5, 4, 2, 1 start at a⁰, a¹, a², a⁴, a⁵ — one sequence offset by a power of `a` rather than six independent streams (`## Invariants`, `## Constraints`, "Batched derivation" ⚠). | measured: biases the pocket and bridge quantities by an amount and sign that depend on the formulation, per-formulation table in `root BOOT.md`, "Known bias of the original's seeds". | reproduced | none |
-| 52–63 | statistics | Stream 3 carries the limb 3784 where a³ has 3748, a transposition in the original (`## Invariants`); consumed in lockstep with streams 4 and 5, `S3 = a³ + 36·2¹⁰⁴`. | measured: X1 of neighbour n predicts X2 of neighbour n+1 with Pearson correlation 0.999994 over 10⁶ draws from the original seeds (`tests/Random.Tests`, wave-8 measurement, not committed as a permanent test — the permanent test is the exact ratio, not the correlation). | reproduced | none |
-| stream 6 (`## Constraints`, "Stream roles") | statistics | Two roles, X3 (pocket size for a bridge) and X4 (pocket-in-pocket and bridge decisions), draw from the same stream 6 rather than from streams of their own (`## Constraints`); the measured bias table (`root BOOT.md`, "Known bias of the original's seeds") covers the seed lags, not this sharing. | not measured | reproduced | none |
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
+| 52–63 | statistics | The six seeds are the source's own limbs, unchanged: streams 6, 5, 4, 2, 1 start at a⁰, a¹, a², a⁴, a⁵ — one sequence offset by a power of `a` rather than six independent streams (`## Invariants`, `## Constraints`, "Batched derivation" ⚠). | measured: biases the pocket and bridge quantities by an amount and sign that depend on the formulation, per-formulation table in `root BOOT.md`, "Known bias of the original's seeds". | reproduced | none | unchanged |
+| 52–63 | statistics | Stream 3 carries the limb 3784 where a³ has 3748, a transposition in the original (`## Invariants`); consumed in lockstep with streams 4 and 5, `S3 = a³ + 36·2¹⁰⁴`. | measured: X1 of neighbour n predicts X2 of neighbour n+1 with Pearson correlation 0.999994 over 10⁶ draws from the original seeds (`tests/Random.Tests`, wave-8 measurement, not committed as a permanent test — the permanent test is the exact ratio, not the correlation). | reproduced | none | unchanged |
+| stream 6 (`## Constraints`, "Stream roles") | statistics | Two roles, X3 (pocket size for a bridge) and X4 (pocket-in-pocket and bridge decisions), draw from the same stream 6 rather than from streams of their own (`## Constraints`); the measured bias table (`root BOOT.md`, "Known bias of the original's seeds") covers the seed lags, not this sharing. | not measured | reproduced | none | unchanged |
 
 ## Taboos
 

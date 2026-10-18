@@ -31,9 +31,11 @@ decide the mode (design or coding), run the linter before and after the work.
   directory holds the original's five files): `dotnet test PropStruct.sln -c Release
   --filter "Category=Legacy"`
 - Tests, full set (needs the original as well; red without it): `dotnet test
-  PropStruct.sln`
+  PropStruct.sln --filter "Category!=Measurement"`
+- Tests, the hand-run measurements (about 95 minutes): `dotnet test PropStruct.sln -c
+  Release --filter "Category=Measurement"`
 - Tests, the release's GPU job: `dotnet test PropStruct.sln -c Release --filter
-  "Category!=Legacy"` with `PROPSTRUCT_REQUIRE_CUDA=1`
+  "Category!=Legacy&Category!=Measurement"` with `PROPSTRUCT_REQUIRE_CUDA=1`
 - Scan for the original's text and bytes, from the delivery's stage S2 (`tools/legacy`):
   `python -X utf8 tools/legacy/scan.py . --hashes`
 

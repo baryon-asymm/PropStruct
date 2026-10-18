@@ -2,11 +2,13 @@
 
 A test project; it exposes nothing but its tests and its tier table.
 
-## Artifacts ⏳
+## Artifacts ✅
 
 ```text
-tests/Execution.Tests/GpuCpuTiers.cs      the tier table of CUDA against the CPU accelerator, with derivations
+tests/Execution.Tests/TierTableTests.cs   the tier tables of CUDA against the CPU, one per model kind, with their checks
 ```
+
+⚠ 2026-10-18: was a planned `GpuCpuTiers.cs`, which never existed; the tables live in `TierTableTests` (`Tiers`, `CorrectedTiers`), their derivations in `src/Execution/BOOT.md`.
 
 ## Categories after the delivery ✅
 

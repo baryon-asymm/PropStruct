@@ -36,16 +36,21 @@ internal static class ReferenceFormulationDriver
         Engine Engine, ModelSetup Setup, SetupTables Tables, Formulation Formulation, ulong NextOrdinal,
         long[] IntegerTotals, double[] RealTotals, double Dmaxxx, double[] Pdoksmall);
 
-    /// <summary>Reads <paramref name="formulationName"/>.dat, completes the setup hand-off, runs cycle 0 in full, and calls <see cref="CycleStatistics.Compute"/> to prepare cycle 1's inputs.</summary>
+    /// <summary>
+    /// Reads <paramref name="formulationName"/>.dat, completes the setup hand-off, runs cycle 0 in full, and calls <see cref="CycleStatistics.Compute"/> to prepare cycle 1's inputs.
+    /// <paramref name="corrections"/> is the model's set (<see cref="CorrectionSet.None"/>, the <c>Original</c> model, by default;
+    /// <see cref="CorrectionSet.All"/>, the <c>Corrected</c> one): it rides in the returned <see cref="Cycle1Ready.Setup"/>.
+    /// </summary>
     public static Cycle1Ready PrepareThroughCycle0(
-        Engine engine, StreamLayout layout, ulong seed, string formulationName, int attemptsPerLaunch = 64)
+        Engine engine, StreamLayout layout, ulong seed, string formulationName, int attemptsPerLaunch = 64,
+        CorrectionSet corrections = CorrectionSet.None)
     {
         var path = RepositoryPaths.Resolve("tests", "Fixtures", "Legacy", "formulations", formulationName + ".dat");
         var formulation = DatFile.Read(path);
         var parameters = ModelParameters.Default;
 
         var prepareStatus = Setup.Prepare(
-            formulation, parameters, PrecisionKind.Binary64, NeighbourBudget, PocketRedrawBudget,
+            formulation, parameters, PrecisionKind.Binary64, corrections, NeighbourBudget, PocketRedrawBudget,
             out var setup, out var tables, out var draw, out var pending, out var inputs);
         if (prepareStatus != SetupStatus.Ok)
         {

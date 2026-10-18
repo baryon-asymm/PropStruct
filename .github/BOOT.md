@@ -146,8 +146,9 @@ time, and `.claude/` is not published. In addition:
   (`ubuntu-latest`); `hosted` (`windows-latest`, `actions/hosted-checks`); `gpu`
   (`[self-hosted, windows, gpu]`, a timeout of 45 minutes, set from the rehearsal's 12
   minutes 6 seconds, one measurement: the preflight, the Release build, `propstruct
-  devices`, the tests with `--filter "Category!=Legacy"` and
-  `PROPSTRUCT_REQUIRE_CUDA=1`; no `setup-dotnet`, since the preflight demands the SDK on
+  devices`, the tests with `--filter "Category!=Legacy&Category!=Measurement"` and
+  `PROPSTRUCT_REQUIRE_CUDA=1` (⚠ 2026-10-18: was `Category!=Legacy` alone; the hand-run
+  `Measurement` facts of `tests/Simulation.Tests`, about 95 minutes, stay out); no `setup-dotnet`, since the preflight demands the SDK on
   the machine); `pack` (`windows-latest`: `check_packages.py pack` and `verify`);
   `publish` (`ubuntu-latest`, nuget.org through Trusted Publishing, the `.nupkg` files,
   each `.snupkg` going beside its own, `--skip-duplicate`, environment `release`,

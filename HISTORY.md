@@ -8,6 +8,79 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="reference-mode-side-effects-corrected-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants", "Reference mode is the original's sequence" — rejected attempts keep every side effect, under every model
+
+Narrowed by the D1 audit of the `Corrected` model: `src/Particle`'s `Fmkarm2OnAcceptance`
+adds line 720's staged `fmkarm2_loc` on acceptance only, so the unconditional clause was
+a hidden deviation (AGENTS.md §12) that no child could narrow. The bullet as it stood:
+
+> - **Reference mode is the original's sequence.** Batch size 1, one attempt per launch,
+>   the six original streams continued across particles and cycles: the same decisions
+>   in the same order as the Fortran. The pocket histogram QKS1 is refreshed after every
+>   attempt that completes the neighbour loop (attempts abandoned inside the loop skip
+>   the refresh, as in the original); rejected attempts keep all their side effects;
+>   accumulators are never reset between cycles.
+
+---
+
+<a id="taboo-silent-fix-2026-10-18"></a>
+
+## 2026-10-18 — from "## Taboos" — no fix under any model
+
+Replaced when the owner decided the `Corrected` model kind (an option of the one
+program that fixes the original's explicit errors, `Original` the default). The taboo
+as it stood before the design pass of 2026-10-18:
+
+> - No silent fix of a defect of the original: reproduce it or declare it in the node's
+>   `BOOT.md` with the Fortran line.
+
+---
+
+<a id="literals-corrected-model-2026-10-18"></a>
+
+## 2026-10-18 — from "## Constraints", "Fidelity to the original" — literals as written under every model
+
+Replaced by the `Corrected` model kind: under it a literal approximating π or 1/3 is
+that constant, the solid-angle closure's `12.56636` (Fortran 430, 716) excepted as a
+modelling choice (arbiter's ruling of 2026-10-18). The bullet's first sentence as it
+stood before the design pass of 2026-10-18 ended:
+
+> …where a REAL*4 literal is its binary32 value and a literal expression is folded in
+> binary32; the attempt plane's literals stay as written under either kind;
+
+---
+
+<a id="statistical-agreement-original-model-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants", "The port agrees with the original statistically"
+
+Narrowed when the `Corrected` model kind arrived: the claim is about the `Original`
+model, the `Corrected` one having no external reference. The words before the design pass of 2026-10-18:
+
+> …by the criterion in `## Constraints`, on the reference formulations, **under the
+> `Original` precision kind**.
+
+---
+
+<a id="purpose-corrected-model-2026-10-18"></a>
+
+## 2026-10-18 — from "## Purpose" — any change of the model a not-goal
+
+Replaced when the owner decided (2026-10-18) to add the `Corrected` model kind, an
+option of the one program fixing only the original's explicit errors, on the branch
+`claude/corrected`. The paragraph's end as it stood before the design pass of 2026-10-18:
+
+> …REAL*4-sensitive branch; interactive input; graphics; any change of the model itself.
+> Defects of the original are reproduced or declared, never silently fixed.
+
+The same day the root's "Known bias of the original's seeds" moved, unchanged but for its
+references, to `tests/Harness/BOOT.md`, and the retelling of the criterion's bands was
+cut to a pointer to `tests/Harness`, to keep the root within §15.
+
+---
+
 <a id="repository-public-2026-10-04"></a>
 
 ## 2026-10-04 — from "## Constraints", "Repository" — private, nothing published

@@ -149,7 +149,7 @@ public class StructuralTests
 
     // "% Dkarm = ... mkm" precedes every fqdokkarm row (one per category) and is dropped here: its count is
     // DPRow, the run-dependent length this test does not compare (the class doc's second bullet).
-    // "Calculation time", "Precision:", "Stream layout:" and "Execution mode:" are the four port-specific
+    // "Calculation time", "Precision:", "Stream layout:", "Execution mode:" and "Model kind:" are the five port-specific
     // footer lines with no counterpart in the original (root BOOT.md's own precedent for the first: "the
     // file already carries a port-specific time line"; src/Output/BOOT.md, "Design decisions (2026-09-19)",
     // the precision-kind footer added 2026-09-21 as "Accumulation:", renamed 2026-09-23, and the
@@ -157,7 +157,8 @@ public class StructuralTests
     // is, not compared against an archive that cannot have them.
     internal static bool IsComparableCommentBanner(string line) =>
         CommentBanner.IsMatch(line) && !line.Contains("% Dkarm =") && !line.Contains("Calculation time") &&
-        !line.Contains("% Precision:") && !line.Contains("% Stream layout:") && !line.Contains("% Execution mode:");
+        !line.Contains("% Precision:") && !line.Contains("% Stream layout:") && !line.Contains("% Execution mode:") &&
+        !line.Contains("% Model kind:");
 
     /// <summary>
     /// Everything up to (and excluding) " Nkarm =" (Fortran line 1233, <c>QKSS</c>): the formulation and

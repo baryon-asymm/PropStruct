@@ -4,6 +4,516 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="corrected-category-flags-every-formulation-2026-10-18"></a>
+
+## 2026-10-18 — from "## Corrected model" — "The three category flags move the category rows of every formulation"
+
+The sentence as the design pass of 2026-10-18 wrote it, an expectation of the arbiter's computations stated as a fact. Measured
+by the coding session of the same day on the totals the listing oracle draws (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`,
+26 formulations, 61 cycle draws; not a Monte Carlo run of the port): `CategoriesEmptyRowsMerged` moves 13 draws, among the
+references HPEPA3 only; `CategoriesLastRowRecomputed` moves 10, no reference; `CategoriesOnCopy` moves the second cycle's rows of
+22 of 26 chains, among the references PSAN02n and HMX. The effect on a reference formulation's own seed-zero run is `Simulation`'s
+to measure once it carries the model kind.
+
+> The three category flags
+> move the category rows of every formulation (`DPRow`, `Dkarmcat`, `dokkarm43`,
+> `dokkarm10`, `fqdokkarm`).
+
+<a id="a8-costing-2026-10-03"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A8, the costing (written 2026-10-03)
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Costed 2026-10-03: the walker is no obstacle (scope extended: 130 problems, 128
+> float events in no row, none from the walk); about forty rows, the temporaries'
+> cells, two new site kinds, both consumers following the table, pins for residues 0, 3.
+
+<a id="a2-coverage-sentences-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A2, the coverage and the product-order sentences
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Every site is covered by an
+> isolating case or written `unreached` with a control or the table's reason
+> (`_check_unreached_sites_are_controlled`); k1–k4 and r1–r3, r5: `tests/Fixtures`. A
+> swapped product order moves no bit (held by A9 and `PlaneFormsTests` instead).
+
+<a id="per-cycle-sites-reformulated-2026-10-03"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — "every site of the per-cycle plane is generated", the reformulation sentence (written 2026-10-03)
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> Reformulated: the 2026-10-01 criterion read the source under rule L
+> (`classify-cycle-plane.py` → `CyclePlane.generated.txt`), retired 2026-10-03, nothing
+> reading it; its verdicts the archive confirms are the generator's own right proof now
+> (16 verdicts, `classify-cycle-plane-listing.py selftest`).
+
+<a id="rate-criterion-dating-2026-10-02"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — the rate criterion's dating, two corrections (written 2026-10-02)
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> ⚠ 2026-10-02: was dated 2026-09-24, before the per-cycle plane changed the report
+> under `Original` (2026-10-01); now the root's re-run of that day. ⚠ 2026-09-28: was
+> "23 of 160 against 22 of 197, p = 0.124", stale; now cited (§8)
+
+<a id="doksd-rule-l-2026-10-03"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A2, `DOKM`/`DOKSD` under rule L (written 2026-10-01)
+
+Moved 2026-10-18 for the line limit (AGENTS.md §15).
+
+> ⚠ 2026-10-01 (A2): `DOKM`/`DOKSD` under rule L; only PSAN02n's `Original` runs moved.
+> Rule L is retired, 2026-10-03: the listing's schedules (`BOOT.md`, "## Setup plane").
+
+<a id="corrected-setup-binary64-unchanged-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "The setup follows the precision kind", before the `Original` model qualified its `Binary64` half
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **The setup follows the precision kind** (decided 2026-09-23). Under `Original` it
+>   reproduces the Fortran's REAL*4 storage of the setup plane, exactly the generated set
+>   ("## Setup plane"); under `Binary64` it is bit-identical to what it computed before,
+>   except `SetupEchoes.Ddokmax` ("## Setup plane", "review"): its stored value moved at
+>   the eighth significant digit when the 2026-09-24 review corrected it to read the same
+>   store every other fraction bound goes through, with the five reference formulations
+>   still bit-identical at seed 0 on every other cell of `results.m`.
+
+<a id="corrected-per-cycle-binary64-unchanged-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "The per-cycle plane follows the precision kind", before the `Original` model qualified its `Binary64` half
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **The per-cycle plane follows the precision kind** (decided 2026-09-27, implemented
+>   2026-10-01, re-implemented from the listing 2026-10-03). Under `Original` `Compute`
+>   does what the executable's listing does at every site of
+>   `CyclePlane.listing.generated.txt`, each rounding through `CyclePlaneRounding`
+>   ("## Report", "The per-cycle plane from the executable's listing"); under `Binary64`
+>   it is bit-identical to before.
+
+<a id="corrected-in-place-rewrites-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "In-place rewrites of the totals, as the original", stated for every run
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **In-place rewrites of the totals, as the original.** `Compute` rewrites, and later
+>   cycles add to the rewritten values: the category merge and shift (lines 911–958) on
+>   `Qdoks`, `Dokp41`, `Dokp31`, without clearing the old last row after any merge (its
+>   contents then count twice once later cycles rebuild the rows); and in cycles ≥ 1
+>   `VdokTotal` and `VdokTotal2` divided by `1 − gdokleft/GGG` (lines 1145, 1150). No
+>   other total is written.
+
+<a id="corrected-merge-loop-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "The merge loop of the original, literally", stated for every run
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **The merge loop of the original, literally.** After every pass that merged a pair,
+>   all category statistics are recomputed (label 600); the final check of the last row
+>   (lines 947–959) merges without recomputing, so the new last row keeps the statistics
+>   of before the merge.
+
+<a id="corrected-p2-doksd-example-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "IEEE results where the original computes them", P2's negative `DOKSD` for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **IEEE results where the original computes them**, for example accuracies of streams
+>   not drawn in cycle 0 (`NFQ = NFW = 0`), empty corrected distributions, `DolM2` or
+>   `DolM3` with no committed Var#1 or Var#2 bridge (0/0), a negative radicand under
+>   `**0.5` (`DOKSD` of P2.dat is negative), an all-empty pocket histogram (`QKSS = 0`
+>   makes every `Qks1` cell `0.0 / 0.0`): the same `NaN` or `∞` as the original, which
+>   runs without floating-point traps. No guard is added.
+
+<a id="corrected-literals-invariant-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "Double precision, literals as written", its opening for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **Double precision, literals as written** under `Binary64`; under `Original` the
+>   setup plane's literal expressions and the per-cycle plane's inexact literals and
+>   all-literal subexpressions are binary32 (root BOOT.md, "Fidelity to the original";
+>   "## Setup plane"; "## Report", R5): `3/3.14` and `24/3.14` (lines 1704, 1716),
+>   `0.8` (line 403), `3.14159`, `0.016`, `0.027`, `2000.`, `3000.`, `0.75`, `0.3333`
+>   (lines 1014–1016), `1e-30` (lines 856, 869–870, 888, 902), `1e-5` (line 1034), `0.001`
+>   (line 1110), `0.01` (lines 1111–1112).
+
+<a id="cell-centre-notes-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — "The cell centre first" with its two notes of 2026-10-02, told in full
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **The cell centre first** (decided 2026-10-02). Every moment term over histogram
+>   cells weights the centre `c = Di·(k − ½)`, formed first: `x·c`, and `(x·c)·c` for a
+>   second moment, extending `## Categories`' `c_i` to the report; every other product
+>   runs as written. The contract, with its lines and its reason: `API.md`, "## Cycle".
+>
+>   ⚠ 2026-10-02: the rule's premise in `API.md`, "the original carries it in 80-bit
+>   registers, so neither order is the original's", is refuted: the executable multiplies
+>   in the written order at 805, 806, 989, 990 and 991, at 53-bit precision. The rule is
+>   unchanged; whether to follow the executable's order is a decision for a later session
+>   (`API.md`, "## Cycle", the note of the same date).
+>
+>   ⚠ 2026-10-02, later: decided, under `Original` only and not yet implemented: the
+>   listing's order replaces the rule (`API.md`, "## Cycle"); `Binary64` keeps it.
+
+<a id="corrected-doksd-constraint-2026-10-18"></a>
+
+## 2026-10-18 — from "## Constraints" — the size-law bullet, "`DOKSD` uses the same formula for both laws" for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - The size law is uniform in `D` when `JZZ = 2` and uniform in `1/D²` (mass-uniform) for
+>   any other value. `DOKSD` (lines 385–386, 399–400, 405) uses the same formula for both
+>   laws; only `DOKM` differs.
+
+<a id="z-order-2026-10-18"></a>
+
+## 2026-10-18 — from "## Setup plane" — "REAL*8 stays `double`", the order before and its ulp counts told in full
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - **REAL*8 stays `double`** — `Z`, `Z1` (`ZX`, `Z11`) and whatever else the declaration
+>   block makes REAL*8. `Z(J)` is formed in the executable's order: the denominator of
+>   the non-uniform law is `(l·l)·(u·u)`, rounded once, and `DOK**4` is `(x·x)·(x·x)`
+>   (`FractionLaw.Build` under `Original`; the order before, `l·l·u·u`, rounded twice and
+>   parted from the executed `PARAM` by 1–3 ulp in `ZX` on 33 of the 49 files and in `Z11`
+>   on 16; `ACCEPTANCE.md` A10).
+
+<a id="dmin-di-dj-defect-story-2026-10-18"></a>
+
+## 2026-10-18 — from "## Setup plane" — "`Dmin` rounds too; `Di`/`Dj` round too", the defect the rounding closed, told in full
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> **`Dmin` rounds too; `Di`/`Dj` round too, both found 2026-09-23.** Neither has a
+> declaration in lines 4–64: REAL*4 by implicit typing, like `gdokns`, and converted from
+> micrometres at lines 264–266 exactly as `DDOK`'s own bounds are at 260–263
+> (`SetupPlane.generated.txt`'s `dmin`/`di`/`dj` rows, role `input`). `Prepare` rounded
+> the fraction bounds but passed `Dmin`, `CellSize` and `CategoryStep` through unrounded:
+> on HMX/HPEPA3/P33, whose default `Dmin` equals the default `Di`, this opened a one-ULP
+> sliver `Attempt`'s "Dok < Dmin" check (Fortran 478, 533) could land a draw in, and
+> separately binned a draw at the lowest fraction bound to `int(D/Di) = 0`, printing a
+> nonzero `fmdok[0]` (HMX 0.2–0.3e-10, HPEPA3 ≈3.7e-10) where the original always prints
+> zero. Fixed by rounding all three through the same `ToBinary32MetresStored` helper
+> (`SetupPlaneTests.DefaultDminRoundsToTheSameBinary32ValueAsTheLowestFractionBound`,
+> `.DefaultCellSizeRoundsToTheSameBinary32ValueAsDminSoTheLowestBoundBinsToCellOne`, three
+> formulations each, seen red on the violation before the fix, one binary32 ULP apart).
+
+<a id="corrected-line-map-notes-2026-10-18"></a>
+
+## 2026-10-18 — from "## Line map" — the notes of six rows before the `Corrected` model named its flags in them
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> | 1695–1734 | `FractionLaw.Build` | unnormalized `Z` by law, `ZSS`, normalized `ZX`, cumulative `Z11` with `Z11(NMM+1) = 1`; `Zerror` (1733) not ported |
+> | 379–406 | `Setup.AnalyticSizes` | `DOKM` by law; `DOKSD` the same for both laws |
+> | 825–959 | `Categories.MergeAndDescribe` | see `## Categories` |
+> | 1001–1016 | `CycleStatistics.Matrix` | `gdokleft`, `gdoksfr`, `PLOTsmdok`, `vdokleft`, `PLOTsm`, `mp` |
+> | 1021–1065 | `SmallParticles.Probability` | `zdoksmall`, `ddoksmall`, `vdoksmall`, `pdoksmall` (monotone from index 2) |
+> | 1137–1152 | `CycleStatistics.MassFractions` | cycles ≥ 1: `DolM1`; in-place division and `DolM2`; in-place division and `DolM3`; `Vdok_total0`, `Vdok_total1`, `deltaVdok` (1140–1142) never read, not ported |
+
+<a id="corrected-categories-steps-2026-10-18"></a>
+
+## 2026-10-18 — from "## Categories" — step 4 and the in-place paragraph, stated for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> 4. Last row (947–959): if `Epsydok(DPRow) > EpsDok` and `DPRow > 1`, rows `DPRow−1` and
+>    `DPRow` merge as in the pass and `DPRow −= 1`, **without** returning to step 2.
+>
+> The merge and shift write into the run's totals (`## Invariants`); the old last row
+> keeps its contents after any merge, and later cycles add pockets into rows by their raw
+> index `int(RK/Dj)+1`. The original behaves so; it is reproduced.
+
+<a id="corrected-pdoksmall-first-cell-2026-10-18"></a>
+
+## 2026-10-18 — from "## Report" — "Decisions where the port departs from a transcription", `pdoksmall(1)` is 0 for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - `pdoksmall(1)`, never assigned by the original, is 0. The original's garbage
+>   (0.338E-39 … 0.153E-37 in the archived outputs) is copied forward by the clamp of
+>   lines 1062–1064 into the leading cells while they are zero (rc166.m prints six
+>   cells of 0.762E-38). The port prints zeros there; the comparison treats reference
+>   values below `1e-30` in `pdoksmall` as zero, recorded in the exclusion list of
+>   `tests/Fixtures` with this evidence.
+
+<a id="corrected-taboo-totals-2026-10-18"></a>
+
+## 2026-10-18 — from "## Taboos" — the third taboo, stated for every model
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> - No clearing or copying of the totals behind the caller's back: the in-place rewrites
+>   of `## Invariants` are the only writes.
+
+<a id="corrected-api-setup-binary64-2026-10-18"></a>
+
+## 2026-10-18 — from API.md, "## Setup" — "Setup under a precision kind", before the `Original` model qualified its `Binary64` half
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> **Setup under a precision kind** (decided and implemented 2026-09-23, BOOT.md, "## Setup
+> plane"; root BOOT.md, "Precision kind"): `Prepare`, `FractionLaw.Build` and
+> `Setup.AnalyticSizes` each take the run's `PrecisionKind`. Under `Original` they return
+> the setup plane's values as the Fortran stores them (`tables.Zss` among them, "## Setup"
+> above); under `Binary64` every result is bit-identical to what this node always
+> computed, except `SetupEchoes.Ddokmax`, whose stored value moved at the eighth
+> significant digit when the 2026-09-24 review corrected which store it reads (BOOT.md,
+> "## Invariants", "The setup follows the precision kind").
+
+<a id="corrected-api-cycle-binary64-2026-10-18"></a>
+
+## 2026-10-18 — from API.md, "## Cycle" — "Cycle under a precision kind", before the `Original` model qualified its `Binary64` half
+
+The text as it stood before the design pass of 2026-10-18, before the design pass for the `Corrected` model (root
+`BOOT.md`, "Model kind").
+
+> Cycle under a precision kind (2026-10-01, from the listing 2026-10-03): `Compute`
+> reads the run's kind from `ModelSetup.Kind`, as `Setup.Prepare` stored it, and passes
+> it to the three members below it. Under `Original` it takes its stores, compiler
+> temporaries, sum schedules and register or home reads from
+> `CyclePlane.listing.generated.txt` ("## Cycle listing map and table"), so every report
+> field whose Fortran variable is REAL*4 is what the executable's home holds, and
+> `nextPdoksmall`, `nextDmaxxx` and the rewritten `Dokp41`, `Dokp31`, `VdokTotal`,
+> `VdokTotal2` are written as it stores them; under `Binary64` every result is
+> bit-identical to before. The kind is explicit on `MergeAndDescribe`, `Probability` and
+> `MaxSize`, never optional.
+
+<a id="stage-1-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — the stage 1 criterion, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-02: stage 1 of the plan above (W0 documents, W1 the excerpt, W2 the map,
+>   the reader and the generated table) is in the tree and drives no code: the excerpt is
+>   the executable's bytes (`CyclePlaneListingTests`), the map holds against it and
+>   `CyclePlane.listing.generated.txt` (193 sites) reproduces byte for byte
+>   (`CyclePlaneListingMapTests`, `tests/Statistics.Tests/BOOT.md`, the same date). Read
+>   against the arbiter's scratch inventory, every cited address lies in a row of the
+>   Fortran lines it names and no rule of the inventory is contradicted; the table is
+>   finer in labels (REAL*8 sums carry B`n` with `rounds = no` where it says W; a stored
+>   named home is S where it says T) and adds sites (lines 979, 1071 and 1140-1142
+>   eliminated, `gk0`/`gk1` unread, REAL*8 temporaries at 856).
+
+<a id="a2-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A2, the listing oracle, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A2, the listing oracle (`tests/Fixtures/cycle_plane_oracle.py`, an x87
+>   interpreter over the excerpt's bytes; `tests/Statistics.Tests/ListingOracleTests`):
+>   under `Original`, `Compute` equals it bit for bit on every case of
+>   `cases/statistics/cycle_plane_oracle.json`, and `Setup.Prepare` equals its pre-loop
+>   run (line 378's λ, `DOKM`, `DOKSD`): both ratchets are empty,
+>   `ListingOracle.approved.txt` from 463 lines and `ListingOracleSetup.approved.txt` from
+>   19, which is the proof r4 seen once, the oracle red on the port of 2026-10-02 at the
+>   isolated sites. Every site of the table is covered by an isolating case or written
+>   `unreached`, and each `unreached` one has a control or the table's own reason for
+>   being exact (`formulas_statistics.py`, `_check_unreached_sites_are_controlled`). The
+>   right proofs k1–k4 and the red proofs r1–r3 and r5 are `tests/Fixtures/BOOT.md`'s. Not
+>   seen red: a product order swapped at a call site (five tried: 805, 806, MD4, DD4,
+>   1089) moves no bit of any case, a 1e-16 difference being absorbed by the binary32
+>   store that follows (mutations 2026-10-03, `tests/Statistics.Tests/BOOT.md`); the forms
+>   themselves are held at `double` by `PlaneFormsTests`, each but `Square`, an equivalent
+>   form (`pow(y, 2)` is `y·y` when pow is correctly rounded). The fixture holds 26
+>   cases: 19 drawn, three pinned for `DOKM`'s schedule (`BK10`, `KB397`, `AK157a`) and
+>   four for `ZS`, `ZX` and the `JZZ = 2` loop (A10, A12); 58 isolated sites, 18
+>   `unreached`; the setup ratchet is empty → HISTORY.md#oracle-fixture-cases-2026-10-03
+
+<a id="a3-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A3, C2, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A3, C2 (`PathIdenticalPairsReportTests`,
+>   `PathIdenticalPairs.approved.txt`, `CyclePlanePairsTieTests`): the port side of the
+>   six pairs regenerated alone by `cycle_plane_pairs.py generate` on the stage 3 build,
+>   every integer-printed cell still equal on all six (S4 did not fire). The original's
+>   files and provenance entries are kept as committed: a second run of the executable
+>   prints other values in its own `pdoksmall` cells below 1e-30 (HMX 0.196E-37 then
+>   0.197E-37, all six pairs), the declared cells of the dead row, so the original's side
+>   is not rewritten. The list of differing cells stays at 551, four of them moved
+>   (→ HISTORY.md#c2-four-moved-cells-2026-10-03). Classes by the design's attribution of
+>   2026-10-02, not a per-cell measurement: P, the print plane (`ConditionBreaking(k)`,
+>   `MediumJammedParticleFraction`, `MediumNumberOfBridges`), 2, 3, 2, 5, 2 and 1 cells;
+>   I, every other, fed by the attempt plane's REAL*4 inputs `Dr`, `Db`, `RK`, 58, 42, 31,
+>   196, 144 and 65; D, declared, as above; the four moved cells are I, two of them now
+>   zero. No cell was required to reach zero and none outside the set moved.
+
+<a id="a6-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A6, the rate, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A6, the rate (`tests/Harness.Tests/RateCriterionTests`,
+>   `SetCriterionTests`, 59 cases): the 160 `Original` runs, `rate-table.json` and the
+>   seed-0 snapshot regenerated (`dotnet run -c Release --project tests/RateTableTool --
+>   rate-table`, 16 m 41 s, then `seed-zero-snapshot`), `Binary64` untouched. 147 of the
+>   160 `Original` runs differ in bytes from before, 13 do not, and the failing cells of
+>   every one of the 160 are the same: 17 of 160 against the original's 15 of 197,
+>   p = 0.102792, no excess at `α`; the positive control on `Binary64` rejects on HPEPA3
+>   and HMX at p = 1.63e-36 each, the 160 `Binary64` runs and their ten snapshot hashes
+>   byte-identical (S3, S6 did not fire). In the snapshot nine of ten `Original` hashes
+>   moved (P33 `Original` did not). The seed-0 controls (A5) hold on the regenerated runs,
+>   39 of 39 (S5 did not fire).
+
+<a id="a7-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A7, the positive controls, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A7, one positive control per site kind the table leaves `unreached` in
+>   the oracle (22 sites in the fixture of cdc6237, 18 in the one regenerated 2026-10-03):
+>   16 cases `control_NN_*` of `cycle_statistics.json`, 35 controls in `CONTROLS` of
+>   `formulas_statistics.py` (a store, a temporary, a sum stored every pass, B6 and C6 at
+>   trip counts 5, 6 and 13, X, H at 817 and 976), each a seeded body whose store or
+>   schedule, flipped in the twin, moves a bit of the Original report (`generate` refuses
+>   a control that moves nothing); the 22 sites (and the 18) are each controlled (11 and
+>   7) or exact by the table (11 and 11) (`order` of `0.0` or `real(i)`). Red on the C# of
+>   cdc6237: all 16 control cases, `seeded_rounding_reaches_every_member`, the cycle
+>   cases, both warning cases, two small-particles cases and the setup plane's five
+>   formulations, 28 of 82 tests, with the new case files and the old code; `Binary64`
+>   cases pass on both. Line 378's λ is `ListingOracleSetup.approved.txt`, empty.
+
+<a id="a10-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A10, `PARAM` in the oracle, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A10 (F4), `PARAM` runs in the oracle: the excerpt holds its bytes
+>   (0x4181A5–0x418577), the machine executes the call (SIZE, the next routine, is a stub
+>   nothing reads) and `ZSS`, `ZX`, `Z11` are the executable's, compared in
+>   `ListingOracleTests` and `PreloopSurveyTests` (both approved files empty). Over the 49
+>   shipped files `ZSS` per addition equals the executable on 49 (one rounding after the
+>   loop parts on 16, `C166` the sixteenth, since the twin's `.dat` reader was fixed: the
+>   old one left them equal); `ZX` parted by 1–3 ulp of double on 33 and `Z11` on 16
+>   because `FractionLaw.Build` formed `l·l·u·u` left to right where the executable forms
+>   `(l·l)·(u·u)`; under `Original` it is the executable's on 49 of 49. Of the references
+>   `HMX` and `HPEPA3` moved (1–2 ulp), `inpt`, `P33`, `PSAN02n` not; the 160 `Original`
+>   rate runs, the seed-0 snapshot, C2 and the 39 controls did not move and `Binary64` is
+>   bit-identical (64 of 64 runs of `HMX` and `HPEPA3` byte-equal on a scratch tree). Pins
+>   `HMX`, `P2a` (`ZS`) and `HPEPA3` (`ZX`) tell the executable's rule from the other.
+
+<a id="a11-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A11, with (c) before A14 and its note, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A11 (F5), (a) the fixture's provenance digests
+>   `formulas_statistics.py` (`cycle_plane_oracle.py restamp`: the 22 cases byte for byte,
+>   `verify` green; `ListingOracleTests.TheFixtureIsOfTheCommittedBytes`, red until
+>   restamped); (b) `.TheTwinThatSuppliesTheInjectedSetupReproducesItsCaseFiles` runs the
+>   twin's `verify` in the fast set, 0.7 s, red on `DOKM_UNROLL = 6`; (c) `QKS1` is one
+>   expression in the oracle's injection and in `Compute` only while `QKSS` is a binary32
+>   integer, up to 2^24 (`Qks1NormalisationTests`: equal on every cycle of the fixture,
+>   `QKSS` at most 4e5, red on the divisor `QKSS + 1`; equal at 2^24, one unit apart at
+>   2^24 + 1, red on `Compute` dividing by `f32(QKSS)`). The bound is no excuse: 110 of
+>   the 175 archived outputs print a larger `QKSS`, among the references HMX and HPEPA3.
+>   `Compute` is unchanged; the finding is the `open` row `718, 963–996` and A14.
+>
+>   ⚠ 2026-10-03: was "one expression only while `QKSS` is a binary32 integer", now at
+>   every count (A14).
+
+<a id="a12-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — A12, the `JZZ = 2` loop, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-10-03: A12, the `JZZ = 2` setup loop is the executable's. From
+>   0x408CFE–0x408F8E: unrolled four-fold; `u − l` is a REAL*4 temporary (0x408D18,
+>   0x408F10) in pass 1 of a block and in every remainder pass, a register in passes 2–4;
+>   `l**5` is stored to a REAL*4 temporary every pass (0x408D29), `u**5` is `u·(u²·u²)`;
+>   `DOK4`, `DOK3` stored every pass; `DOKSD` stored after passes 1–3 of a block
+>   (0x408D7B), carried after the fourth and through the remainder. `Setup.AnalyticSizes`
+>   (`UnrolledSchedule(n, 4)`) and the twin's `jzz2_sums` follow it; the survey's approved
+>   file is empty (`CSPX04` agrees). Right: the six shipped `JZZ = 2` files and 120 drawn
+>   loops of 1–16 fractions, zero differing bits, in C# by
+>   `PreloopSurveyTests.AnalyticSizesReproducesTheExecutablesJzz2LoopOnDrawnLoops`
+>   (`preloop_survey.json`'s `jzz2Controls`). Red: the earlier rule parts on 91 and 121 of
+>   300 drawn loops; the width rounded every pass, never rounded, `l**5` unstored, `DOKSD`
+>   unstored part on 8, 9, 27, 14 of 120, and the same edits of `Setup.AnalyticSizes` turn
+>   that test red (the width never rounded is green on the 49 files alone).
+
+<a id="out-of-sample-controls-narration-2026-10-18"></a>
+
+## 2026-10-18 — from "## Acceptance criteria" — the four out-of-sample controls, with the note of 2026-10-01, told in full
+
+The text as it stood before the design pass of 2026-10-18, moved by AGENTS.md §15 to make room for the `Corrected`
+model's criteria; the tick, its date and its places stay in `ACCEPTANCE.md`.
+
+> - [x] 2026-09-28: the arbiter's per-cycle-plane verdict of 2026-09-28 (amendment A3)
+>   freezes four out-of-sample controls before any per-cycle
+>   rounding code is written, each proven right at the arbiter's own count and red on the
+>   named alternative (`tests/Statistics.Tests/PerCyclePlaneOutOfSampleControlsTests`):
+>   (i) the Fortran 795-796 rule (nothing rounded before 796's own store) reproduces
+>   `epsdokfr` on all 295 archived outputs of the five reference formulations, red on
+>   "795's store rounded" (HMX 9 of 49, HPEPA3 14 of 98 consistent); (ii) R1 at 771-783
+>   puts every printed `epsx` cell on the 2⁻²⁴ grid, 2016 of 2016 over 336 archived and
+>   legacy outputs, red on today's unrounded port (0 of 960); (iii) rule L's once-rounded
+>   `DOKM` reproduces `epsalldok` on all 293 archived outputs, red on today's
+>   per-addition `DOKM` (PSAN02n 15 of 49) — the mechanism A2 below fixes.
+>
+>   ⚠ 2026-10-01: (ii)'s red side read the rate runs, which now carry R1 (960 of 960 on
+>   the grid); it reads the frozen pre-change runs instead, 0 of 30
+>   (`.Control2EpsxCellsAreOnTheGridInThePortsRunsAndOffItBeforeTheChange`).
+>
+>   Control (iv), `da_coef` of the two legacy runs `rps01`/`rps02`, gates since
+>   2026-10-02: the plane, run on the shipped `psan01.dat` and `psan02.dat` (found by the
+>   outputs' own `Input filename`, read with their pocket-forming flags) and the printed
+>   `fmdok[0]` (empty) as the reachable cell, prints exactly the archive's 0.7284034 and
+>   0.6019315 (`PerCyclePlaneOutOfSampleControlsTests`, `.Control4DaCoefOfTheLegacyPair`
+>   `ReproducesTheArchivedPrint`). Red on the same run without the flags
+>   (`.Control4IsRedWhenThePocketFormingFlagsAreNotRead`, both files), with 1016's store
+>   unrounded (`rps02`) and with the folds of 1014–1016 off (both files), each reverted.
+>   `eta` is the menu default 0, not printed by either.
+>
+>   ⚠ 2026-10-02: was "reported only, not gated", now gated (the old figures were
+>   artefacts of recovered inputs) → HISTORY.md#control-iv-reported-only-2026-10-02
+
 <a id="specification-out-of-tree-2026-10-04"></a>
 ## 2026-10-04 — from "## Constraints" — the §6 deviation's line, before the source and the listing excerpt left the repository
 

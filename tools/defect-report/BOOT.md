@@ -27,11 +27,18 @@ written").
   `Differing cells` column joins it as a second generated file.
 - **No claim of its own.** Every row of the output comes from a row of a node's
   `## Defects of the original` table, with the node named. Text is copied, not
-  paraphrased; the only text the node authors is the preamble and the section headings.
+  paraphrased; the only text the node authors is the preamble, the section headings and
+  the one summary line counting the rows by `Corrected`.
+
+  ⚠ 2026-10-18: was "the preamble and the section headings", now the summary line too:
+  it only counts the copied `Corrected` values, and states nothing about the original.
 - **A malformed table is an error, not a silent skip.** A missing column, an unknown
   `Kind`, an unknown value in `The port`, a `Consequence` that is neither a measurement
-  with a place nor the words `not measured`: each fails the run, naming file and line.
-  A defect quietly dropped from the report is worse than no report.
+  with a place nor the words `not measured`, an unknown value in `Corrected`, a
+  `not reachable` on a row whose `Kind` is not `numeric` or whose `The port` is not
+  `reproduced`, a `fixed (...)` that does not name distinct C# identifiers, a header of
+  the old six columns: each fails the run, naming file and line. A defect quietly
+  dropped from the report is worse than no report.
 - **The order is by consequence, not by file.** `algorithm` first, then `statistics`,
   `numeric`, `dead`, `cosmetic`; inside a kind, by the first Fortran line number. The
   reader's question is "what changes the answer", and the page answers it in its first
@@ -40,6 +47,14 @@ written").
   same reason: the check must run before anything is installed.
 - **Idempotent.** Running it twice writes the same bytes; `--check` writes nothing and
   fails when the file in the tree differs from what would be generated.
+- **LF bytes on every platform.** Both generated files are written as UTF-8 with `LF`
+  line ends and no BOM, by bytes, never through a text-mode write that translates the
+  line feed on Windows; `--check` compares the bytes of the file in the tree, the
+  page's date line aside, so a file holding a CR reads as stale and says so.
+
+  ⚠ 2026-10-18: was "writes the same bytes" over `write_text`, which on Windows wrote
+  CRLF, and `--check` read the file with its line ends normalised, so the CRLF page
+  passed; now LF written by bytes and compared by bytes.
 
 ## Dependencies
 
@@ -57,7 +72,22 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
 
 - The input format is the one the root fixes: a section `## Defects of the original`
   holding one Markdown table with the columns **Fortran | Kind | What the original
-  does | Consequence | The port | Differing cells**, and nothing else.
+  does | Consequence | The port | Differing cells | Corrected**, and nothing else. The
+  seventh column says what the `Corrected` model kind does with the
+  defect: `unchanged`, `not reachable` (a `numeric` row the port reproduces, only) or
+  `fixed (<Member>[, <Member>]…)`, the members being `CorrectionSet` flags of
+  `src/Particle`; this node checks their shape, not their existence. The JSON twin does
+  not carry the column.
+
+  ⚠ 2026-10-18: was six columns, ending at `Differing cells`; the old header is now a
+  format error, with no back-compatibility (owner, 2026-10-18; every table migrated in
+  the same commit).
+
+  ⚠ 2026-10-18: was `not reachable` allowed on any `numeric` row, now on a `numeric` row
+  whose `The port` is `reproduced` only: the value says the defect exists only under
+  `PrecisionKind.Original`, which is false of a row the port declares without
+  reproducing; four such rows read `not reachable` and are `unchanged` now (final
+  review, C5).
 - The node never reads the Fortran source. It has no opinion on whether a row is true;
   that is the transcribing node's own claim, and the protocol's answer to "is the
   document true about the code" is a human and the periodic reconciliation
@@ -114,6 +144,23 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
       extra row, the test failed, the file was restored and the whole self-test passed
       (31 tests). Right: the unmutated tree passes, three rows on the day of this tick.
 
+- [x] 2026-10-18: every `Corrected` rule is covered by a self-test case, each proven
+      red and right in `tools/defect-report/test_defect_report.py`,
+      `DefectReportTest`: `test_an_old_six_column_header_is_an_error`,
+      `test_an_unknown_corrected_value_is_an_error`,
+      `test_an_empty_corrected_value_is_an_error`,
+      `test_not_reachable_on_a_non_numeric_row_is_an_error` (right:
+      `test_not_reachable_on_a_numeric_row_is_accepted`),
+      `test_a_malformed_fixed_value_is_an_error`,
+      `test_a_fixed_value_naming_a_member_twice_is_an_error`,
+      `test_a_good_fixed_value_is_parsed_into_corrections`,
+      `test_the_page_shows_the_column_and_counts_the_rows_by_value`,
+      `test_the_declared_json_does_not_carry_the_corrected_column`; and on the real
+      tree `RealTreeTest.test_the_summary_line_of_the_real_page_counts_every_row`.
+      Non-degenerate: each check was disabled in turn and the named cases failed (nine
+      mutations, none left green; the run is in the commit message of the change), and
+      `docs/declared-differences.json` came out of the regeneration byte-identical.
+
   ⚠ 2026-10-02: was "the real tree fills in exactly four `Differing cells` entries, and
   `docs/declared-differences.json` holds exactly those four rows"
   (`test_declared_differences_has_four_rows_equal_to_the_defects_with_entries`, ticked
@@ -122,6 +169,24 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
   until the orchestrator's kit audit found it, since nothing runs it automatically.
   Now the criterion names no count: "exactly" is checked against the list the parser
   generates (AGENTS.md section 6).
+- [x] 2026-10-18: `not reachable` is rejected unless `The port` is `reproduced`, in
+      `tools/defect-report/test_defect_report.py`, `DefectReportTest`. Red:
+      `test_not_reachable_on_a_row_the_port_does_not_reproduce_is_an_error` (both
+      `declared, not reproduced` and `open`) failed with the port check disabled, and
+      on the real tree `--check` named `src/Output/BOOT.md:110` before the four rows
+      were relabelled. Right:
+      `test_unchanged_is_accepted_on_a_numeric_row_the_port_does_not_reproduce` and
+      `test_not_reachable_on_a_numeric_row_is_accepted`; the real tree passes.
+- [x] 2026-10-18: the writer emits LF on every platform and `--check` reads a CR as
+      stale, in `tools/defect-report/test_defect_report.py`, `DefectReportTest`. Red:
+      `test_check_reads_a_crlf_page_as_stale` regenerates the page, turns it to CRLF
+      (the old writer's output) and then the twin alone, and `--check` fails each,
+      naming the CR bytes. Right:
+      `test_the_writer_emits_no_carriage_return_on_any_platform` regenerates over CRLF
+      files, finds no CR in either, and `--check` is green. Non-degenerate: with the
+      writer put back to `write_text` four cases failed on this Windows machine, with
+      the reader put back to the normalising `read` the red case failed, and with both
+      restored all 45 tests passed.
 
 ## Taboos
 

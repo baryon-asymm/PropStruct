@@ -12,10 +12,17 @@ so that the library never depends on formatting.
 - `results.m` holds the original's variable names, comment lines, order and formats:
   Fortran edit descriptors (`E9.3`, `E12.6`, `F7.2`, `F6.4`, `I3`…) and list-directed
   output emulated as Digital Visual Fortran prints them, six values per line with the
-  original's continuation.
+  original's continuation. Under the `Corrected` model the names, order and formats
+  stay; the comment lines `## Corrected model` names differ and its footer line is
+  added.
+
+  ⚠ 2026-10-18: was the original's comment lines under every model, now under `Original`, `Corrected` correcting two and adding one → HISTORY.md#comment-lines-under-original-2026-10-18
 - The line of Fortran 1238 is reproduced as printed (`epsx(5)` shows EPS6, `epsx(6)`
   shows EPS7); the JSON carries all seven accuracies under true names.
-- `pdoksmall(1)` prints as zero.
+- `pdoksmall(1)` prints as zero under the `Original` model; under `Corrected` it prints
+  the value `Statistics` assigns it (`PdoksmallFirstCell`), with no code here.
+
+  ⚠ 2026-10-18: was zero under every model, now under `Original` → HISTORY.md#pdoksmall-first-cell-2026-10-18
 - Formatting never depends on the current culture.
 - JSON written and read back gives an equal result.
 - `RunDiagnostics.Precision` (`src/Simulation/API.md`) is recorded in `results.m` as
@@ -94,105 +101,79 @@ Checks: `tests/Output.Tests`; grammars: `API.md`, "## Print-expression map".
 
 ## Acceptance criteria
 
-- [x] 2026-09-19: for the reference formulations, the port's `results.m` equals the
-      original's in names, comments and declared order (`tests/Output.Tests`,
-      `StructuralTests.PortResultsMMatchesOriginalInNamesAndCommentsInOrder`, all
-      five reference formulations green). Values and the run-dependent array lengths
-      are compared by the statistical criterion, `tests/Simulation.Tests`, not here
-      (see "Array-length divergence, measured" above for why a byte-for-byte
-      comparison against a single archived run cannot be this node's criterion).
-- [x] 2026-09-19: every formatting primitive reproduces the strings of the reference
-      files it is specified by (`tests/Output.Tests`, `FortranFormatTests`, 26 cases
-      each citing its own fixture file and line).
-- [x] 2026-09-19: JSON round-trips (`tests/Output.Tests`, `JsonRoundTripTests`:
-      `WriteThenReadGivesAnEqualResultFieldByFieldWithBitwiseDoubleEquality`,
-      `WriteReadWriteGivesTheSameBytes`, `ReadMalformedJsonThrowsJsonException`).
-- [x] 2026-09-21: the `fmkarm`/`fqkarm`/`fmkarm_cor`/`fmkarm_cor2`/`fqkarm_cor`
-      print-length formula (`## Array-length divergence, measured`, "The `DPmax`/
-      `DPmax_cor` print-length formula itself…") matches the archive on nine of the
-      ten reference-formulation lengths it drives; the tenth (HMX's `DpMaxCor`-driven
-      trio) is `Particle`'s own accumulator value, not this node's formula
-      (`tests/Output.Tests/PocketPrintLengthTests`).
-- [x] 2026-09-21: the precision-kind footer line explains itself rather than naming
-      a bare enum value, differs between the two kinds nowhere but itself, and stays a
-      plain comment excluded from the structural comparison the same way the time line
-      is (`tests/Output.Tests/PrecisionFooterLineTests`, 4 cases, run once
-      `src/Simulation`'s finished implementation of `PrecisionKind`/
-      `SimulationOptions.Precision`/`RunDiagnostics.Precision` merged onto this
-      branch — its `API.md` alone, published first so this node's coding session did
-      not have to wait, was not enough to build against). Proven non-degenerate the
-      same day: with the `IsComparableCommentBanner` exclusion of "% Precision:"
-      removed, `StructuralTests.PortResultsMMatchesOriginalInNamesAndCommentsInOrder`
-      failed on all five reference formulations and two of
-      `PrecisionFooterLineTests`' own cases failed with it; reverted, all nine green
-      again (`tests/Output.Tests/BOOT.md`, "## Mutations", entry 7).
-- [x] 2026-09-21: the stream-layout and execution-mode footer lines each explain
-      themselves rather than naming a bare enum value, each differs between its two
-      values nowhere but itself, and each stays a plain comment excluded from the
-      structural comparison the same way the time line and the precision-kind line
-      already are (`tests/Output.Tests/RunProvenanceFooterLineTests`, 8 cases, reusing
-      `PrecisionFooterLineTests`' own sample builder and write helper rather than a
-      second copy of either). Content, not mere inequality, per root BOOT.md's project
-      rule adopted the same day ("each asserted by content and not by inequality"): the
-      "changes only its own line" cases assert the surviving line carries the correct
-      distinguishing phrase for each of the two values compared, not only that a single
-      line differs, and the "explains itself" cases assert each value's line carries its
-      own distinguishing phrase and not the other's. Proven non-degenerate the same day,
-      two ways, each red then reverted to green. First, with the `IsComparableCommentBanner`
-      exclusions of "% Stream layout:" and "% Execution mode:" removed:
-      `StructuralTests.PortResultsMMatchesOriginalInNamesAndCommentsInOrder` failed on
-      all five reference formulations and four of `RunProvenanceFooterLineTests`' own
-      cases (the four `IsAPlainCommentBanner` cases) failed with it, nine cases in all —
-      the same shape as mutation 7 for the precision-kind line. Second, with
-      `StreamLayoutCommentLine`'s two branches' message bodies swapped: exactly the two
-      cases carrying this row's own positive control failed
-      (`StreamLayoutLineExplainsItselfRatherThanPrintingABareEnumName` and
-      `ChangingTheStreamLayoutChangesOnlyItsOwnFooterLineWithTheCorrectWording`), each
-      on a specific missing substring, not a bare "these two lines differ" — the shape of
-      check this row's own wording exists to rule out, and which the swap would not have
-      caught (`tests/Output.Tests/BOOT.md`, "## Mutations", entries 8–9).
-- [x] 2026-09-23: the header echo of the menu parameter `eps` reproduces the original's
-      REAL*4 store under `PrecisionKind.Original` and is unchanged under `Binary64`
-      (`## Header echo`; `tests/Output.Tests/EpsHeaderEchoTests`, 3 cases, seen red
-      against the pre-fix code). Positive control: the port's `--precision original`
-      header equals the archived reference header line for line on all five reference
-      formulations (filename and time lines excluded). Negative control: `--precision
-      double` output is unchanged apart from the time line. Every other header echo was
-      checked the same way and none of them showed the same shape (`## Header echo`).
-- [x] 2026-09-24: the tail-probability header line and the `Dokb_max` gate both read the
-      original's own already-reduced `alfa` (`RunHeader.TailProbabilityModified`), not
-      the raw menu parameter (`## Tail-probability header line and gate`;
-      `tests/Output.Tests/TailProbabilityHeaderTests`, 5 cases: two unit-level, seen red
-      against the pre-fix code — one for the header line, a two-row theory for the gate
-      in both directions — and two fixture-backed, against
-      `tests/Fixtures/cases/output/nonzero-tail-probability/results.m.txt`, a real
-      original run with a nonzero tail probability generated for this criterion).
-- [x] 2026-09-24: `coef`, `fqmkm1` and `fqmkm2` print `nmax + 2` values padded with
-      zeros beyond their own `Nc`-sized array, not truncated to it (`## Array-length
-      divergence, measured`; `tests/Output.Tests/ArrayPaddingTests`, 4 cases: three
-      unit-level, one per array, each seen red against the pre-fix clamp, and one
-      reading `tests/Fixtures/Legacy/outputs/hp2.m.txt` through `tests/Harness`' parser
-      for the archive's own overflow evidence, no count or value typed into the test).
-
-⚠ 2026-09-24: cited test names renamed for CA1707, meaning unchanged, no criterion
-re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
-
-⚠ 2026-10-02: the first row read 1176–1504, now 1184–1453, the scope of "## Print-time
-expressions": 1176–1183 is cycle bookkeeping and the file header, and the console
-summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line map",
-"The screen summary"). Found by reading the row against that section.
+→ [ACCEPTANCE.md](ACCEPTANCE.md)
 
 ## Defects of the original
 
-| Fortran | Kind | What the original does | Consequence | The port | Differing cells |
-|---|---|---|---|---|---|
-| 1184–1453 | numeric | The print plane computes its own expressions in REAL*4 (print-time arithmetic such as `DOKSD**0.5`, `1 − DolM`, the products with `mp`) and prints REAL*4 values; the port computes them in `double` and rounds to the printed digits without a binary32 conversion ("## Design decisions (2026-09-19)", the first bullet; `src/Statistics/BOOT.md`, "## Report", the per-cycle plane's bullet). A last printed digit can differ under either precision kind. | not measured: the criterion's print-resolution floor covers one unit of the last digit, and the set criterion finds no such cell under `Original` (`tests/Harness.Tests/SetCriterionTests`, 2026-10-01). | declared, not reproduced | none |
-| 1238 | cosmetic | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | none |
-| 1370, 1373, 1377; `arrayprint`, 1517–1543 | cosmetic | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | none |
+| Fortran | Kind | What the original does | Consequence | The port | Differing cells | Corrected |
+|---|---|---|---|---|---|---|
+| 1184–1453 | numeric | The print plane computes its own expressions in REAL*4 (print-time arithmetic such as `DOKSD**0.5`, `1 − DolM`, the products with `mp`) and prints REAL*4 values; the port computes them in `double` and rounds to the printed digits without a binary32 conversion ("## Design decisions (2026-09-19)", the first bullet; `src/Statistics/BOOT.md`, "## Report", the per-cycle plane's bullet). A last printed digit can differ under either precision kind. | not measured: the criterion's print-resolution floor covers one unit of the last digit, and the set criterion finds no such cell under `Original` (`tests/Harness.Tests/SetCriterionTests`, 2026-10-01). | declared, not reproduced | none | unchanged |
+| 1238 | cosmetic | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | none | unchanged |
+| 1250–1252 | cosmetic | The condition labels print `0.5`, `2.0` and `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and condition 5 names `Dbase` where its test reads `max(Dbase,Dok)` (`## Corrected model`, "The condition labels"). | not measured | reproduced | none | fixed (Model) |
+| 1286 | cosmetic | `fineoxy_fr` adds `gdokleft/GGG`, a share of the non-homogenized oxidizer `GGG`, to `gdokns`, a share of the whole oxidizer `GGG0` (`## Corrected model`, "`fineoxy_fr`"). | not measured | reproduced | none | fixed (Model) |
+| 1368–1369 | cosmetic | The `fqmkm1` comment says `(step = 0.01)` while `qmkm1` is binned at 0.001 (`## Corrected model`, "`fqmkm1`'s step"). | not measured | reproduced | none | fixed (Model) |
+| 1370, 1373, 1377; `arrayprint`, 1517–1543 | cosmetic | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | none | unchanged |
 
 ## Taboos
 
 - No computation of model quantities here.
+
+## Corrected model
+
+Designed and implemented 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+[Simulation](../Simulation/API.md), "## Model kind"). Every branch below reads
+`result.Diagnostics.Model == ModelKind.Corrected` and nothing else: no `CorrectionSet`
+reaches this node, so a seam run, labelled `Corrected`, gets all of them. Under
+`Original` every byte of `results.m` and of the JSON is what it was before the option
+(`tests/Simulation.Tests`' seed-zero guard). Each is print-time text or print-time
+arithmetic, as its `Original` line is, so the taboo above holds.
+
+- **The footer line** (no Fortran line). Written after the execution-mode line by
+  `ResultsMWriter.ModelCommentLine`, the one place the text is written, under
+  `Corrected` only, verbatim, on one line, its leading blank included: the text is the
+  code block of [API.md](API.md), "## Corrected model", the one place it is held
+  (moved there 2026-10-18: a neighbour reads only `API.md`, AGENTS.md §3).
+
+  No `=` and no digit, like the footer lines above it, and excluded from the structural
+  comparison of `tests/Output.Tests` the same way (`% Model kind:`). `Original` writes
+  no line.
+- **`fqmkm1`'s step, Fortran 1368–1369.** The comment says `(step = 0.01)`; the
+  original bins `qmkm1` at 0.001 (Fortran 628, read back at 1110, outside this node's
+  range; audit of 2026-10-16, checked 2026-10-18). `Corrected` writes `(step = 0.001)`
+  in that comment; `fqmkm2`'s and `coef`'s comments stay. Branch: the literal at its
+  `Line` call in `WriteFunctions`.
+- **The condition labels, Fortran 1250–1252.** The original prints `0.5`, `2.0` and
+  `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and names `Dbase` in condition
+  5, which tests the distance against `max(Dbase,Dok)` (Fortran 547, 552, 566, outside
+  the range; same audit). `Corrected` prints `Dbase < {AK1}Dok`, `Dbase > {AK2}Dok` and
+  `l > {AK4}max(Dbase,Dok)`, each ratio `StoredSetup.Ak1`/`Ak2`/`Ak4` (never
+  `Formulation`: "print the stored setup" below) as `ToString("0.0##",
+  CultureInfo.InvariantCulture)`. The shape ` %    K) <label>:` stays, the label padded
+  with blanks to 16 characters when shorter, as the original pads `Nkarm/Nmkm < min`;
+  `tests/Harness` keys these lines by `K`. At the default ratios conditions 3 and 4
+  print as under `Original`. Branch: the label of each `Line` call in `WriteResults`,
+  the `Original` literal kept verbatim on its line, its citation and fragment unchanged.
+  A `Corrected` result with a null ratio is refused, `ArgumentException` naming it.
+- **`fineoxy_fr`, Fortran 1286.** `gdokns + gdokleft/GGG` adds a share of the
+  non-homogenized oxidizer `GGG` to a share of the whole oxidizer `GGG0`.
+  `Corrected` prints `gdokns + (1 − gdokns)·gdokleft/GGG`, the share of `GGG0`
+  (`GGG = GGG0·(1 − gdokns)`, Fortran 376, as the arbiter checked it), in C#
+  `gdokns + (1.0 - gdokns) * local.Gdokleft / header.Ggg` with `gdokns` =
+  `StoredSetup.HomogenizedOxidizerFraction`. The `Original` statement keeps its line,
+  fragment and `// Fortran 1286`; the `Corrected` value is its own statement, which
+  carries no `// Fortran` citation (no generated row holds it), and the printed
+  `R(...)` is the same call. Equal to `Original` when `gdokns = 0` or `gdokleft = 0`;
+  each reference formulation's archived `results.m` prints `fineoxy_fr` as 0.
+- **JSON.** `ResultsJson`'s options take a `DefaultJsonTypeInfoResolver` with one
+  modifier: `ShouldSerialize` omits `RunDiagnostics.Model` when `Original` and
+  `StoredSetup.Ak1`/`Ak2`/`Ak4` when `null`; `Simulation` carries no serialisation
+  attribute. A missing `Model` reads back `Original` and a missing ratio `null`, so the
+  round trip stays exact under both models and an `Original` JSON keeps its bytes.
+
+Evidence: writer tests on constructed results (a label at `AK1 = 0.45`, `fineoxy_fr`
+at `gdokns = 0.1` with `gdokleft > 0`, the footer, the step); a run of P312 under
+`Corrected` with `gdokns = 0.1`, where `gdokleft ≈ 0.122` at defaults moves
+`fineoxy_fr` by about 0.023 (the arbiter's estimate, not a measurement).
 
 ## Design decision (2026-09-24): print the stored setup
 

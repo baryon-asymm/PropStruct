@@ -51,13 +51,17 @@ internal sealed class Scenario : IDisposable
         Accelerator accelerator, double size, double cellSize, double lambda, double ak3, double ak4, int cycleFlag,
         int neighbourBudget = 200, int pocketRedrawBudget = 200,
         byte pocketForming = 1, double? dmax = null, double dmin = 0.0,
-        double ak1 = 0.0, int variant = 1, bool uniformQks1 = true, double dmaxxx = 1e6, int arraySize = 2000)
+        double ak1 = 0.0, int variant = 1, bool uniformQks1 = true, double dmaxxx = 1e6, int arraySize = 2000,
+        CorrectionSet corrections = CorrectionSet.None, double? nnMax = null, PrecisionKind kind = PrecisionKind.Binary64)
     {
         var setup = ConstructedModel.Permissive(size, cellSize, lambda, ak3, ak4, neighbourBudget, pocketRedrawBudget, arraySize);
         setup.Dmin = dmin;
         setup.Dmax = dmax ?? size * 10.0;
         setup.Ak1 = ak1;
         setup.Variant = variant;
+        setup.Corrections = corrections;
+        setup.Kind = kind;
+        setup.NnMax = nnMax ?? setup.NnMax;
 
         var fractions = ConstructedModel.SingleFraction(accelerator, size, size, pocketForming,
             out var bounds, out var cumulative, out var forming);

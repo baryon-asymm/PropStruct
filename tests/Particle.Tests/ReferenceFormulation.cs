@@ -44,13 +44,17 @@ internal static class ReferenceFormulation
     /// answer.
     /// </summary>
     public static ModelSetup Prepare(Accelerator accelerator, string name, out SetupTables tables, out SetupEchoes echoes)
+        => Prepare(accelerator, name, PrecisionKind.Binary64, out tables, out echoes);
+
+    /// <summary>The same setup under the run's <paramref name="kind"/> (<c>Setup.Prepare</c> takes it as an argument).</summary>
+    public static ModelSetup Prepare(Accelerator accelerator, string name, PrecisionKind kind, out SetupTables tables, out SetupEchoes echoes)
     {
         var path = RepositoryPaths.Resolve("tests", "Fixtures", "Legacy", "formulations", name + ".dat");
         var parameters = ModelParameters.Default;
         var formulation = DatFile.Read(path, parameters.ReadPocketFormingFractions);
 
         var status = Setup.Prepare(
-            formulation, parameters, PrecisionKind.Binary64, NeighbourBudget, PocketRedrawBudget,
+            formulation, parameters, kind, NeighbourBudget, PocketRedrawBudget,
             out var setup, out tables, out var draw, out var pending);
 
         if (status != SetupStatus.Ok)

@@ -4,6 +4,33 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="comment-lines-under-original-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — the original's comment lines under every model
+
+Changed when the `Corrected` model came to correct the `fqmkm1` step comment and the
+condition labels and to add its footer line (`## Corrected model`); the invariant now
+holds under `Original`, and under `Corrected` for names, order and formats. The bullet
+as it stood:
+
+> - `results.m` holds the original's variable names, comment lines, order and formats:
+>   Fortran edit descriptors (`E9.3`, `E12.6`, `F7.2`, `F6.4`, `I3`…) and list-directed
+>   output emulated as Digital Visual Fortran prints them, six values per line with the
+>   original's continuation.
+
+---
+
+<a id="pdoksmall-first-cell-2026-10-18"></a>
+
+## 2026-10-18 — from "## Invariants" — `pdoksmall(1)` zero under every model
+
+Changed when the `Corrected` model came to assign `pdoksmall(1)` (`Statistics`,
+`PdoksmallFirstCell`); the invariant now holds under `Original`. The bullet as it stood:
+
+> - `pdoksmall(1)` prints as zero.
+
+---
+
 <a id="karmcoef-control-value-2026-09-24"></a>
 
 ## 2026-10-04 — from "## Design decision (2026-09-24): print the stored setup" — the review note on the control value, told in full
