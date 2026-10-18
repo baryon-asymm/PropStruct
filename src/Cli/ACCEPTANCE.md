@@ -76,18 +76,45 @@ re-verified and no date moved (`tests/test-renames-2026-09-24.txt`).
 
 ### Corrected model (designed 2026-10-18, `BOOT.md`, "## Corrected model")
 
-- [ ] `--model` reaches `SimulationOptions.Model` and no other property, and every
-      public property still has its flag (`ReflectedFlagCoverageTests`,
-      `FlagRoundTripTests`, generic over `FlagCatalog`); `--model original` and no
-      `--model` give the same `SimulationOptions`; `ResultsMByteIdenticalTests` stays
-      green unedited. Red once: the catalog entry removed turns the coverage test red.
-- [ ] `--model corrected --precision original` exits 2 with the library's message
-      naming both halves, through the existing `InvalidSetup` branch; `--model
-      corrected` alone runs a small formulation to exit 0 and its `results.m` carries
-      the model footer line; an unknown value (`--model fixed`) exits 2 naming the
-      flag.
-- [ ] The summary line under `Original` is byte for byte the line before the option
-      (asserted against a fixed expected text built from the same diagnostics), and
-      under `Corrected` it differs only by ` model=Corrected` after `layout=…`.
-- [ ] The usage text names `--model original|corrected` and its one sentence;
-      `--help` after `run` prints it.
+- [x] 2026-10-18: `--model` reaches `SimulationOptions.Model` and no other property, and
+      every public property still has its flag (`ReflectedFlagCoverageTests`,
+      `FlagRoundTripTests`, generic over `FlagCatalog`, its `--model` case;
+      `ModelFlagTests.ModelCorrectedChangesTheModelPropertyAndNoOther`);
+      `--model original` and no `--model` give the same `SimulationOptions`
+      (`ModelFlagTests.ModelOriginalAndNoModelFlagGiveTheSameSimulationOptions`);
+      `ResultsMByteIdenticalTests` stays green unedited (156 of 156 cases of
+      `tests/Cli.Tests`, `Category=Long` included). Red twice: before the entry existed
+      `ReflectedFlagCoverageTests.EverySimulationOptionsPropertyHasAFlagOrIsDeliberatelyUnflagged`
+      was red (`Model` unflagged, the T6 base); with the catalog entry removed again it
+      is red together with seven `ModelFlagTests` cases; with `RunOptionsBuilder`'s
+      assignment aimed at `Streams` the `--model` case of `FlagRoundTripTests` and seven
+      `ModelFlagTests` cases fail.
+- [x] 2026-10-18: `--model corrected --precision original` exits 2 with the library's
+      message naming both halves, through the existing `InvalidSetup` branch
+      (`ModelFlagTests.ModelCorrectedWithPrecisionOriginalExitsTwoNamingBothHalves`, run
+      with `--mode reference`: the default mode is batched and `Simulator.Create` checks
+      the batched refusal first, so without it the message names the batched half only);
+      `--model corrected` alone and `--model original` run a small formulation to exit 0
+      and the JSON result records the model
+      (`ModelFlagTests.ModelFlagRunsToExitZeroAndTheResultRecordsTheModelRun`); an
+      unknown value (`--model fixed`) exits 2 naming the flag
+      (`ModelFlagTests.AnUnknownModelValueExitsTwoNamingTheFlag`; red once with `fixed`
+      added to the catalog's values).
+- [ ] `--model corrected` alone writes a `results.m` that carries the model footer line.
+      Not verifiable at this base: `src/Output`'s `results.m` row is still ⏳
+      (`src/Output/API.md`, "## Corrected model"), a run under `Corrected` writes no
+      footer. To be added as a case of `ModelFlagTests` once `Output`'s row is merged.
+- [x] 2026-10-18: the summary line under `Original` is byte for byte the line before the
+      option, with and without `--model original`, asserted against a fixed expected text
+      built from the JSON result's own diagnostics
+      (`ModelFlagTests.TheSummaryLineUnderOriginalIsTheLineBeforeTheOption`,
+      `TheSummaryLineWithoutTheFlagIsTheSameLineAsUnderOriginal`), and under `Corrected`
+      it differs only by ` model=Corrected` after `layout=…`
+      (`TheSummaryLineUnderCorrectedDiffersOnlyByModelCorrectedAfterLayout`). Red: the
+      model always appended, three cases red (these two and
+      `RunOutputContentTests.RunSummaryLineMatchesTheDocumentedShape`); the model's text
+      altered, the `Corrected` case red.
+- [x] 2026-10-18: the usage text names `--model original|corrected` and its one
+      sentence; `--help` after `run` prints it
+      (`ModelFlagTests.TheRunUsageNamesTheModelFlagAndItsSentence`; red with the flag
+      line removed and with the sentence altered).

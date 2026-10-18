@@ -73,7 +73,7 @@ public sealed class Simulator : IDisposable
         var stopwatch = Stopwatch.StartNew();
 
         var prepareStatus = Setup.Prepare(
-            formulation, _options.Parameters, _options.Precision.ToParticle(), _options.NeighbourBudget, _options.PocketRedrawBudget,
+            formulation, _options.Parameters, _options.Precision.ToParticle(), _options.EffectiveCorrections, _options.NeighbourBudget, _options.PocketRedrawBudget,
             out var setup, out var tables, out var draw, out var pending, out var inputs);
         if (prepareStatus != SetupStatus.Ok)
         {
@@ -92,7 +92,12 @@ public sealed class Simulator : IDisposable
             inputs.OxidizerDensity, inputs.PropellantDensity, inputs.OxidizerMassFraction, inputs.MetalMassFraction,
             setup.Alpha, setup.NnMin, setup.NnMax, setup.PocketCoefficient, setup.BridgeCoefficient,
             inputs.HomogenizedOxidizerFraction, inputs.EpsDok,
-            tables.MassShare.ToImmutableArray(), tables.Bounds.ToImmutableArray());
+            tables.MassShare.ToImmutableArray(), tables.Bounds.ToImmutableArray())
+        {
+            Ak1 = _options.Model == ModelKind.Corrected ? setup.Ak1 : null,
+            Ak2 = _options.Model == ModelKind.Corrected ? setup.Ak2 : null,
+            Ak4 = _options.Model == ModelKind.Corrected ? setup.Ak4 : null,
+        };
 
         _engine.Load(in setup, tables.Bounds, tables.Cumulative, tables.PocketForming);
 
@@ -183,7 +188,10 @@ public sealed class Simulator : IDisposable
         var reportedAttemptsPerLaunch = _options.Mode == ExecutionMode.Reference ? 1 : _options.AttemptsPerLaunch;
         var diagnostics = new RunDiagnostics(
             _options.Mode, reportedBatchSize, reportedAttemptsPerLaunch, _engine.Accelerator, _options.Streams,
-            _options.Precision, _options.Seed, _options.ContinuedStreams, totalAttempts, totalLaunches, stopwatch.Elapsed);
+            _options.Precision, _options.Seed, _options.ContinuedStreams, totalAttempts, totalLaunches, stopwatch.Elapsed)
+        {
+            Model = _options.Model,
+        };
 
         return BuildResult(formulation, lastReport!, convergence, diagnostics, storedSetup);
     }

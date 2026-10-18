@@ -125,11 +125,11 @@ node's public surface.
 the per-cycle plane (`src/Statistics/BOOT.md`, "## Report", "The per-cycle plane under
 `Original`"); `Simulator` passes nothing new.
 
-## Model kind ⏳
+## Model kind ✅
 
-Designed 2026-10-18 (BOOT.md, "## Corrected model"; root BOOT.md, "Model kind is an
-option of every run"); nothing below exists yet. The members are added to the records
-of "## Simulator" and "## Result" as body init properties, so every 0.1.0 constructor
+Designed and implemented 2026-10-18 (BOOT.md, "## Corrected model"; root BOOT.md,
+"Model kind is an option of every run"). The members are added to the records of
+"## Simulator" and "## Result" as body init properties, so every 0.1.0 constructor
 stays.
 
 ```csharp
@@ -312,8 +312,8 @@ upper bound in turn (decided 2026-10-02 at the root, with "## Result").
 | `Precision == PrecisionKind.Original` with `Mode == ExecutionMode.Batched`, by any route to batched execution (a plain batch or the degenerate `BatchSize == 1`/`ContinuedStreams` configuration) | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup`, before any setup or accelerator work exists (`SimulationOptionsValidator`, architecture audit finding R1, 2026-09-24), reused rather than a new status value (decided with the root, 2026-09-21: the message names both halves of the conflict, and a consumer that already reports `InvalidSetup` by echoing the message needs no new case); `SetupFailure` is `null` — this is not a setup precondition |
 | `Streams == StreamLayout.Original` with `Mode == ExecutionMode.Batched`, by any route to batched execution (a plain batch or the degenerate `BatchSize == 1`/`ContinuedStreams` configuration) | as above, `Simulator.Create` throws the same way and for the same reason (decided with the root, 2026-09-21, root BOOT.md "Two stream layouts": the message names both halves of the conflict); `SetupFailure` is `null` |
 | invalid options (non-positive budgets, batch size, the `ContinuedStreams` combination) | `ArgumentException` before any work, from `Simulator.Create`'s own `SimulationOptionsValidator` |
-| ⏳ `Model == ModelKind.Corrected` with `Precision == PrecisionKind.Original`, in either mode | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup` before any setup or accelerator work, checked after the two batched refusals above, which keep their messages; the message names the requested model and the requested precision kind; `SetupFailure` is `null` (designed 2026-10-18, "## Model kind") |
-| ⏳ the internal `Corrections` set while `Model == ModelKind.Original`, or holding a bit outside `CorrectionSet.All` | `ArgumentException` before any work, from the same validator |
+| `Model == ModelKind.Corrected` with `Precision == PrecisionKind.Original`, in either mode | `Simulator.Create` throws `SimulationFailedException` with `RunStatus.InvalidSetup` before any setup or accelerator work, checked after the two batched refusals above, which keep their messages; the message names the requested model and the requested precision kind; `SetupFailure` is `null` (2026-10-18, "## Model kind") |
+| the internal `Corrections` set while `Model == ModelKind.Original`, or holding a bit outside `CorrectionSet.All` | `ArgumentException` before any work, from the same validator |
 
 ## Side effects
 

@@ -32,7 +32,17 @@ public sealed record StoredSetup(
     double OxidizerDensity, double PropellantDensity, double OxidizerMassFraction, double MetalMassFraction,
     double Alpha, double NnMin, double NnMax, double PocketCoefficient, double BridgeCoefficient,
     double HomogenizedOxidizerFraction, double EpsDok,
-    ImmutableArray<double> FractionMassShares, ImmutableArray<double> FractionBounds);
+    ImmutableArray<double> FractionMassShares, ImmutableArray<double> FractionBounds)
+{
+    /// <summary>The size ratio <c>AK1</c> as the run stored it; <see cref="ModelKind.Corrected"/> only, <see langword="null"/> under <see cref="ModelKind.Original"/> (BOOT.md, "## Corrected model", "Stored size ratios").</summary>
+    public double? Ak1 { get; init; }
+
+    /// <summary>The size ratio <c>AK2</c>; as <see cref="Ak1"/>.</summary>
+    public double? Ak2 { get; init; }
+
+    /// <summary>The size ratio <c>AK4</c>; as <see cref="Ak1"/>.</summary>
+    public double? Ak4 { get; init; }
+}
 
 /// <summary>The formulation identity and the setup echoes of <c>CycleReport</c>.</summary>
 public sealed record RunHeader(
@@ -101,4 +111,8 @@ public sealed record Convergence(
 /// </summary>
 public sealed record RunDiagnostics(
     ExecutionMode Mode, int BatchSize, int AttemptsPerLaunch, AcceleratorInfo Accelerator, StreamLayout Streams,
-    PrecisionKind Precision, ulong Seed, bool ContinuedStreams, long TotalAttempts, long TotalLaunches, TimeSpan Elapsed);
+    PrecisionKind Precision, ulong Seed, bool ContinuedStreams, long TotalAttempts, long TotalLaunches, TimeSpan Elapsed)
+{
+    /// <summary><see cref="SimulationOptions.Model"/> unchanged; a body property so the 0.1.0 constructor stays and a JSON written before reads back <see cref="ModelKind.Original"/> (BOOT.md, "## Corrected model", "Labelling").</summary>
+    public ModelKind Model { get; init; }
+}

@@ -144,7 +144,7 @@ public class JsonRoundTripTests
     /// last bit is not silently accepted) - the record types have no <c>Equals</c> override strict enough for
     /// this on their own (immutable-array and matrix fields compare by reference otherwise).
     /// </summary>
-    private static void AssertBitwiseEqual(SimulationResult expected, SimulationResult actual)
+    internal static void AssertBitwiseEqual(SimulationResult expected, SimulationResult actual)
     {
         AssertEqualHeader(expected.Header, actual.Header);
         AssertEqualDoubles(nameof(Counters), [
@@ -238,6 +238,9 @@ public class JsonRoundTripTests
             (expected.HomogenizedOxidizerFraction, actual.HomogenizedOxidizerFraction),
             (expected.EpsDok, actual.EpsDok),
         ]);
+        AssertEqualOptionalDouble(nameof(StoredSetup.Ak1), expected.Ak1, actual.Ak1);
+        AssertEqualOptionalDouble(nameof(StoredSetup.Ak2), expected.Ak2, actual.Ak2);
+        AssertEqualOptionalDouble(nameof(StoredSetup.Ak4), expected.Ak4, actual.Ak4);
         AssertEqualDoubleArrays(expected.FractionMassShares, actual.FractionMassShares);
         AssertEqualDoubleArrays(expected.FractionBounds, actual.FractionBounds);
     }
@@ -329,6 +332,7 @@ public class JsonRoundTripTests
         Assert.Equal(expected.TotalAttempts, actual.TotalAttempts);
         Assert.Equal(expected.TotalLaunches, actual.TotalLaunches);
         Assert.Equal(expected.Elapsed, actual.Elapsed);
+        Assert.Equal(expected.Model, actual.Model);
     }
 
     private static void AssertEqualDoubleArrays(ImmutableArray<double> expected, ImmutableArray<double> actual)
@@ -352,4 +356,13 @@ public class JsonRoundTripTests
         Assert.True(
             BitConverter.DoubleToInt64Bits(expected) == BitConverter.DoubleToInt64Bits(actual),
             $"{context}: expected {expected:R}, got {actual:R} (not bitwise equal)");
+
+    private static void AssertEqualOptionalDouble(string context, double? expected, double? actual)
+    {
+        Assert.Equal(expected.HasValue, actual.HasValue);
+        if (expected.HasValue)
+        {
+            AssertEqualDouble(context, expected.Value, actual!.Value);
+        }
+    }
 }

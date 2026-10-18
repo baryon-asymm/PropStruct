@@ -1,5 +1,6 @@
 using PropStruct.Execution;
 using PropStruct.Input;
+using PropStruct.Particle;
 
 namespace PropStruct.Simulation;
 
@@ -74,6 +75,29 @@ public sealed record SimulationOptions
     /// is an option of every run"; `src/Statistics/BOOT.md`, "## Setup plane" and "## Report").
     /// </summary>
     public PrecisionKind Precision { get; init; } = PrecisionKind.Binary64;
+
+    /// <summary>
+    /// <see cref="ModelKind.Original"/> (the default) computes what the original computes, bit for bit;
+    /// <see cref="ModelKind.Corrected"/> fixes the original's explicit errors (BOOT.md, "## Corrected
+    /// model"). <see cref="ModelKind.Corrected"/> with <see cref="PrecisionKind.Original"/> is refused with
+    /// <see cref="RunStatus.InvalidSetup"/> before any setup or accelerator work exists.
+    /// </summary>
+    public ModelKind Model { get; init; } = ModelKind.Original;
+
+    /// <summary>
+    /// The seam for <c>tests/Simulation.Tests</c> (BOOT.md, "## Corrected model", "The seam"): <see langword="null"/>
+    /// is the model's own set; a non-null value with <see cref="Model"/> == <see cref="ModelKind.Original"/>, or
+    /// with a bit outside <see cref="CorrectionSet.All"/>, is refused by <see cref="SimulationOptionsValidator"/>.
+    /// </summary>
+    internal CorrectionSet? Corrections { get; init; }
+
+    /// <summary>
+    /// The set the simulator hands to <c>Statistics.Setup.Prepare</c> (BOOT.md, "## Corrected model", "The
+    /// mapping"): <see cref="CorrectionSet.None"/> under <see cref="ModelKind.Original"/>, otherwise
+    /// <see cref="Corrections"/> or <see cref="CorrectionSet.All"/>.
+    /// </summary>
+    internal CorrectionSet EffectiveCorrections =>
+        Model == ModelKind.Original ? CorrectionSet.None : Corrections ?? CorrectionSet.All;
 
     /// <summary>0: the layout's own initial states (root BOOT.md, "Execution model").</summary>
     public ulong Seed { get; init; }

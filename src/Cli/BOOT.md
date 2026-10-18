@@ -184,7 +184,7 @@ which is worse than an awkward name.
 
 Run options, which the original had no menu for, carry descriptive names only:
 `--mode reference|batched`, `--accelerator auto|cpu|cuda`, `--layout original|independent`,
-`--precision binary64|original`, `--model original|corrected` (designed 2026-10-18,
+`--precision binary64|original`, `--model original|corrected` (designed and implemented 2026-10-18,
 "## Corrected model"), `--batch <n>`, `--seed <n>`, `--output <path>`,
 `--json <path>`, `--quiet`, and the budgets `--attempts-per-launch`,
 `--max-attempts-per-particle`, `--neighbour-budget`, `--record-budget-bytes`, plus
@@ -296,7 +296,7 @@ there is no process-level Ctrl+C test, by decision.
 
 ## Corrected model
 
-Designed 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+Designed and implemented 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
 [Simulation](../Simulation/API.md), "## Model kind"); the fixes are the library's, and
 this node only names the option.
 

@@ -18,7 +18,15 @@ namespace PropStruct.Simulation.Tests;
 public class DegenerateConfigurationTests
 {
     [Fact]
-    public void BatchedDegenerateConfigurationEqualsReferenceModeBitForBit()
+    public void BatchedDegenerateConfigurationEqualsReferenceModeBitForBit() =>
+        AssertDegenerateConfigurationEqualsReferenceMode(ModelKind.Original);
+
+    /// <summary>The same claim under the <c>Corrected</c> model (ACCEPTANCE.md, "Corrected model", the degenerate row).</summary>
+    [Fact]
+    public void BatchedDegenerateConfigurationEqualsReferenceModeBitForBitUnderCorrected() =>
+        AssertDegenerateConfigurationEqualsReferenceMode(ModelKind.Corrected);
+
+    private static void AssertDegenerateConfigurationEqualsReferenceMode(ModelKind model)
     {
         var formulation = SmallFormulation.Build(particlesPerCycle: 24, cycles: 2);
 
@@ -28,6 +36,7 @@ public class DegenerateConfigurationTests
             Accelerator = AcceleratorKind.Cpu,
             Streams = StreamLayout.Independent,
             Seed = 0UL,
+            Model = model,
         });
         var referenceResult = reference.Run(formulation);
 
@@ -40,6 +49,7 @@ public class DegenerateConfigurationTests
             BatchSize = 1,
             AttemptsPerLaunch = 1,
             ContinuedStreams = true,
+            Model = model,
         });
         var degenerateResult = degenerate.Run(formulation);
 
@@ -60,6 +70,9 @@ public class DegenerateConfigurationTests
         Assert.Equal(referenceResult.Diagnostics.TotalLaunches, degenerateResult.Diagnostics.TotalLaunches);
         Assert.Equal(1, referenceResult.Diagnostics.BatchSize);
         Assert.Equal(1, degenerateResult.Diagnostics.BatchSize);
+        Assert.Equal(model, referenceResult.Diagnostics.Model);
+        Assert.Equal(model, degenerateResult.Diagnostics.Model);
+        ResultReflection.AssertBitIdentical(referenceResult.StoredSetup, degenerateResult.StoredSetup);
     }
 
     /// <summary>

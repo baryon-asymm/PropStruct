@@ -29,7 +29,8 @@ had to read the formulation before it could run the simulator at all.
 
 ## Corrected model ⏳
 
-Designed 2026-10-18 (`BOOT.md`, "## Corrected model"); not implemented yet. The
+Designed 2026-10-18 (`BOOT.md`, "## Corrected model"); the JSON row is implemented
+the same day (`ResultsJson`'s contract modifier), the `results.m` row is not yet. The
 writers' signatures do not change. What they write depends on
 `SimulationResult.Diagnostics.Model` ([Simulation](../Simulation/API.md), "## Model
 kind"):

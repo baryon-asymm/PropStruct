@@ -71,3 +71,9 @@
       approved ones and `SeedZeroResultsMMatchesApprovedSnapshot` green; one character of
       `extra/P33-defaults`' JSON hash edited, red; reverted. Right once: regenerated three
       times from scratch, identical; its `results.m` column equals the untouched snapshot's.
+- [x] 2026-10-18: the model kind is covered by `ModelKindTests` (18 cases) and
+      `DegenerateConfigurationTests`' `Corrected` case: surface, mapping on P33's
+      `Dok43sd` (the archive's 75.45 for `Original`, 112.66 for `Corrected`), the refusal and
+      the batched refusals' unchanged messages, the seam with its negative and positive
+      controls, determinism, the stored ratios; every one red once, `## Mutations`, "Model
+      kind". The guard stayed green, 34 of 34, and the `SeedZero` facts, 59 of 59.

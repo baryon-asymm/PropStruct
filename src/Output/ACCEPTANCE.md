@@ -118,7 +118,12 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
       differs from the `Original` value by `gdokns·gdokleft/GGG`; at `gdokleft = 0`
       the two print the same; `PrintExpressionMapTests` stays green with the 1286 row
       unedited. Right once on P312 under `Corrected` with `gdokns = 0.1`.
-- [ ] JSON: a `Corrected` result round-trips equal and byte-stable with `Model` and the
+- [x] JSON: a `Corrected` result round-trips equal and byte-stable with `Model` and the
       three ratios present; an `Original` result's JSON holds none of the four
       properties; a JSON written before the option reads back with `Model = Original`
       and null ratios. Red once with the modifier removed (the `Original` bytes move).
+      (2026-10-18, `tests/Output.Tests/ModelJsonTests` (5 cases) and `JsonRoundTripTests`
+      (3, extended to `Model` and the ratios); red with the `Model` rule and with the
+      ratio rule each made unconditional, the `Original` JSON gaining the property;
+      the seed-zero guard of `tests/Simulation.Tests` hashes the `Original` bytes and
+      stayed green, 34 of 34.)
