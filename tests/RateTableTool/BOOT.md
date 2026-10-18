@@ -96,7 +96,7 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
       per (formulation, layout, precision, seed index), and the regeneration that added
       it moves no verdict: zero `FailingCells`/`FailingNames`/`ResultSha256` differences
       against the pre-run table (`## Regeneration runs` below).
-- [x] 2026-10-18: `original-model-guard` writes `OriginalModelGuard.approved.txt`, 33 lines,
+- [x] 2026-10-18: `original-model-guard` writes `OriginalModelGuard.approved.txt`, 33 lines (34 since T13),
       byte-identical on three regenerations from scratch (Release); its `results.m` column
       equals `SeedZeroResultsM.approved.txt` on the twenty seed-0 cases, a file this task did
       not touch, so `RunSeed`'s `results.m` is what it was (`## The Original-model guard`).
@@ -311,13 +311,17 @@ move; `SnapshotSha256` did, with the snapshot. `RateCriterionTests` and
 ## The Original-model guard
 
 Task T2, 2026-10-18 (`tests/Simulation.Tests/BOOT.md`, "## The Original-model guard", owns the
-why). `OriginalModelGuard.Cases` is the one list of the 33 cases (twenty seed-0, five batched
-CPU, eight `extra/...`), `OriginalModelGuard.Line` the one line format, `ApprovedPath` the one
+why). `OriginalModelGuard.Cases` is the one list of the 34 cases (twenty seed-0, five batched
+CPU, nine `extra/...`), `OriginalModelGuard.Line` the one line format, `ApprovedPath` the one
 path; the generator writes and the neighbour's test reads through them. A case runs through
 `ReferenceModeRunner.Fingerprint`, which hashes the `results.m` text and the `ResultsJson`
 text of the result with `Diagnostics.Elapsed` and `Diagnostics.Accelerator` replaced by
 constants and the line endings made LF; it does not parse the `results.m`, since an extra
 case prints `NaN`, which `ResultsMFile` does not read. The file is written with LF line endings.
+
+**2026-10-18 (T13), `extra/PSAN02-sfr-dmin20-di10`.** Added with `src/` checked out at `ac1fc20`
+(the original port) so that its line is the original's; Release, 34 cases in 7 m 26 s; the 33
+older lines came out byte-identical, the new one is the only difference.
 
 **2026-10-18, `original-model-guard`.** Release build, `PROPSTRUCT_NO_CUDA=1`, 16 logical CPUs:
 33 cases in 6 m 7 s (twice) and 9 m 45 s (the machine busy); the three files are identical.

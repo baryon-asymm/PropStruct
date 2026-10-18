@@ -121,12 +121,14 @@ internal static class OriginalModelGuard
         // particles, a read SFR vector, several cycles, other fraction counts and size laws.
         var defaults = ModelParameters.Default;
         var psan02 = defaults with { ReadPocketFormingFractions = true, Dmin = Length.FromMicrometres(20) };
+        var psan02Di10 = psan02 with { CellSize = Length.FromMicrometres(10) };
         yield return Extra("P312-defaults", "P312", cycles: null, defaults);
         yield return Extra("P312-dmin5", "P312", cycles: null, defaults with { Dmin = Length.FromMicrometres(5) });
         yield return Extra("P312-cycles3", "P312", cycles: 3, defaults);
         yield return Extra("P312-homogenized0.1", "P312", cycles: null, defaults with { HomogenizedOxidizerFraction = 0.1 });
         yield return Extra("PSAN02-sfr-dmin20", "PSAN02", cycles: null, psan02);
         yield return Extra("PSAN02-sfr-dmin20-cycles3", "PSAN02", cycles: 3, psan02);
+        yield return Extra("PSAN02-sfr-dmin20-di10", "PSAN02", cycles: null, psan02Di10);
         yield return Extra("P33-defaults", "P33", cycles: null, defaults);
         yield return Extra("P2-defaults", "P2", cycles: null, defaults);
     }

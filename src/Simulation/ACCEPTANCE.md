@@ -138,8 +138,53 @@ has no external reference (root `BOOT.md`, "Model kind is an option of every run
       model line of `BOOT.md`, "## Corrected model", verbatim (2026-10-18,
       `tests/Output.Tests`' `CorrectedResultsMTests.ACorrectedResultWritesTheFooterLineOfBootMdVerbatimAfterTheExecutionModeLine`
       and, end to end, `tests/Cli.Tests`' `ModelFlagTests.ResultsMCarriesTheModelFooterLineUnderCorrectedOnceAndNeverUnderOriginal`).
-- [ ] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
+- [x] An undefined `ModelKind` value (a cast integer) is an `ArgumentException` naming the value
+      from `Simulator.Create`, before the seam check; both defined members are accepted.
+      (2026-10-18, `ModelKindTests.AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck`
+      and `EveryDefinedModelValueIsAcceptedByTheValidator`; red with the `Enum.IsDefined` check
+      removed: the three cases of the first.)
+- [x] Budgets under `Corrected`: the method of `BOOT.md`, "## Budget measurement", run
       under `Corrected` on the five reference formulations, its maxima recorded here
       with the run's place (`BOOT.md` stands at its §15 limit), and no default below
       100 times a `Corrected` maximum; a default that rises changes its row of
       `BOOT.md`'s defaults table in place, its basis naming the `Corrected` maximum.
+      (2026-10-18, below; no default is below 100 times a `Corrected` maximum, none rose.)
+
+  The run's place: a scratch test of `tests/Simulation.Tests` (`BudgetCorrectedScratch`),
+  run once on 2026-10-18 in Release on the CPU, one process per formulation and
+  quantity, and deleted, as the 2026-09-19 scratch was. Its instrument is the method's
+  own, driven through `Simulator` and its failure statuses instead of `Engine`: each
+  budget is bracketed `(a, b]` (failed at `a`, completed at `b`) by doubling from 1 and
+  then bisecting to a width of at most `a / 32`, the other budgets at 2³⁰. The attempt
+  maximum is read in reference mode (both layouts, `Binary64`) and in batched mode
+  (`Independent`); neighbour draws per attempt and pocket redraws per bridge in batched
+  mode, whole formulations. Bracketing the attempt cap is exact: a particle fails the
+  run when its count passes the cap. Every figure is one deterministic run's bound at
+  seed 0, not a spread.
+
+  | Formulation | Model | Attempts, reference `Original` layout | reference `Independent` | batched | Neighbour draws | Pocket redraws |
+  |---|---|---|---|---|---|---|
+  | HPEPA3 | `Corrected` | (84, 86] | (82, 84] | (108, 110] | (180,224, 184,320] | (80, 82] |
+  | HPEPA3 | `Original` | (88, 90] | (76, 78] | (108, 110] | (180,224, 184,320] | (28, 29] |
+  | inpt | `Corrected` | (92, 94] | (96, 98] | (78, 80] | (50, 51] | (4, 5] |
+  | inpt | `Original` | (112, 114] | (72, 74] | (78, 80] | (50, 51] | (3, 4] |
+  | P33 | `Corrected` | (17, 18] | (25, 26] | (17, 18] | (22,528, 23,040] | (14, 15] |
+  | P33 | `Original` | (17, 18] | (21, 22] | (17, 18] | (22,528, 23,040] | (6, 7] |
+  | PSAN02n | `Corrected` | (220, 224] | (96, 98] | (126, 128] | (52, 53] | (6, 7] |
+  | PSAN02n | `Original` | (204, 208] | (112, 114] | (128, 132] | (52, 53] | (5, 6] |
+  | HMX | `Corrected` | (4,352, 4,480] | (3,776, 3,840] | (3,904, 3,968] | (135,168, 139,264] | (58, 59] |
+  | HMX | `Original` | (4,352, 4,480] | (4,224, 4,352] | (3,904, 3,968] | (135,168, 139,264] | (40, 41] |
+
+  Positive control, the same instrument on `Original`: the reference-mode maxima in the
+  original layout contain the 2026-09-19 figures that were read exactly (P33 18, inpt 114,
+  HPEPA3 90, PSAN02n 205, HMX 4,412). The batched neighbour and pocket columns do not
+  reproduce that table's: it was measured in the `Original` layout, which batched mode
+  refuses now, so these are the production path's own figures.
+
+  Against the defaults, by the upper end of the largest `Corrected` interval, over every
+  column of its quantity: `MaxAttemptsPerParticle` 500,000 against 4,480 (HMX), 111.6
+  times; `NeighbourBudget` 20,000,000 against 184,320 (HPEPA3), 108.5 times;
+  `PocketRedrawBudget` 12,800 against 82 (HPEPA3), 156.1 times. All are at least 100;
+  `PocketRedrawBudget`, the one at risk, rose in its maximum under `Corrected`
+  (HPEPA3 29 to 82, HMX 41 to 59) and still stands. `AttemptsPerLaunch` is not a
+  100-times default (`BOOT.md`, "## Budget selection rule (2026-09-28)").

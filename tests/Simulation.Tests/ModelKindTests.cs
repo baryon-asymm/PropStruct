@@ -193,6 +193,34 @@ public class ModelKindTests
         _ = Assert.Throws<ArgumentException>(() => Simulator.Create(options));
     }
 
+    /// <summary>
+    /// An undefined <see cref="ModelKind"/> value is refused before the seam check, naming the value; the two
+    /// defined members pass the same check (right once), so the refusal is the undefined value's own.
+    /// </summary>
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(2)]
+    [InlineData(int.MaxValue)]
+    public void AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck(int value)
+    {
+        var options = Reference(ModelKind.Original) with { Model = (ModelKind)value, Corrections = CorrectionSet.None };
+
+        var exception = Assert.Throws<ArgumentException>(() => Simulator.Create(options));
+
+        Assert.Equal("options", exception.ParamName);
+        Assert.Contains($"Model {value} is not a {nameof(ModelKind)} member", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(ModelKind.Original)]
+    [InlineData(ModelKind.Corrected)]
+    public void EveryDefinedModelValueIsAcceptedByTheValidator(ModelKind model)
+    {
+        using var simulator = Simulator.Create(Reference(model));
+
+        Assert.NotNull(simulator);
+    }
+
     [Fact]
     public void ARunWithTheSeamedSetAllIsTheCorrectedRun()
     {

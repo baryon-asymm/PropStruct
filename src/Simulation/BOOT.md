@@ -168,8 +168,8 @@ fixes are `Particle`'s and `Statistics`' (`CorrectionSet`, `../Particle/API.md`)
 
 - **The option.** `public enum ModelKind { Original = 0, Corrected = 1 }`, explicit
   values, in `ModelKind.cs`; `SimulationOptions.Model { get; init; } =
-  ModelKind.Original`. "Kind", parallel to `PrecisionKind`; "variant" already names the
-  menu parameter `ivar` (`ModelParameters.Variant`, `% Calculation variant =`).
+  ModelKind.Original`; an undefined cast value is an `ArgumentException` of the
+  validator, never a model. "Kind" parallels `PrecisionKind`; "variant" is `ivar`.
 - **The mapping.** The effective set is `Model == Original ? CorrectionSet.None :
   Corrections ?? CorrectionSet.All`. `Simulator.Run` passes it to the `CorrectionSet`
   overload of `Statistics.Setup.Prepare` (`../Statistics/API.md`) at its one call site,

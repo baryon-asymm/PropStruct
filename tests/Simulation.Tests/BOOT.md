@@ -365,6 +365,8 @@ guard), seen red, reverted:
 | `Ak1` copied under `Original` too | `AnOriginalRunsResultsAndJsonCarryNoModelLabel` |
 | `RunDiagnostics.Model` fixed at `Original` | `ACorrectedRunsDiagnosticsAndStoredRatiosEqualTheSetupsOwn`, `CorrectedWithBinary64RunsToCompletionInBothModesAndBothLayouts`, the degenerate case under `Corrected` |
 | `SimulationOptions.Model` defaulting to `Corrected` | `TheSurfaceHasTheExplicitValuesTheDefaultAndBodyInitProperties` |
+| the `Enum.IsDefined` check of the validator removed (T13) | the three cases of `AnUndefinedModelValueIsRefusedNamingTheValueBeforeTheSeamCheck` |
+| each `CorrectionSet` flag applied under `Original`, one at a time (T13) | the cases of `ACCEPTANCE.md`'s per-flag table |
 
 ## Budget ladder (2026-10-01)
 
@@ -399,11 +401,21 @@ SHA-256 of `results.m` (time line cut) and of the `ResultsJson` text of the whol
 
 Cases (`OriginalModelGuard.Cases`, `tests/RateTableTool`), seed 0, CPU: the twenty seed-0
 cases (`seed0/...`); the five references batched, `Independent`, `Binary64` (`batched/...`);
-eight reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5 µm, 3 cycles,
-`HomogenizedOxidizerFraction` 0.1), `PSAN02` (SFR read, `Dmin` 20 µm, then 3 cycles), `P33`,
-`P2` (`extra/...`), the paths the references leave dark (`Gdokleft` is 0 there), at
-`ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print `NaN`, which
-`ResultsMFile` does not parse, so the runner does not. 34 cases: 17 m 49 s in Debug.
+nine reference-mode `Independent`/`Binary64` runs of `P312` (defaults, `Dmin` 5 µm, 3 cycles,
+`HomogenizedOxidizerFraction` 0.1), `PSAN02` (SFR read, `Dmin` 20 µm; then 3 cycles; then
+`Di` 10 µm too), `P33`, `P2` (`extra/...`), the paths the references leave dark (`Gdokleft`
+is 0 there), at `ParticlesPerCycle = 50` (`P312`: 0.28 s per particle in Release); some print
+`NaN`, which `ResultsMFile` does not parse, so the runner does not. 34 cases, 7 m 26 s to
+generate in Release.
+
+`PSAN02-sfr-dmin20-di10` (2026-10-18, T13): `PSAN02-sfr-dmin20` keeps the default `Di`, and
+`1.9999999999999998e-05 / 1e-05` truncates to 1, so its `b` is 10 µm, `φ(b)` is 0 and
+`GdokleftOnce` cannot move a bit there (the per-flag table in `ACCEPTANCE.md` shows no case
+saw it); with `Di` 10 µm `b` is 20 µm. Its line was generated with the product code of the
+original port: `src/` checked out at `ac1fc20` (the tree removed and checked out again from
+that commit), the generator built and run in Release, `src/` restored from `HEAD`. The
+regenerated file differs from the committed one by that one added line, and the 34 cases
+pass at the head, `Original` unchanged.
 
 ## Correction-effects measurement
 
