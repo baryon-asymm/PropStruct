@@ -9,7 +9,9 @@ namespace PropStruct.Statistics.Tests;
 /// <c>if</c> on a <c>CorrectionSet</c> flag guards, and a statement that names a flag, calls no
 /// <c>CyclePlaneRounding</c>, <c>CyclePlaneOrder</c> or <c>UnrolledSchedule</c> member and carries no
 /// <c>// Fortran n</c> citation, which <c>CyclePlaneSiteMapTests</c> maps to a listing site that a corrected
-/// expression does not have. The scan is textual, over <c>src/Statistics/*.cs</c>.
+/// expression does not have; a statement that names a flag in a conditional expression selects between constants
+/// only, so that no flag-selected local is read by a shared statement. The scan is textual, over
+/// <c>src/Statistics/*.cs</c>.
 /// </summary>
 public static partial class CorrectedStatementStructureTests
 {

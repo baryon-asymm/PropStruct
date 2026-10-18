@@ -386,7 +386,8 @@ only, and every rule here holds for each flag alone.
   corrected expression has none), names its flag in a comment, and reads the shared
   statements' values, plain `double` under `Binary64`. A shared helper may run on other
   storage (`CategoriesOnCopy`); a constant that differs by model is one folded pair,
-  `exact ? 3.0 / Math.PI : 3.0 / 3.14`.
+  `exact ? 3.0 / Math.PI : 3.0 / 3.14`; any other difference is an `if` on the flag, the
+  original untouched in its `else`, never a flag-selected local a shared statement reads.
 
 The fixes, `Binary64` only; the expected effects are the arbiter's computations:
 
