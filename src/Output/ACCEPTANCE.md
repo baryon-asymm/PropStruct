@@ -92,11 +92,17 @@ summary 1454–1504 is declared not ported (`src/Statistics/BOOT.md`, "## Line m
 
 ### Corrected model (designed 2026-10-18, `BOOT.md`, "## Corrected model")
 
-- [ ] `Original` unchanged: for a result whose `Diagnostics.Model` is `Original`, both
+- [x] `Original` unchanged: for a result whose `Diagnostics.Model` is `Original`, both
       writers produce the bytes they produced before the option
       (`tests/Simulation.Tests`' seed-zero guard, `results.m` and JSON);
       `StructuralTests` stays green unedited but for the `% Model kind:` exclusion.
       Red once: writing the footer line under `Original` turns the guard red.
+      (2026-10-18, `tests/Simulation.Tests`' `OriginalModelGuardTests`, 34 of 34 green
+      with this change, 33 `Long` cases and the file check; red with the footer line
+      written under `Original`: the five `inpt` cases failed on the `results.m` hash,
+      the other 29 not run. The fast set is green but for the one expected
+      `ReflectedFlagCoverageTests` case, and `StructuralTests` carries the one edit
+      `% Model kind:` in `IsComparableCommentBanner`.)
 - [x] The footer line: under `Corrected` the line of `BOOT.md`, "## Corrected model",
       is written verbatim after the execution-mode line and holds no `=` and no digit;
       two results identical but for `Diagnostics.Model` and `StoredSetup.Ak1`/`Ak2`/`Ak4`
