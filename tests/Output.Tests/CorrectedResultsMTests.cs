@@ -220,8 +220,14 @@ public class CorrectedResultsMTests
             var corrected = ResultsMFile.Parse(correctedPath);
 
             Assert.Equal(original.Keys.Order(), corrected.Keys.Order());
-            var conditionKeys = original.Keys.Where(k => k.Contains("condition", StringComparison.OrdinalIgnoreCase)).ToList();
-            Assert.NotEmpty(conditionKeys);
+            // The parser names a condition line by its number K (the key is ConditionBreaking(K), whatever the
+            // label says); all nine are there under the Corrected labels, each read as under Original.
+            var conditionKeys = Enumerable.Range(1, 9).Select(k => $"ConditionBreaking({k})").ToList();
+            foreach (var key in conditionKeys)
+            {
+                Assert.Contains(key, corrected.Keys);
+            }
+
             foreach (var key in conditionKeys)
             {
                 Assert.Equal(original[key], corrected[key]);
