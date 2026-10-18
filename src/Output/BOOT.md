@@ -109,9 +109,9 @@ Checks: `tests/Output.Tests`; grammars: `API.md`, "## Print-expression map".
 |---|---|---|---|---|---|---|
 | 1184–1453 | numeric | The print plane computes its own expressions in REAL*4 (print-time arithmetic such as `DOKSD**0.5`, `1 − DolM`, the products with `mp`) and prints REAL*4 values; the port computes them in `double` and rounds to the printed digits without a binary32 conversion ("## Design decisions (2026-09-19)", the first bullet; `src/Statistics/BOOT.md`, "## Report", the per-cycle plane's bullet). A last printed digit can differ under either precision kind. | not measured: the criterion's print-resolution floor covers one unit of the last digit, and the set criterion finds no such cell under `Original` (`tests/Harness.Tests/SetCriterionTests`, 2026-10-01). | declared, not reproduced | none | not reachable |
 | 1238 | cosmetic | Prints `epsx(5)` labelled as `EPS6` and `epsx(6)` labelled as `EPS7` — a mislabeling in the original's own print statement (`## Invariants`). | not measured | reproduced | none | unchanged |
-| 1250–1252 | cosmetic | The condition labels print `0.5`, `2.0` and `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and condition 5 names `Dbase` where its test reads `max(Dbase,Dok)` (`## Corrected model`, "The condition labels"). | not measured | reproduced | none | unchanged |
-| 1286 | cosmetic | `fineoxy_fr` adds `gdokleft/GGG`, a share of the non-homogenized oxidizer `GGG`, to `gdokns`, a share of the whole oxidizer `GGG0` (`## Corrected model`, "`fineoxy_fr`"). | not measured | reproduced | none | unchanged |
-| 1368–1369 | cosmetic | The `fqmkm1` comment says `(step = 0.01)` while `qmkm1` is binned at 0.001 (`## Corrected model`, "`fqmkm1`'s step"). | not measured | reproduced | none | unchanged |
+| 1250–1252 | cosmetic | The condition labels print `0.5`, `2.0` and `4.7` whatever the formulation's `AK1`, `AK2`, `AK4`, and condition 5 names `Dbase` where its test reads `max(Dbase,Dok)` (`## Corrected model`, "The condition labels"). | not measured | reproduced | none | fixed (Model) |
+| 1286 | cosmetic | `fineoxy_fr` adds `gdokleft/GGG`, a share of the non-homogenized oxidizer `GGG`, to `gdokns`, a share of the whole oxidizer `GGG0` (`## Corrected model`, "`fineoxy_fr`"). | not measured | reproduced | none | fixed (Model) |
+| 1368–1369 | cosmetic | The `fqmkm1` comment says `(step = 0.01)` while `qmkm1` is binned at 0.001 (`## Corrected model`, "`fqmkm1`'s step"). | not measured | reproduced | none | fixed (Model) |
 | 1370, 1373, 1377; `arrayprint`, 1517–1543 | cosmetic | `arrayprint('coef'/'fqmkm1'/'fqmkm2', ..., *_nmax + 2)` passes an element count taken from the caller, not from the callee's own `Nc`-sized array declaration, so the subroutine reads and prints zero past the array's own end whenever `nmax` reaches `Nc − 1` or `Nc` (`## Array-length divergence, measured`). | measured: `tests/Fixtures/Legacy/outputs/hp2.m.txt` prints 1002 `coef` values, the last two `0.000E+00` (`## Array-length divergence, measured`). | reproduced | none | unchanged |
 
 ## Taboos
@@ -120,7 +120,7 @@ Checks: `tests/Output.Tests`; grammars: `API.md`, "## Print-expression map".
 
 ## Corrected model
 
-Designed 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
+Designed and implemented 2026-10-18 (root BOOT.md, "Model kind is an option of every run";
 [Simulation](../Simulation/API.md), "## Model kind"). Every branch below reads
 `result.Diagnostics.Model == ModelKind.Corrected` and nothing else: no `CorrectionSet`
 reaches this node, so a seam run, labelled `Corrected`, gets all of them. Under

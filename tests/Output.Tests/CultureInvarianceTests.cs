@@ -72,4 +72,13 @@ public class CultureInvarianceTests
     public void FormatArrayUnaffectedByCurrentCulture() =>
         UnderDecimalCommaCulture(() =>
             Assert.Equal(" Gfr = [0.515E+00 0.485E+00  ];", FortranFormat.FormatArray("Gfr", [0.515, 0.485], decimals: 3)));
+
+    [Fact]
+    public void CorrectedConditionLabelRatiosUnaffectedByCurrentCulture() =>
+        UnderDecimalCommaCulture(() =>
+        {
+            var lines = PrecisionFooterLineTests.WriteLines(CorrectedResultsMTests.CorrectedSample(ak1: 0.45));
+
+            Assert.Equal("Dbase < 0.45Dok ", CorrectedResultsMTests.ConditionLabels(lines)[3]);
+        });
 }
