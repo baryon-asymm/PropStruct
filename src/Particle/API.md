@@ -174,9 +174,9 @@ internal enum CorrectionSet : uint
     DoksdConsistent = 128,               // Statistics, Fortran 399–400, 405
     CategoriesOnCopy = 256,              // Statistics, Fortran 911–958, 825–829
     CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
-    CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
+                                         // 1024 is retired (2026-10-19) and never reused
     PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
-    All = 4091,                          // the Corrected model: every member above
+    All = 3067,                          // the Corrected model: every member above
 }
 
 internal struct ModelSetup
@@ -210,8 +210,10 @@ statements written (T4).
 
 ⚠ 2026-10-18: was reading all four members the next paragraph names, now three, `Fmkarm2OnAcceptance` withdrawn → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
 
-The values are explicit powers of two and are never renumbered or reused (the value 4 is
-retired, 2026-10-18); `All` is their sum. The
+The values are explicit powers of two and are never renumbered or reused (the values 4 and
+1024 are retired, 2026-10-18 and 2026-10-19); `All` is their sum.
+
+⚠ 2026-10-19: was "the value 4 is retired" and `All = 4091`, now 1024 too (`CategoriesEmptyRowsMerged` withdrawn) and `All = 3067` → HISTORY.md#categories-empty-rows-merged-withdrawn-2026-10-19 The
 `Corrected` model (root `BOOT.md`, "Model kind") is `All`, and the node that maps the
 public model kind to this set (`Simulation`) passes nothing else outside a measurement.
 `Statistics.Setup.Prepare` stores the set it is given into `ModelSetup.Corrections`,

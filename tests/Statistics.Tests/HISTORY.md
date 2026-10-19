@@ -4,6 +4,19 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="categories-empty-rows-mutation-2026-10-19"></a>
+## 2026-10-19 — from "## Mutations" — the `CategoriesEmptyRowsMerged` mutation, as it stood
+
+The flag was withdrawn from the `Corrected` model on 2026-10-19 (`src/Statistics/HISTORY.md#categories-empty-rows-merged-withdrawn-2026-10-19`);
+`CategoriesEmptyRowsMergedTests` is replaced by `CategoriesEmptyRowsKeptTests`. The entry:
+
+```text
+- `CategoriesEmptyRowsMerged` (2026-10-18): the empty-row term of `Insufficient` made `false`:
+  four reds in `CategoriesEmptyRowsMergedTests`, and with `empty[r]` and `r > 0` the case file's
+  row 0 alone (one red); the empty flag read as `QDOKSS <= 1` turns the one-particle fact red;
+  each reverted, green.
+```
+
 <a id="to-nearest-representable-rerun-2026-09-25"></a>
 ## 2026-10-04 — from "## Mutations" — the re-run of the `ToNearestRepresentable` mutation after its rewrite, told in full
 

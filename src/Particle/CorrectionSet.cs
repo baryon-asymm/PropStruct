@@ -5,7 +5,8 @@ namespace PropStruct.Particle;
 /// (BOOT.md, "## Corrected model"; API.md, "## Corrected model"). The values are explicit
 /// powers of two and are never renumbered or reused; <see cref="All"/> is their sum. The
 /// value 4 is retired: 2026-10-18, it was <c>Fmkarm2OnAcceptance</c> (BOOT.md,
-/// "## Corrected model"). A member is named in its defect rows' <c>Corrected</c> column as
+/// "## Corrected model"); so is the value 1024: 2026-10-19, it was
+/// <c>CategoriesEmptyRowsMerged</c> (<c>Statistics</c>' BOOT.md, "## Corrected model"). A member is named in its defect rows' <c>Corrected</c> column as
 /// <c>fixed (&lt;Member&gt;)</c>. <c>Attempt.Run</c> acts on <see cref="ExactConstants"/>,
 /// <see cref="BridgeFrustum"/> and <see cref="WindowLowerEdge"/> only; the others fix lines of
 /// <c>Statistics</c> and mean nothing here.
@@ -43,12 +44,9 @@ internal enum CorrectionSet : uint
     /// <summary><c>Statistics</c>, Fortran 947–959.</summary>
     CategoriesLastRowRecomputed = 512,
 
-    /// <summary><c>Statistics</c>, Fortran 869–871, 915, 947.</summary>
-    CategoriesEmptyRowsMerged = 1024,
-
     /// <summary><c>Statistics</c>, Fortran 1059–1061.</summary>
     PdoksmallFirstCell = 2048,
 
     /// <summary>The <c>Corrected</c> model: every member above.</summary>
-    All = 4091,
+    All = 3067,
 }
