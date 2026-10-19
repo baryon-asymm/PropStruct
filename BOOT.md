@@ -133,14 +133,18 @@ errors, openly and as an option (`## Invariants`, "Model kind").
 
 - **Model kind is an option of every run, and `Original` is the default** (decided
   2026-10-18, owner). `Original` is the original's model, bit for bit as before the option
-  (`tests/Simulation.Tests`, the seed-zero guard). `Corrected` fixes the original's explicit
-  errors — what its own code shows to be an error, not a modelling choice — and nothing
-  else, each a row marked `fixed` in `docs/ORIGINAL-DEFECTS.md`. It is a parameter of the
-  one particle program, setup and per-cycle computation, not a second implementation; it
-  runs under `Binary64` only (refused with a status under `Original` precision), in both
-  modes and layouts; recorded in the result and, under `Corrected` only, in a `results.m`
-  footer (`src/Simulation`, "## Corrected model"). It has no external reference, and it
-  refits none of the coefficients fitted under `Original` (`Input`'s defaults).
+  (`tests/Simulation.Tests`, the seed-zero guard), but for one port defect fixed under
+  `Binary64`: a Dmin written in µm truncated a cell low (`src/Statistics`, 2026-10-19).
+
+  ⚠ 2026-10-19: was "bit for bit as before the option" without exception, now but for the `Binary64` Dmin cell index → HISTORY.md#model-kind-dmin-exception-2026-10-19
+
+  `Corrected` fixes the original's explicit errors — what its own code shows to be an
+  error, not a modelling choice — and nothing else, each a row marked `fixed` in
+  `docs/ORIGINAL-DEFECTS.md`: a parameter of the one particle program, setup and
+  per-cycle computation, not a second implementation; `Binary64` only (refused with a
+  status under `Original` precision), both modes and layouts; recorded in the result
+  and, under `Corrected` only, in a `results.m` footer (`src/Simulation`, "## Corrected
+  model"); no external reference; no coefficient fitted under `Original` refitted.
 
 - **The original generator, bit for bit.** GSV=2 is the multiplicative congruential
   generator modulo 2¹²⁸ with the original multiplier and the six seeds exactly as
@@ -360,13 +364,11 @@ generator of reference outputs; GitHub Actions and nuget.org (`.github/BOOT.md`)
   layout carries no such bias. Mechanism, figures and corrections: `tests/Harness/BOOT.md`,
   "## Known bias of the original's seeds" (moved there on 2026-10-18, §15).
 - **Performance:** CUDA and CPU batched mode are measured against the original in
-  `tests/Benchmarks`, recorded and never asserted; the figures of record and the
-  attempt-budget default they led to are that node's (E-B, adopted 2026-10-01). Decided
-  2026-09-27: a profile first, then only the experiments its figures select, under rules
-  fixed before they run (`tests/Benchmarks/BOOT.md`, "## Post-acceptance plan"); none
+  `tests/Benchmarks`, recorded, never asserted; its figures and the attempt-budget default
+  are that node's (E-B, 2026-10-01). Since 2026-09-27 a profile first, then only the
+  experiments it selects, by rules fixed beforehand (`tests/Benchmarks/BOOT.md`); none
   changes the particle program's arithmetic, a changed attempt budget is re-verified by
-  link 3 and recorded in the run's result, and the kernel is not restructured without a
-  design session.
+  link 3 and recorded, and the kernel is not restructured without a design session.
 
   ⚠ 2026-09-27: was "bound by divergence and tails …, not arithmetic", now Benchmarks' figures and that a hypothesis, no profile recorded → HISTORY.md#performance-2026-09-27
 

@@ -20,6 +20,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `RunDiagnostics.Model` and `StoredSetup.Ak1`, `Ak2`, `Ak4`. An `Original` run's
   `results.m` and JSON are byte for byte as in 0.1.0.
 
+### Fixed
+- Under the `Binary64` precision kind, a `Dmin` written in micrometres (`--dmin 10`,
+  `Length.FromMicrometres`) with the default cell size took the fine-oxidizer share one
+  cell too low (`10·1e-6/1e-5` truncates to 0), so `--dmin 10` gave `fineoxy_fr` 0 and a
+  different `Zkarm` from the default it equals. The index is now the exact quotient of
+  the values as written, as the original and the `Original` precision kind compute it.
+  This changes `Original`-model output for such inputs; the defaults are unchanged.
+
 ### Known limitations
 - The `Corrected` model has no external reference: the statistical agreement with the
   original is a claim about the `Original` model.
