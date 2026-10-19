@@ -30,5 +30,11 @@ namespace PropStruct.Statistics;
 /// <c>formulation.Fractions[i].MassShare</c> directly, a second, un-rounded copy of the
 /// same REAL*4 value this array already carries rounded.
 /// </param>
+/// <param name="DminCell">
+/// <c>int(Dmin/Di)</c> of Fortran line 1001, the 0-based <c>FMDOK</c> index <c>gdokleft</c> reads, computed once
+/// by <c>Setup.Prepare</c>: the quotient of the stored binary32 values under
+/// <see cref="Particle.PrecisionKind.Original"/>, the exact quotient of the values as written under
+/// <see cref="Particle.PrecisionKind.Binary64"/> (<see cref="LengthQuotient"/>; BOOT.md, "## Line map").
+/// </param>
 internal sealed record SetupTables(
-    double[] Bounds, double[] Cumulative, double[] Share, byte[] PocketForming, double Zss, double[] MassShare);
+    double[] Bounds, double[] Cumulative, double[] Share, byte[] PocketForming, double Zss, double[] MassShare, int DminCell);

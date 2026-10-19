@@ -317,7 +317,7 @@ internal static class Setup
 
         var cellSizeMetres = original ? ToBinary32MetresStored(parameters.CellSize) : parameters.CellSize.Metres;
         var categoryStepMetres = original ? ToBinary32MetresStored(parameters.CategoryStep) : parameters.CategoryStep.Metres;
-        if (!(cellSizeMetres > 0.0) || !(categoryStepMetres > 0.0))
+        if (!(cellSizeMetres > 0.0) || !(categoryStepMetres > 0.0) || !double.IsFinite(cellSizeMetres))
         {
             return SetupStatus.InvalidCellSize;
         }
@@ -330,6 +330,10 @@ internal static class Setup
         {
             return SetupStatus.InvalidMinimumSize;
         }
+
+        // Fortran 1001, FMDOK(int(Dmin/Di)+1): under Original the quotient of the stored binary32 values, as
+        // always; under Binary64 the exact quotient of the values as written (BOOT.md, "## Line map").
+        var dminCell = original ? (int)(dminMetres / cellSizeMetres) : LengthQuotient.Truncated(parameters.Dmin, parameters.CellSize);
 
         var fractionCount = formulation.Fractions.Length;
         var bounds = new double[2 * fractionCount];
@@ -490,7 +494,7 @@ internal static class Setup
             Kind = precision, // Setup.Prepare sets the run's kind itself (audit R2); Simulator no longer patches it.
         };
 
-        tables = new SetupTables(bounds, cumulative, share2, pocketForming, zss, massShare);
+        tables = new SetupTables(bounds, cumulative, share2, pocketForming, zss, massShare, dminCell);
         draw = new TailDraw(x, x1);
         pending = new PendingEchoes(dokm, doksd, storedDdokmax, tailProbabilityModified, ggg);
         inputs = new SetupInputs(plot1, plot2, ggg0, metalMassFraction, gdokns, epsDok, eta);
