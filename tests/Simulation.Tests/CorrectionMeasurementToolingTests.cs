@@ -43,14 +43,14 @@ public class CorrectionMeasurementToolingTests
     }
 
     /// <summary>
-    /// The three category flags, named by the spec of the arms, and the seam of each leave-one-out arm: every flag
-    /// but the one it is named after, so that the flag is out and the other ten are in.
+    /// The two category flags, named by the spec of the arms, and the seam of each leave-one-out arm: every flag
+    /// but the one it is named after, so that the flag is out and every other one is in.
     /// </summary>
     [Fact]
-    public void TheCategoryFlagsAreTheThreeAndEachAllButArmSetsEveryOtherFlag()
+    public void TheCategoryFlagsAreTheTwoAndEachAllButArmSetsEveryOtherFlag()
     {
         Assert.Equal(
-            [CorrectionSet.CategoriesOnCopy, CorrectionSet.CategoriesLastRowRecomputed, CorrectionSet.CategoriesEmptyRowsMerged],
+            [CorrectionSet.CategoriesOnCopy, CorrectionSet.CategoriesLastRowRecomputed],
             CorrectionArm.CategoryFlags);
 
         foreach (var flag in CorrectionArm.CategoryFlags)

@@ -4,6 +4,82 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="categories-empty-rows-merged-withdrawn-2026-10-19"></a>
+
+## 2026-10-19 — from "## Corrected model", "## Categories", "## Line map" and "## Defects of the original" — `CategoriesEmptyRowsMerged` withdrawn, the claims about it in full
+
+Owner decision of 2026-10-19 ("3 снять"). The 869–871 statement sets `Epsydok = 0` to
+avoid 0/0 and the original then reads "no data" as "accurate"; but a row with one
+particle, or whose particles share one size cell, gets the same `Epsydok = 0` from the
+same estimator and is never merged, so the fix cured `N = 0` and kept `N = 1`: arguable,
+not an explicit error (two auditors, 2026-10-18). Its only visible effect on the five
+references was the printed category axis, which changes no statistic. The value 1024 is
+retired in `Particle`. The texts as they stood.
+
+"## Corrected model", the bullet:
+
+```text
+- **`CategoriesEmptyRowsMerged`** (869–871, 915, 947). A row the 869–870 test gives
+  `Epsydok = 0` (`QDOKSS = 0`, `MDOK3` or `MDOK4 ≤ 1e-30`) never merges. Corrected: it
+  is insufficient in both tests (`empty || Epsydok > EpsDok`), `Epsydok` stays 0; a row
+  of `QDOKSS = 1`, legitimately without variance, is not. The three category flags
+  move the category rows (`DPRow`, `Dkarmcat`, `dokkarm43`, `dokkarm10`, `fqdokkarm`)
+  where a merge or an empty row occurs; the main effect is this one's: where the finest
+  fraction is coarse (inpt, PSAN02n) the structurally empty leading rows are merged
+  away, `Dkarmcat` no longer starts at `Dj` and `DPRow` falls 15 % and 10 % with
+  `CategoriesOnCopy` (row 869–871); a script indexing rows by number sees it.
+```
+
+"## Categories", the end of the paragraph on the in-place rewrite:
+
+```text
+the totals are not written; under `CategoriesEmptyRowsMerged` a row step 2 gives
+`Epsydok = 0` by its empty-row test is insufficient in steps 3 and 4
+(`## Corrected model`).
+```
+
+"## Line map", the row of 825–959 ended `CategoriesOnCopy`, `CategoriesLastRowRecomputed`,
+`CategoriesEmptyRowsMerged` (`## Corrected model`).
+
+"## Defects of the original", the row of 869–871, 915, 947:
+
+```text
+| 869–871, 915, 947 | algorithm | A category row with QDOKSS = 0, or MDOK3 or MDOK4 ≤ 1e-30, gets Epsydok = 0 and so survives every merge test ("## Categories"; "## Corrected model", `CategoriesEmptyRowsMerged`). | measured 2026-10-18 under `CategoriesEmptyRowsMerged`, on the listing oracle's drawn totals, 61 cycle draws of 26 cases, each a fresh state (not a Monte Carlo run): 13 of the 61 move the report, `DPRow` falling by 1 to 10 (BK10 33 → 27, AK157a 65 → 55) and an empty row's `Dokp43` of 0 becoming the merged row's quotient (HPEPA10, P18050, PSAN02, KB396, AK157a, HPEPA3 cycle 1: 0 → 2.6e-4 to 5.8e-4); of the references in the oracle HPEPA3 moves, 26 → 23 and 23 → 18 rows, PSAN02n and HMX do not (`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests`); in program runs (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, the re-run at 8b29342; batched, CPU, `Independent`, `Binary64`, sixteen distinct seeds `k·2¹⁶` on the five references, eight on an extra case; shift of the printed `DPRow` in per cent of the `Original` mean ± the standard error of the shift) the effect is the structurally empty leading rows merged away: a pocket needs RK > AK3·max(Dr, Db), so the rows below never fill and the original keeps them, and on a formulation whose finest fraction is coarse the printed category count falls and `Dkarmcat` no longer starts at `Dj`, so a script that indexes category rows by number sees it; inside the `Corrected` model (`All` against `AllButCategoriesEmptyRowsMerged`) the `DPRow` mean is 31.94 against 38.00 on inpt (−15.0 ± 0.4 % against +1.2 ± 0.3 %), 27.00 against 31.00 on PSAN02n (−10.2 ± 0.2 % against +3.1 ± 0.2 %) and, eight seeds, 76.75 against 80.75 on PSAN02 read with its pocket-forming flags at `Dmin` 20 µm (−4.7 ± 0.4 % against +0.3 ± 0.4 %); `Dkarmcat` differs in 32 cells of inpt and 27 of PSAN02n under `All`, in none of inpt without the flag, and the cells differing in all go from 103 of 2643 to 428 of 2409 compared (inpt) and from 128 of 2157 to 538 of 2049 (PSAN02n); HPEPA3, P33, HMX and the P312 cases show no effect (identical `DPRow` shifts, identical counts of differing cells in `All` and the arm without the flag); the flag alone leaves the count where it was (inpt 37.56, PSAN02n 30.06 rows) while 80 and 98 cells of the rows differ, so the count falls only together with `CategoriesOnCopy` (without the copy it stays: −0.2 ± 0.5 % and +0.2 ± 0.4 %) | reproduced | none | fixed (CategoriesEmptyRowsMerged) |
+```
+
+`ACCEPTANCE.md`, the criterion of 2026-10-18:
+
+```text
+- [x] 2026-10-18: Corrected, `CategoriesEmptyRowsMerged`: an empty middle or last row merges
+  where `None` keeps it, all rows empty end at one, a `QDOKSS = 1` row is left alone
+  (`CategoriesEmptyRowsMergedTests`, red on the read removed, 4 of 7, and on `QDOKSS <= 1`, 1).
+  Reported (`CategoryFlagsOnOracleTotalsTests`): 13 of 61 draws move; HPEPA3 yes, PSAN02n, HMX no.
+  Program runs, the page at 8b29342: `DPRow` −15.0 ± 0.4 % (inpt), −10.2 ± 0.2 % (PSAN02n)
+  inside the `Corrected` model, the oracle chain blind to it (`BOOT.md`, row 869–871).
+```
+
+The measurement behind the oracle figures of that row, the test
+`CategoriesEmptyRowsMergedMovesTheRowsOfTheDraws` of
+`tests/Statistics.Tests/CategoryFlagsOnOracleTotalsTests` and its 13 of 61 cycle draws, is
+removed with the flag; `CategoriesEmptyRowsKeptTests` holds the rows the two models now
+share.
+
+<a id="dmin-cell-index-binary64-2026-10-19"></a>
+
+## 2026-10-19 — from "## Line map" and "## Corrected model" — the cell index `int(Dmin/Di)` as the doubles' quotient, and what its evidence case said
+
+Owner decision of 2026-10-19 ("1A"): under `Binary64` the index is the exact quotient of
+the values as written (`BOOT.md`, "## Line map"). Before it `CycleStatistics.Matrix` read
+`fmdokIndex = (int)(setup.Dmin / di)` under both kinds, `// FMDOK(int(Dmin/Di)+1), 1-based`,
+and every document that named the index named that expression: "`gdokleft` reads
+`FMDOK(int(Dmin/Di)+1)`" (Line map), "With `k = int(Dmin/Di) + 1`, `b = (k − 1)·Di`"
+(`GdokleftOnce`). The evidence case of `GdokleftOnce`, PSAN02 read with its pocket-forming
+flags at `Dmin` 20 µm and `Di` 10 µm, was stated "both as the menu converts them, so that
+`Dmin/Di` is exactly 2"; with `Di` left at its default (`Length.FromMetres(10e-6)`) the same
+`Dmin` of 20 µm truncated to 1 under the doubles' quotient, which the case's wording about
+the menu's conversion avoided without saying so. The run-level cases
+`extra/PSAN02-sfr-dmin20` of `tests/Simulation.Tests` ran with that default `Di`.
+
 <a id="u4-line-limit-moves-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Invariants" and "## Setup plane" — two passages shortened for the line limit

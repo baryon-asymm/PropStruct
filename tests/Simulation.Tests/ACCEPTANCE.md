@@ -79,9 +79,30 @@
       of `ac1fc20` (`BOOT.md`, "## The Original-model guard"), the 34 older lines
       byte-identical.
 
+  ⚠ 2026-10-19: was "the 34 older lines byte-identical" as the whole provenance of the
+  file, every line generated with the product code of `ac1fc20` or unchanged since; now
+  two lines were regenerated at the head on purpose, the next criterion.
+
   ⚠ 2026-10-18: was "33 cases, green in Debug against a Release-written file", the whole
   guard `Category=Long` and so run by no CI →
   HISTORY.md#original-guard-criterion-33-cases
+- [x] 2026-10-19 (U6): two lines of the guard were regenerated on purpose, on the
+      owner's decision (root `BOOT.md`, "Model kind", the 2026-10-19 exception):
+      `extra/PSAN02-sfr-dmin20` and `extra/PSAN02-sfr-dmin20-cycles3` (`Binary64`,
+      `Dmin` 20 µm written in µm, default `Di`; the Dmin cell index was 1 and is 2,
+      `src/Statistics/BOOT.md`, "The cell index under `Binary64`").
+      `original-model-guard` run at the head in Release (35 cases, 6 m 02 s). (a) The
+      file differs from the one before in exactly those two lines, the other 33
+      byte-identical (`git diff` of the file: 2 insertions, 2 deletions). (b) With only
+      the index computation reverted in scratch (`Setup.cs`, `var dminCell =
+      (int)(dminMetres / cellSizeMetres)` for both kinds, nothing else touched) the
+      regenerated file (35 cases, 6 m 05 s) equals the file before U6 byte for byte,
+      SHA-256 `c675b1d7cf6063a7331f989d1b6d72081f50e6575b0ec4e98f6d2dcee1ec33d3` on
+      both, so the change is the fix and nothing else; `src/` restored, `git diff`
+      clean. Right: the new `results.m` hashes of `-dmin20` and `-di10` are equal, as
+      the case written with `Di` 10 µm (whose index the double quotient had right)
+      always was. The 47 facts of both guards green in Release, the `Long` ones included
+      (6 m 0 s). The only lines ever regenerated (`BOOT.md`, "Provenance").
 - [x] 2026-10-18 (T13): the guard sees every one of the eleven `CorrectionSet` flags
       (twelve until `Fmkarm2OnAcceptance` was withdrawn, U1). Each flag
       was applied alone under `Original` (a scratch mapping at `SimulationOptions.EffectiveCorrections`,
@@ -101,17 +122,29 @@
       | `WindowLowerEdge` | 8 | all 24 B64 |
       | `VdokTotalOnCopy` | 16 | `extra/P312-cycles3`, `extra/PSAN02-sfr-dmin20-cycles3` |
       | `ZdoksmallCoarseShare` | 32 | `extra/P312-defaults`, `-cycles3`, `-homogenized0.1`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
-      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20-di10` alone |
+      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` (U6; `-di10` alone until 2026-10-19) |
       | `DoksdConsistent` | 128 | `seed0/P33/{Original,Independent}/Binary64`, `batched/P33`, `extra/P33-defaults`, `extra/P2-defaults` |
       | `CategoriesOnCopy` | 256 | all 24 B64 |
       | `CategoriesLastRowRecomputed` | 512 | 21: all B64 but `seed0/HMX/*/Binary64` and `batched/HMX` |
-      | `CategoriesEmptyRowsMerged` | 1024 | 12: `seed0/{HMX,inpt,PSAN02n}/*/Binary64`, `batched/{HMX,inpt,PSAN02n}`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `CategoriesEmptyRowsMerged` | 1024 — retired 2026-10-19 (withdrawn after the audit) | 12 when it stood: `seed0/{HMX,inpt,PSAN02n}/*/Binary64`, `batched/{HMX,inpt,PSAN02n}`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
       | `PdoksmallFirstCell` | 2048 | `extra/P312-dmin5` alone |
 
       `GdokleftOnce` was seen by no case of the 33 before `extra/PSAN02-sfr-dmin20-di10` was added
       (the 33 stay green under it); red once there: flag 64 turns that case red, right once:
       the same case is green unmapped, on a line generated at `ac1fc20`
       (`## The Original-model guard`). `PdoksmallFirstCell` and `GdokleftOnce` rest on one case each.
+
+  ⚠ 2026-10-19 (U6): was "`GdokleftOnce` ... `extra/PSAN02-sfr-dmin20-di10` alone" and
+  "rest on one case each"; now `GdokleftOnce` is red on `extra/PSAN02-sfr-dmin20`,
+  `-cycles3` and `-di10`, and only `PdoksmallFirstCell` rests on one case. Why it was
+  wrong: the exact Dmin cell index of those two cases is 2, not 1, so `b` is 20 µm
+  there, as `-di10` always had it (`BOOT.md`, "## The Original-model guard"). Found by
+  the re-run of every flag over the 14 `Binary64` cases that are not `seed0/*` and the
+  one `Original` case (Release, a scratch mapping at
+  `SimulationOptions.EffectiveCorrections` reading the flag from an environment
+  variable, reverted): the other nine flags give the sets of the table, cell for cell;
+  the `seed0/*` cells were not re-run, their approved lines not having moved. The
+  retired flag has no row to re-run.
 - [x] 2026-10-18: the model kind is covered by `ModelKindTests` (24 cases) and
       `DegenerateConfigurationTests`' `Corrected` case: surface, mapping on P33's
       `Dok43sd` (the archive's 75.45 for `Original`, 112.66 for `Corrected`), the refusal and
@@ -147,16 +180,31 @@
       | `WindowLowerEdge` | 8 | all 10 |
       | `VdokTotalOnCopy` | 16 | `extra/P312-cycles3`, `extra/PSAN02-sfr-dmin20-cycles3` |
       | `ZdoksmallCoarseShare` | 32 | `extra/P312-defaults`, `-cycles3`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
-      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20-di10` alone |
+      | `GdokleftOnce` | 64 | `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` (U6; `-di10` alone until 2026-10-19) |
       | `DoksdConsistent` | 128 | `extra/P33-defaults`, `extra/P2-defaults` |
       | `CategoriesOnCopy` | 256 | all 10 |
       | `CategoriesLastRowRecomputed` | 512 | all 10 |
-      | `CategoriesEmptyRowsMerged` | 1024 | `batched/inpt`, `batched/PSAN02n`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10` |
+      | `CategoriesEmptyRowsMerged` | 1024 — retired 2026-10-19 (withdrawn after the audit) | `batched/inpt`, `batched/PSAN02n`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10`, when it stood |
       | `PdoksmallFirstCell` | 2048 | `extra/P312-dmin5` alone |
 
       Every flag is seen by at least one fast case, so the two Long cases are not the
       only guard of any; `GdokleftOnce` and `PdoksmallFirstCell` rest on one case each.
       Right once: the unmapped run is green.
+
+  ⚠ 2026-10-19 (U6): was "each of the eleven flags" and "`GdokleftOnce` ... `-di10`
+  alone", "rest on one case each"; now ten flags (`CategoriesEmptyRowsMerged` withdrawn),
+  `GdokleftOnce` red on the three PSAN02 extras, `PdoksmallFirstCell` alone on one case. The snapshot was regenerated at the
+  head (Release, 10 cases, 48 s): five lines moved (`batched/inpt`, `batched/PSAN02n`,
+  by the withdrawal of `CategoriesEmptyRowsMerged`; `extra/PSAN02-sfr-dmin20`,
+  `-cycles3`, by that and the exact Dmin cell index; `extra/PSAN02-sfr-dmin20-di10`, by
+  the withdrawal alone), five did not (the P312 three, `extra/P33-defaults`,
+  `extra/P2-defaults`). The ten flags were dropped in turn over all ten cases again
+  (Release, the scratch mapping `All & ~flag` of the flag read from an environment
+  variable, reverted): every cell of the table is as written but `GdokleftOnce`'s, no
+  flag stays green, and `batched/inpt` and `batched/PSAN02n` are red under five flags
+  (`ExactConstants`, `BridgeFrustum`, `WindowLowerEdge`, `CategoriesOnCopy`,
+  `CategoriesLastRowRecomputed`), so they stay as the snapshot's batched cases. Right:
+  the unmapped run is green, 11 of 11, in Release.
 - [x] 2026-10-18 (U3): the Original guard's fast subset still sees every flag. The 12
       fast cases (`batched/*` five, `extra/P312-dmin5`, `extra/PSAN02-sfr-dmin20`,
       `-cycles3`, `-di10`, `extra/P33-defaults`, `extra/P2-defaults`,
@@ -167,11 +215,11 @@
       the `Binary64` ones; the `Original`-precision case is red under none), 10 for
       `CategoriesLastRowRecomputed` (all but `batched/HMX`), `VdokTotalOnCopy` by
       `extra/PSAN02-sfr-dmin20-cycles3`, `ZdoksmallCoarseShare` by the three PSAN02
-      extras, `GdokleftOnce` by `extra/PSAN02-sfr-dmin20-di10`, `DoksdConsistent` by
-      `batched/P33`, `extra/P33-defaults` and `extra/P2-defaults`,
-      `CategoriesEmptyRowsMerged` by six (`batched/{HMX,inpt,PSAN02n}`, the three PSAN02
-      extras), `PdoksmallFirstCell` by `extra/P312-dmin5`. The cheap subset costs, in
-      Debug, 32 s for the 22 fast tests of `OriginalModelGuardTests` and
+      extras, `GdokleftOnce` by `extra/PSAN02-sfr-dmin20-di10` (by the three PSAN02
+      extras since U6), `DoksdConsistent` by `batched/P33`, `extra/P33-defaults` and
+      `extra/P2-defaults`, `CategoriesEmptyRowsMerged` by six (`batched/{HMX,inpt,PSAN02n}`,
+      the three PSAN02 extras; retired 2026-10-19), `PdoksmallFirstCell` by
+      `extra/P312-dmin5`. The cheap subset costs, in Debug, 32 s for the 22 fast tests of `OriginalModelGuardTests` and
       `CorrectedModelGuardTests` together (`batched/HMX` 17 s, `batched/HPEPA3` 7 s, the
       rest 0.03 to 7 s a case); the other 169 fast tests of this assembly take 9 s, and
       inside `dotnet test PropStruct.sln` the assembly took 48 s (1 m 29 s for the whole
@@ -221,3 +269,23 @@
   HISTORY.md#correction-effects-seeds-repeat-2026-10-18
 
   ⚠ 2026-10-18 (U4): was unticked, now re-ticked on the page at 8b29342, 16 arms and 1792 runs where it had 14 and 1568, the negative control clean where it had 0 to 9 differing cells → HISTORY.md#correction-effects-reticked-u4-2026-10-18
+
+  ⚠ 2026-10-19 (U6): was "eleven single flags and the three `AllBut` arms" (16 arms with
+  `Original` and `All`), now ten single flags and two `AllBut` arms, 14 arms, the arm
+  list being generated from `CorrectionSet` and `CorrectionArm.CategoryFlags`; the flag
+  `CategoriesEmptyRowsMerged` is withdrawn and `TheCategoryFlagsAreTheThree...` is now
+  `TheCategoryFlagsAreTheTwoAndEachAllButArmSetsEveryOtherFlag`. The figures of the U4
+  criterion above (16 arms, 1792 runs) are those of the page at 8b29342, which this task
+  did not touch and the next measurement run replaces.
+- [x] 2026-10-19 (U6): a Dmin written in micrometres and the same value in metres are
+      one run at the public path (`DminCellRunTests`, 3 facts, fast, 8 s in Debug): P312
+      at 10 particles per cycle, `Binary64`, batched, CPU, `Independent`, seed 0
+      (`GuardCase`, `ReferenceModeRunner.Fingerprint`); `Dmin` 10 µm gives the same
+      `results.m` hash and the same result JSON hash as the default `Dmin` (10e-6 m),
+      and 20 µm the same as 20e-6 m, the stored `StoredSetup.Dmin` set to zero in the
+      JSON before the hash as the one number the spelling moves in the last bit; the
+      positive control, 10 µm against 20 µm, differs in both hashes. Red once: `Setup.cs`
+      storing the double quotient `(int)(dminMetres / cellSizeMetres)` for both kinds
+      (scratch): the two equalities red, the control green; right: the same three green
+      at the head; `src/` restored, diff clean (`BOOT.md`, "## The Dmin cell index at
+      run level").

@@ -21,8 +21,10 @@ internal static class CorrectedModelGuard
     /// <summary>
     /// The cases of <see cref="OriginalModelGuard.Cases"/> run under <c>Corrected</c>: the reduced extras the references
     /// leave dark (every <c>extra/...</c> case at <c>Binary64</c> but <c>P312-homogenized0.1</c>, which the other P312
-    /// cases already cover) and the two batched references that show <c>CategoriesEmptyRowsMerged</c>. <c>Corrected</c>
-    /// is refused under the <c>Original</c> precision kind, so no <c>Original</c>-precision case can be here.
+    /// cases already cover) and the two batched references, the snapshot's only batched cases (they showed the withdrawn
+    /// <c>CategoriesEmptyRowsMerged</c> and still see five other flags; <c>tests/Simulation.Tests/ACCEPTANCE.md</c>, the
+    /// per-flag table). <c>Corrected</c> is refused under the <c>Original</c> precision kind, so no <c>Original</c>-precision
+    /// case can be here.
     /// </summary>
     private static readonly string[] SourceIds =
     [

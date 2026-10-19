@@ -179,7 +179,8 @@ public class CycleStatisticsFormulaTests
             Share: c.Tables.Share.ToArray(),
             PocketForming: c.Tables.PocketForming.ToArray(),
             Zss: 1.0,
-            MassShare: c.Tables.MassShare.ToArray());
+            MassShare: c.Tables.MassShare.ToArray(),
+            DminCell: (int)(s.Dmin / s.CellSize)); // The fixture's stored metres, as Setup.Prepare computes it under Original.
         var echoes = new SetupEchoes(
             c.Echoes.Dokm, c.Echoes.Doksd, c.Echoes.Ddokmax, c.Echoes.Ddokmax,
             TailProbabilityModified: 0.0, OxidizerMassFractionEffective: c.Echoes.Ggg);

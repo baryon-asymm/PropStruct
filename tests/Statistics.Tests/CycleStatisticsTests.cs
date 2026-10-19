@@ -169,7 +169,8 @@ public class CycleStatisticsTests
             Share: ScenarioShare,
             PocketForming: ScenarioPocketForming,
             Zss: 1.0,
-            MassShare: ScenarioMassShare);
+            MassShare: ScenarioMassShare,
+            DminCell: 1); // Dmin = 1 with Di = 1.
 
         var echoes = new SetupEchoes(
             Dokm: 1.0, Doksd: 1.0, Ddokmax: 2.0, Dmax: 2.0,

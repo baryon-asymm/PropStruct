@@ -41,7 +41,11 @@ measurement (2026-09-24)"). `ReferenceModeRunner` stays `internal`, as it was th
 - **One runner.** `ReferenceModeRunner` (`RunSeed`, `Fingerprint`, one private core) is the
   only place that constructs a `Simulator`, runs it and writes and hashes its `results.m`;
   the generators and the neighbours' own tests call it, never a second copy (root BOOT.md
-  Taboos).
+  Taboos). `Fingerprint` has a second overload, taking a function that reshapes the
+  result before the JSON is hashed (the `results.m` hash untouched); the guards never
+  call it, so their hashes are the first overload's, and `tests/Simulation.Tests`'
+  `DminCellRunTests` passes it to compare two runs in every number but one that records
+  the parameter itself (U6, 2026-10-19).
 - **One approved-file format.** `ApprovedGuardFile` is the only writer and reader of the
   line `<id> <SHA-256 of results.m> <SHA-256 of the result JSON>` that both guards'
   files hold (`OriginalModelGuard`, `CorrectedModelGuard`); neither has a copy of it
@@ -115,6 +119,18 @@ Inherited from the parent ([BOOT.md](../../BOOT.md)). In addition:
       not touch, so `RunSeed`'s `results.m` is what it was (`## The Original-model
       guard`). U3's added line came from the product code of `ac1fc20`, the 34 others
       byte-identical to the file before it.
+
+  ⚠ 2026-10-19: was "the 34 others byte-identical" as the file's whole provenance, now
+  two lines regenerated at the head on purpose (`extra/PSAN02-sfr-dmin20`, `-cycles3`;
+  the Dmin cell index 1 became 2), the next criterion.
+- [x] 2026-10-19 (U6): `original-model-guard` run at the head (Release, 35 cases, 6 m
+      02 s) writes a file that differs from the one before in exactly those two lines,
+      33 byte-identical; run again with only the index computation of `src/Statistics`'
+      `Setup.cs` reverted in scratch (6 m 05 s) it writes the file before U6 byte for
+      byte (SHA-256 `c675b1d7...ec33d3`); `src/` restored. The evidence and the owner's
+      decision: `tests/Simulation.Tests/ACCEPTANCE.md`, "(U6)". `corrected-model-snapshot`
+      (10 cases, 48 s) moved five of its ten lines (`tests/Simulation.Tests/BOOT.md`,
+      "## The Corrected-model snapshot").
 - [x] 2026-10-18 (U3): `corrected-model-snapshot` writes
       `CorrectedModelSnapshot.approved.txt`, 10 lines, byte-identical on a second
       regeneration from scratch (Release, 52 s and 50 s), and `CorrectedModelGuardTests`
@@ -343,6 +359,16 @@ case prints `NaN`, which `ResultsMFile` does not read. The file is written with 
 (the original port) so that its line is the original's; Release, 34 cases in 7 m 26 s; the 33
 older lines came out byte-identical, the new one is the only difference.
 
+**2026-10-19 (U6), two lines regenerated at the head.** `extra/PSAN02-sfr-dmin20` and
+`-cycles3` (`Binary64`, `Dmin` 20 µm in µm, default `Di`), on the owner's decision: the
+Dmin cell index of `src/Statistics` is the exact quotient under `Binary64`, 2 where it
+was 1. Release, 35 cases in 6 m 02 s; the other 33 lines byte-identical to the file
+before. With only that computation reverted in scratch the generator wrote the file
+before U6 byte for byte (6 m 05 s), the proof that the two lines are the fix and nothing
+else (`tests/Simulation.Tests/BOOT.md`, "Provenance"). `ReferenceModeRunner.Fingerprint`
+gained an overload for `tests/Simulation.Tests/DminCellRunTests`; the guard's cases,
+their order, options and hashes are unchanged by it.
+
 **2026-10-18, `original-model-guard`.** Release build, `PROPSTRUCT_NO_CUDA=1`, 16 logical CPUs:
 33 cases in 6 m 7 s (twice) and 9 m 45 s (the machine busy); the three files are identical.
 Per case: seed-0 HMX 43 s each, HPEPA3 19 s, PSAN02n 6-11 s, `inpt` and `P33` 1-2 s; batched
@@ -370,3 +396,8 @@ unlike the Original guard it cannot be generated at `ac1fc20`.
 **2026-10-18, `corrected-model-snapshot`.** Release build, `PROPSTRUCT_NO_CUDA=1`, 16
 logical CPUs: 10 cases in 52 s and again in 50 s, the two files identical. Per case:
 `extra/P312-cycles3` 32 s, `-defaults` 16 s, the other eight under 1.3 s.
+
+**2026-10-19 (U6), regenerated.** 10 cases in 48 s (Release): five lines moved
+(`batched/inpt`, `batched/PSAN02n`, `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10`),
+five did not; why, in `tests/Simulation.Tests/BOOT.md`, "## The Corrected-model
+snapshot".
