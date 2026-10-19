@@ -58,7 +58,7 @@ internal static class ReferenceModeRunner
             Streams = layout,
             Precision = precision,
             Seed = seed,
-        }, parseCandidate: true);
+        }, parseCandidate: true, reshapeForJson: null);
 
     /// <summary>The hashes of one run of a formulation under <paramref name="options"/>, whose
     /// <see cref="SimulationOptions.Parameters"/> are the parameters its <c>results.m</c> is written with. The
@@ -66,9 +66,20 @@ internal static class ReferenceModeRunner
     /// what the run prints and holds, and a run whose <c>results.m</c> prints <c>NaN</c> is a legitimate case
     /// of it, one <see cref="ResultsMFile"/> does not parse.</summary>
     public static Run Fingerprint(Formulation formulation, SimulationOptions options) =>
-        Execute(formulation, options, parseCandidate: false);
+        Execute(formulation, options, parseCandidate: false, reshapeForJson: null);
 
-    private static Run Execute(Formulation formulation, SimulationOptions options, bool parseCandidate)
+    /// <summary>
+    /// <see cref="Fingerprint(Formulation, SimulationOptions)"/> with <paramref name="reshapeForJson"/> applied to the
+    /// result before the JSON hash is taken, the <c>results.m</c> hash untouched: for the comparisons that hold two
+    /// runs equal in every number but one the parameters' own stored form moves (<c>tests/Simulation.Tests</c>,
+    /// "## The Dmin cell index at run level"). The guards never call it, so their hashes are those of the overload above.
+    /// </summary>
+    public static Run Fingerprint(
+        Formulation formulation, SimulationOptions options, Func<SimulationResult, SimulationResult> reshapeForJson) =>
+        Execute(formulation, options, parseCandidate: false, reshapeForJson);
+
+    private static Run Execute(
+        Formulation formulation, SimulationOptions options, bool parseCandidate, Func<SimulationResult, SimulationResult>? reshapeForJson)
     {
         using var simulator = Simulator.Create(options);
         var result = simulator.Run(formulation);
@@ -83,7 +94,7 @@ internal static class ReferenceModeRunner
             var normalizedText = string.Join('\n', ReadLines(withoutTimeLine));
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedText)));
 
-            return new Run(candidate, normalizedText, hash, JsonSha256Of(result, tempPath));
+            return new Run(candidate, normalizedText, hash, JsonSha256Of(reshapeForJson?.Invoke(result) ?? result, tempPath));
         }
         finally
         {
