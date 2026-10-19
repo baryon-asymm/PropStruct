@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 namespace PropStruct.Statistics.Tests;
 
 /// <summary>
-/// The effect of the three category flags (<c>src/Statistics/BOOT.md</c>, "## Corrected model") on the rows <c>Compute</c>
+/// The effect of the two category flags (<c>src/Statistics/BOOT.md</c>, "## Corrected model") on the rows <c>Compute</c>
 /// reports, measured on the totals of the listing oracle's cases (<c>tests/Fixtures/cases/statistics/cycle_plane_oracle.json</c>,
 /// 26 formulations, two or three cycles each, each cycle's totals a seeded draw of the original executable's accumulators,
 /// injected independently of the cycle before) and not on a Monte Carlo run of the port: the setup is the port's under
@@ -95,14 +95,6 @@ public class CategoryFlagsOnOracleTotalsTests(ITestOutputHelper output)
     [Fact]
     public void CategoriesLastRowRecomputedMovesTheRowsOfTheDraws() =>
         ReportSingleCycleFlag(CorrectionSet.CategoriesLastRowRecomputed);
-
-    /// <summary>
-    /// Reported, per case and cycle, as for <c>CategoriesLastRowRecomputed</c>: <c>CategoriesEmptyRowsMerged</c> against <c>None</c>
-    /// on the same drawn totals.
-    /// </summary>
-    [Fact]
-    public void CategoriesEmptyRowsMergedMovesTheRowsOfTheDraws() =>
-        ReportSingleCycleFlag(CorrectionSet.CategoriesEmptyRowsMerged);
 
     private void ReportSingleCycleFlag(CorrectionSet flag)
     {

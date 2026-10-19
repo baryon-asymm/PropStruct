@@ -15,28 +15,17 @@ The definition of what "`Simulation` is ready" means.
 | L0/L1 | `RunDiagnostics.AttemptsPerLaunch` is the effective budget (1 in reference mode, the option otherwise), not the option unconditionally; a smaller budget forces more launches on a formulation needing more than one attempt | `SmallFormulation`/HPEPA3 at budgets 1, 1024 and reference mode | ✅ 2026-09-28: `AttemptsPerLaunchDiagnosticsTests` |
 | L2 | reference mode on HPEPA3 reproduces the reference's printed counters | `tests/Fixtures/references/HPEPA3/results.m.txt` through `tests/Harness` | ✅ 2026-09-19: `Hpepa3CounterTests` (figures in `src/Simulation/BOOT.md`, "## Counter check") |
 | L2 | the statistical criterion on the five reference formulations, realigned again 2026-09-24 to root's rate-based pass condition (root BOOT.md, "the pass condition compares failure rates, not single runs") | link 1 no longer lives here at all — it is a *rate* over sixteen seeds, owned by `tests/Harness.Tests/RateCriterionTests` over the pregenerated `tests/Fixtures/rate-table.json`; this node keeps only an exact seed-0 snapshot (a change detector, not a reproduction claim) and link 3: batched `Binary64` against sequential `Binary64`, statistically, on the port's own replicas, CPU accelerator and CUDA (`StatisticalCriterion.TwoSampleBiasOfSets`, `tests/Harness/API.md`) | ✅ 2026-10-01: `StatisticalCriterionTests`, 40 cases (30 `Category=Long`: 20 seed-0 snapshot, 10 link 3), all pass — see "## Statistical criterion measurement (2026-09-24)" below. The 2026-09-23 ratchet-based measurement (link 1 as a per-run comparison against the original's own replicas, retired the same day audit D5 named it) is superseded, `HISTORY.md#statistical-criterion-measurement-2026-09-23-link-1`. |
-| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 35 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-18: `OriginalModelGuardTests`, 36 tests: 35 cases, 12 in the fast set and 23 `Category=Long`, and the file's own; "## The Original-model guard" |
-| L2 | the `Corrected` model's results do not move unnoticed, and it means every flag of `CorrectionSet` | the same hashes, 10 CPU runs under `Corrected` (`Snapshots/CorrectedModelSnapshot.approved.txt`); the mapping read from `EffectiveCorrections` | ✅ 2026-10-18: `CorrectedModelGuardTests`, 11 tests, 2 of them `Long`; `ModelKindTests`; "## The Corrected-model snapshot" |
+| L2 | the `Original` model stays bit for bit what it is, while a second model kind is added | hashes of `results.m` and of the whole result as JSON, 35 CPU runs (`Snapshots/OriginalModelGuard.approved.txt`) | ✅ 2026-10-19: `OriginalModelGuardTests`, 36 tests: 35 cases, 12 in the fast set and 23 `Category=Long`, and the file's own; two lines regenerated on purpose, "## The Original-model guard" |
+| L2 | the `Corrected` model's results do not move unnoticed, and it means every flag of `CorrectionSet` | the same hashes, 10 CPU runs under `Corrected` (`Snapshots/CorrectedModelSnapshot.approved.txt`); the mapping read from `EffectiveCorrections` | ✅ 2026-10-19: `CorrectedModelGuardTests`, 11 tests, 2 of them `Long`; `ModelKindTests`; "## The Corrected-model snapshot" |
+| L2 | a Dmin written in micrometres and the same value in metres are one run at the public path | `Binary64`, batched CPU, P312 at 10 particles: the `results.m` hash and the result JSON (the stored `Dmin` aside) of 10 µm against the default `Dmin`, and of 20 µm against 20e-6 m, equal | ✅ 2026-10-19: `DminCellRunTests`, 3 tests; "## The Dmin cell index at run level" |
 
 ⚠ 2026-10-18: was "34 cases (33 `Category=Long`)" in the guard's row, the whole guard run by no CI → HISTORY.md#original-guard-criterion-33-cases
 
-⚠ 2026-09-19: the ✅ marks of this table were first dated 2026-09-18 by a session that
-ended at a usage limit, and two of them did not hold when this session started. The
-completeness row was red: `Ggg` had been removed from `RunHeader` for a mutation and
-never restored. The counter row passed vacuously for conditions 6–9 (wrong denominator,
-absolute floor of 1.0; `src/Simulation/BOOT.md`, "## Counter check"). Every row was
-re-proven on 2026-09-19 by the mutations below, each seen red and reverted.
+⚠ 2026-10-19: was the `Original` model "stays bit for bit what it is" without exception, now but for two guard lines regenerated for the `Binary64` Dmin cell index → "## The Original-model guard", "Provenance"
 
-⚠ 2026-10-02: the statistical-criterion row was dated 2026-09-24, the day its text was
-realigned. The evidence it names was obtained later: the seed-0 snapshot was
-re-approved and link 3 re-run at the attempt budget 8192 on 2026-10-01 (874d81c, 82f1de2,
-3ea6471; `git log` of `StatisticalCriterionTests.cs` and the snapshot ends at 874d81c),
-the date the root's batched criterion carries for the same evidence
-(`ACCEPTANCE.md`, "Batched mode"; the rule: a date is the day the evidence now in the
-tree was obtained after the last change to what it reads, AGENTS.md §6). Found by the
-2026-10-02 arbitration's D4 reading. Not re-run for this correction (`Category=Long`):
-3630af3 (2026-10-02) changed the failure path of `Simulator` only, no byte of a
-completed run, and the figure "40 cases" is as recorded 2026-09-24.
+⚠ 2026-09-19: was the ✅ marks first dated 2026-09-18, two of them not holding, now every row re-proven by the mutations below → HISTORY.md#table-marks-redated-2026-09-19
+
+⚠ 2026-10-02: was the statistical-criterion row dated 2026-09-24, the day its text was realigned, now 2026-10-01, the day its evidence was obtained → HISTORY.md#statistical-criterion-row-date-2026-10-02
 
 `Snapshots/SeedZeroResultsM.approved.txt` is weakly tied to the platform: a last-ULP
 difference of `Math.Log` or `Math.Pow` moves a hash only where it crosses a print
@@ -234,12 +223,7 @@ tests, seen red, then reverted; the fast rows by a script in the session scratch
 | 2026-10-02, the arm deleted | the build: `error IDE0072: Populate switch` at `Simulator.cs(299,73)`; restored, diffed byte-identical |
 | 2026-10-02, right proof, end to end, once: `src/Execution/Engine.cs`'s host-thread `Parallel.For(0, active.Length, ...)` of `RunAttempts` changed to `active.Length - 1` (Execution's recorded mutation, `tests/Execution.Tests/BOOT.md`, "## Launch-advance check (2026-10-02)"), reverted after | unmutated, `dotnet src/Cli/bin/Debug/net10.0/propstruct.dll run tests/Fixtures/cases/input/baseline.dat --accelerator cpu --output <scratch>.m` exits 0. Mutated, the same command exits 4 with the stderr line `System.InvalidOperationException: Execution reported ParticleNotRun: a launch left an active particle's attempt count unchanged, a defect of the engine, not a status of the run.`; and a scratch `[Fact]` (deleted) running `Simulator.Run` on `SmallFormulation.Build(24, 1)`, `Mode = Batched`, `Accelerator = Cpu`, passed `Assert.Throws<InvalidOperationException>` with the message containing `ParticleNotRun`; `Engine.cs` diffed clean after |
 
-⚠ 2026-09-23: the row above named `ReferenceMode_IndependentLayout_SatisfiesCriterion_AgainstIndependentReplicas`,
-which the same day's realignment renamed to
-`ReferenceMode_IndependentLayout_OriginalPrecision_MatchesIndependentReplicas_ExceptKnownCells` and changed from
-`PrecisionKind.Binary64` to `PrecisionKind.Original`; the row is kept as the historical record of the proof it was
-(swapping `ReplicaKind` breaks the comparison) rather than rewritten, since a mutation record is provenance, not
-current truth (AGENTS.md §8).
+⚠ 2026-09-23: was the row above naming `ReferenceMode_IndependentLayout_SatisfiesCriterion_AgainstIndependentReplicas`, now renamed and moved to `PrecisionKind.Original` by the realignment; the row stays as the record of the proof it was → HISTORY.md#mutation-row-renamed-2026-09-23
 
 Two more mutations, 2026-09-23, proving the realigned criterion's own two new mechanisms non-degenerate
 (root BOOT.md's own two-proof taboo; "## Statistical criterion measurement (2026-09-23)" above has the full
@@ -314,14 +298,22 @@ the file, diff clean):
 | Mutation | Red |
 |---|---|
 | the mapping `Corrected` → `All & ~GdokleftOnce` (scratch edit of `EffectiveCorrections`) | `ModelKindTests.TheEffectiveCorrectionsAreEveryFlagUnderCorrectedWithNoSeamAndNoneUnderOriginal` alone; the other 23 `ModelKindTests` cases stayed green, which is the gap it closes |
-| each of the eleven flags dropped from the `Corrected` mapping | the cases of `ACCEPTANCE.md`'s Corrected per-flag table |
+| each of the eleven (ten since 2026-10-19) flags dropped from the `Corrected` mapping | the cases of `ACCEPTANCE.md`'s Corrected per-flag table |
 | each flag applied under `Original` over the 12 fast guard cases | the cases of `ACCEPTANCE.md`'s fast-subset criterion |
 | one character of `extra/PSAN02-sfr-dmin20-cycles3/Original`'s hash in `OriginalModelGuard.approved.txt`, and of `corrected/extra/P33-defaults`' in `CorrectedModelSnapshot.approved.txt`, edited | those two cases, nothing else; 18 of 20 fast guard cases green |
 | `MeasurementCase.SeedStrideBits` 16 → 17 | `EveryCasesSeedsAndTheAuditsEightHaveDistinctPhasesModulo2To20`, `TheOldStrideWithSixteenSeedsRepeatsEightPhasesAndTheCheckNamesThem`, `TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes` |
 | the `RequireDistinctPhases` calls of `CorrectionEffectsReport` commented out | `TheReportRefusesArmsWhoseSeedsRepeatAPhaseAndRunsOverDistinctOnes` |
-| `CorrectionArm.AllBut` mapped to `All & flag` | `TheCategoryFlagsAreTheThreeAndEachAllButArmSetsEveryOtherFlag` |
+| `CorrectionArm.AllBut` mapped to `All & flag` | `TheCategoryFlagsAreTheTwoAndEachAllButArmSetsEveryOtherFlag` (`...AreTheThree...` until 2026-10-19) |
 | the `AllBut` arms not added to `Measured` | that fact and `TheMeasuredArmsAreOriginalAllEachSingleFlagAndAllButEachCategoryFlagOnceUnderDistinctNames` |
 | `Dagg43_cor(2)` removed from `HeadlineQuantity.All` | `TheHeadlineQuantitiesAreReadFromTheParsedCellsAndDPRowIsTheCategoryCount` |
+
+### U6 (2026-10-19)
+
+| Mutation | Red |
+|---|---|
+| `Setup` storing the double quotient `(int)(Dmin / Di)` for both kinds (scratch) | `TenMicrometresIsTheDefaultDminAtRunLevel`, `TwentyMicrometresIsTwentyMicrometresWrittenInMetresAtRunLevel`; the control stays green |
+| the same, regenerating `OriginalModelGuard.approved.txt` | none: the file equals the one before U6 byte for byte |
+| each flag applied under `Original` and dropped under `Corrected`, over the PSAN02 and batched cases | the cases of `ACCEPTANCE.md`'s two per-flag tables |
 
 ## Budget ladder (2026-10-01)
 
@@ -334,14 +326,7 @@ differ in any row**; 55 of 55 tests passed in 27.5 min. Cells compared per formu
 HPEPA3 2071, inpt 2634, P33 1509, PSAN02n 2151, HMX 6635. Launches at seed 0 equal E-B's
 (HPEPA3 7/2/2/2/2, HMX 187/47/12/3/2), asserted. **The rule selects 8192.**
 
-Paired shift, 8192 against 32, host threads, eight seeds (a size, not a verdict): cells
-that differ at all — HMX 107, inpt 52, PSAN02n 39, HPEPA3 18, P33 0; the largest mean
-paired shift is 0.28 of the 32-row's seed sd (PSAN02n `Dqmkm2[0]`; HMX 0.21, HPEPA3 0.14,
-inpt 0.11). Link 3 itself resolves only shifts of about 4.6–5 seed sd (budget decision,
-F3), so this record, not the GREEN rows, bounds the staleness of the coarser QKS1
-refresh. The null-budget red of the echo assertion is the test author's record, not re-run.
-The ladder theory was deleted when the default moved (C5); it stays reproducible at
-3ea6471.
+⚠ 2026-10-19: was the paired-shift paragraph of 8192 against 32, now moved, the figure that bounded the staleness being 0.28 of the seed sd → HISTORY.md#budget-ladder-paired-shift
 
 ## The Original-model guard
 
@@ -371,27 +356,30 @@ Release (34 cases).
 set, 12 cases, 32 s in Debug together with the Corrected snapshot's; `seed0/*` and the
 three P312 extras that took 44 to 94 s in Debug (`-defaults`, `-cycles3`,
 `-homogenized0.1`) stay `Long`, 23 cases. The 12 still see every flag of `CorrectionSet`
-(`ACCEPTANCE.md`, the fast-subset criterion); the two flags that rest on one case each
-have it in the fast set: `extra/P312-dmin5` (`PdoksmallFirstCell`, 0.07 s) and
-`extra/PSAN02-sfr-dmin20-di10` (`GdokleftOnce`).
+(`ACCEPTANCE.md`, the fast-subset criterion); `PdoksmallFirstCell` rests on one of them,
+`extra/P312-dmin5` (0.07 s), and `GdokleftOnce` on the three PSAN02 extras.
 
-`PSAN02-sfr-dmin20-di10` (2026-10-18, T13): `PSAN02-sfr-dmin20` keeps the default `Di`, and
-`1.9999999999999998e-05 / 1e-05` truncates to 1, so its `b` is 10 µm, `φ(b)` is 0 and
-`GdokleftOnce` cannot move a bit there (the per-flag table in `ACCEPTANCE.md` shows no case
-saw it); with `Di` 10 µm `b` is 20 µm. Its line was generated with the product code of the
-original port: `src/` checked out at `ac1fc20` (the tree removed and checked out again from
-that commit), the generator built and run in Release, `src/` restored from `HEAD`. The
-regenerated file differs from the committed one by that one added line, and the 34 cases
-pass at the head, `Original` unchanged.
+⚠ 2026-10-19: was "the two flags that rest on one case each", `GdokleftOnce` on `-di10` alone, now `PdoksmallFirstCell` alone: the exact Dmin cell index lets `-dmin20` and `-cycles3` see it → HISTORY.md#guard-provenance-ac1fc20-2026-10-19
 
-`extra/PSAN02-sfr-dmin20-cycles3/Original` (2026-10-18, U3) was generated the same way:
-the tree removed and `src/` checked out at `ac1fc20`, `tests/RateTableTool` as at the
-base of U3 but for the case (`Program.cs` without the `corrected-model-snapshot`
-subcommand and `CorrectedModelGuard.cs` set aside, since a `Corrected` model does not
-exist at `ac1fc20`), `original-model-guard` run in Release (35 cases, 6 m 45 s), `src/`
-and the tool restored from `HEAD`. The file differs from the committed one by that one
-line; the 34 older lines came out byte-identical, the old model's product code
-reproducing them. The case is green at the head.
+`PSAN02-sfr-dmin20-di10` (T13) writes `Di` 10 µm out beside `PSAN02-sfr-dmin20`, which
+keeps the default; under the double quotient the latter's index was 1 and `GdokleftOnce`
+could not move a bit there, which is why the case exists. It stays, as the spelling in
+µm of both.
+
+⚠ 2026-10-19: was the paragraph generating its line and `extra/PSAN02-sfr-dmin20-cycles3/Original`'s with `src/` at `ac1fc20`, "`Original` unchanged" → HISTORY.md#guard-provenance-ac1fc20-2026-10-19
+
+**Provenance.** The lines of `extra/PSAN02-sfr-dmin20-di10` and
+`extra/PSAN02-sfr-dmin20-cycles3/Original` were generated with `src/` checked out at
+`ac1fc20` (the original port), the others at the head, and the 34 older lines came out
+byte-identical each time. **Two lines were regenerated on purpose** (2026-10-19, U6) on
+the owner's decision (root `BOOT.md`, "Model kind", the 2026-10-19 exception), the only
+lines ever regenerated: `extra/PSAN02-sfr-dmin20` and `extra/PSAN02-sfr-dmin20-cycles3`
+(`Binary64`, `Dmin` 20 µm written in µm, default `Di`), whose Dmin cell index was 1 and
+is 2 (`src/Statistics/BOOT.md`, "The cell index under `Binary64`"). Proof,
+`ACCEPTANCE.md`: every other line byte-identical, and the file regenerated with only the
+index computation reverted in scratch equals the old file byte for byte. The new
+`results.m` hashes of `-dmin20` and `-di10` are one, as the case written with `Di` 10 µm
+always was.
 
 ## The Corrected-model snapshot
 
@@ -401,8 +389,8 @@ Original guard's mechanism on ten cases (`CorrectedModelGuard.Cases`,
 `tests/RateTableTool`): the eight reduced extras of the guard that show the fixes the
 references leave dark (`extra/P312-defaults`, `-dmin5`, `-cycles3`,
 `extra/PSAN02-sfr-dmin20`, `-cycles3`, `-di10`, `extra/P33-defaults`,
-`extra/P2-defaults`) and `batched/inpt`, `batched/PSAN02n`, which show
-`CategoriesEmptyRowsMerged`; each is the Original guard's case run under
+`extra/P2-defaults`) and `batched/inpt`, `batched/PSAN02n`, the snapshot's only batched
+cases; each is the Original guard's case run under
 `ModelKind.Corrected` with no seam, ids prefixed `corrected/`. `P312-homogenized0.1` is
 left out: the other P312 cases cover it. The two P312 cases that take 47 and 102 s in
 Debug are `Category=Long`; the other eight run in the fast set (about 10 s).
@@ -410,8 +398,29 @@ Debug are `Category=Long`; the other eight run in the fast set (about 10 s).
 tests/RateTableTool -- corrected-model-snapshot` at the head (Release, 10 cases, 52 s),
 never typed; green in Debug. It asserts that the `Corrected` results are those approved,
 not that they are right: a regeneration is the owner's decision, in the commit that
-changes the model. Its per-flag proof is in `ACCEPTANCE.md`: dropping any of the eleven
+changes the model. Its per-flag proof is in `ACCEPTANCE.md`: dropping any of the ten
 flags from the mapping turns at least one fast case red.
+
+⚠ 2026-10-19: was `batched/inpt` and `batched/PSAN02n` "which show `CategoriesEmptyRowsMerged`" and eleven flags, now the batched cases, kept (they see five other flags), and ten flags: the flag is withdrawn → HISTORY.md#corrected-snapshot-empty-rows-2026-10-19
+
+**Regenerated 2026-10-19** (U6): five of the ten lines moved, five stayed (the P312
+three, `extra/P33-defaults`, `extra/P2-defaults`). `batched/inpt` and `batched/PSAN02n`:
+the withdrawal of `CategoriesEmptyRowsMerged`, the printed category axis keeping its
+empty rows. `extra/PSAN02-sfr-dmin20` and `-cycles3`: that withdrawal and the exact Dmin
+cell index. `extra/PSAN02-sfr-dmin20-di10`: the withdrawal alone, its index being 2
+already; its `results.m` hash now equals `-dmin20`'s, the same run spelled two ways.
+
+## The Dmin cell index at run level
+
+U6, 2026-10-19. `src/Statistics` fixed the `Binary64` index `int(Dmin/Di)` of Fortran
+line 1001, a defect of the port: against the default `Di` of 10e-6 m a `Dmin` written in
+µm truncated one cell low (10 µm gave 0, 20 µm gave 1). `DminCellRunTests` states the
+fix at the public path, through `GuardCase` and `ReferenceModeRunner.Fingerprint`: P312
+at 10 particles per cycle, `Binary64`, batched, CPU, `Independent`, seed 0. 10 µm equals
+the default `Dmin` (10e-6 m) and 20 µm equals 20e-6 m, in the `results.m` hash and in
+the JSON hash, once the stored `Dmin`, the one number the spelling moves in the last
+bit, is zeroed in the JSON; the positive control is that 10 µm and 20 µm differ. Red
+with the computation reverted in scratch, right at the head (`ACCEPTANCE.md`).
 
 ## Correction-effects measurement
 
@@ -423,11 +432,12 @@ measurement"). Its pages are generated into `Measurements/corrections-2026-10-18
 folder, never typed.
 
 - **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
-  seam `SimulationOptions.Corrections`; and, for the three category flags, which act on
-  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All read
-  from the enum
-  (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
-  and budgets, seeds `k * 2^16` (U3). CUDA not used: other sessions share the GPU.
+  seam `SimulationOptions.Corrections`; and, for the two category flags, which act on
+  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All
+  read from the enum (`CorrectionMeasurementToolingTests`); fourteen at 4558ce1.
+  Batched, CPU, `Independent`, `Binary64`, default batch and budgets, seeds `k * 2^16`
+  (U3). CUDA not used: other sessions share the GPU.
+  ⚠ 2026-10-19: was "the three category flags", sixteen arms, now two, fourteen → HISTORY.md#correction-effects-arms-u7-2026-10-19
 - **Seeds are phases**: the streams jump by `seed · 2^80` in a period of 2^100, so seeds
   equal modulo 2^20 are copies. `k * 2^17` repeated after eight seeds; `k * 2^16` gives
   sixteen distinct phases. A fast fact asserts it for every case, and the report refuses
@@ -448,7 +458,7 @@ folder, never typed.
 - **Controls**: the seam with `None` equals `Original` (`ModelKindTests`). Negative: `Original`
   even against odd seeds. Positive: `WindowLowerEdge` in reference mode over `k = 0..7`,
   `DoksdConsistent` on P33, `ExactConstants` on `Setup.Lambda`.
-- **Floor** (measured 2026-10-18, the re-run at 8b29342): the negative control is clean,
+- **Floor** (measured 2026-10-19, the page at 4558ce1): the negative control is clean,
   0 differing of 1234 to 7139 compared cells in all nine cases, `Original` even seeds
   against odd (8 against 8 on the references, 4 against 4 on the extras).
   `TwoSampleBiasOfSets` has no count floor or print resolution (`tests/Harness/API.md`),

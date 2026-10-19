@@ -8,6 +8,23 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="model-kind-dmin-exception-2026-10-19"></a>
+
+## 2026-10-19 — from "## Invariants", "Model kind is an option of every run" — `Original` bit for bit without exception
+
+Narrowed when a defect of the port was found and fixed on the owner's word: under
+`Binary64` the Dmin cell index of Fortran 1001 truncated one cell low for a Dmin written
+in micrometres with the default Di written in metres (`10·1e-6/1e-5 < 1`), so `--dmin 10`
+gave `fineoxy_fr` 0 and P312's `Zkarm` −6.8 % against the default (`src/Statistics`).
+The original computes the index exactly in REAL*4, and so does the `Original` precision
+kind; `Binary64` now does too, which changes `Original`-model `Binary64` output for such
+inputs only. The sentence as it stood:
+
+> `Original` is the original's model, bit for bit as before the option
+> (`tests/Simulation.Tests`, the seed-zero guard).
+
+---
+
 <a id="reference-mode-side-effects-withdrawn-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Invariants", "Reference mode is the original's sequence" — all side effects but `fmkarm2`'s under `Corrected`

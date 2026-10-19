@@ -96,7 +96,6 @@ internal static class Categories
         var mdok3 = new double[ncat];
         var mdok4 = new double[ncat];
         var epsydok = new double[ncat];
-        var empty = new bool[ncat];
         var dokp43Working = new double[ncat];
         var qdokkarmWorking = new double[ncat];
         var qdoksoWorking = new double[ncat][];
@@ -176,8 +175,8 @@ internal static class Categories
                 }
 
                 var tiny = rounding.Literal(1e-30); // Fortran 869
-                empty[r] = rowSum == 0 || mdok3[r] <= tiny || mdok4[r] <= tiny;
-                epsydok[r] = empty[r]
+                var empty = rowSum == 0 || mdok3[r] <= tiny || mdok4[r] <= tiny;
+                epsydok[r] = empty
                     ? 0.0
                     : rounding.Store(3.0 * Math.Sqrt(rounding.Temporary(1.0 / rowSum) * (ddok4 / (mdok4[r] * mdok4[r]) + ddok3 / (mdok3[r] * mdok3[r])))); // Fortran 875
 
@@ -192,11 +191,8 @@ internal static class Categories
         }
 
         var lastRowReturns = corrections.HasFlag(CorrectionSet.CategoriesLastRowRecomputed);
-        var emptyRowsMerge = corrections.HasFlag(CorrectionSet.CategoriesEmptyRowsMerged);
 
-        // CategoriesEmptyRowsMerged: a row the empty-row test gave Epsydok = 0 is as insufficient as one over the threshold;
-        // a row of one particle, legitimately without variance, is not empty.
-        bool Insufficient(int r) => epsydok[r] > epsDok || emptyRowsMerge && empty[r];
+        bool Insufficient(int r) => epsydok[r] > epsDok;
 
         while (true)
         {

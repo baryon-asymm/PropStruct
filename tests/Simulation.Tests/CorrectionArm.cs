@@ -27,7 +27,7 @@ internal sealed record CorrectionArm(string Name, ModelKind Model, CorrectionSet
 
     /// <summary>
     /// The flags the category fixes are, those of <see cref="SingleFlags"/> whose name begins with
-    /// <c>Categories</c>: they act on the same arrays (Fortran 869–959), so the effect of the three together is not
+    /// <c>Categories</c>: they act on the same arrays (Fortran 869–959), so the effect of the two together is not
     /// the sum of their single effects, and the measurement takes each of them out of <see cref="Everything"/> as well.
     /// </summary>
     public static IReadOnlyList<CorrectionSet> CategoryFlags { get; } = SingleFlags

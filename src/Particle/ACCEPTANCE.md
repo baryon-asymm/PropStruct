@@ -255,8 +255,8 @@ beforehand.
       the `Corrected` column, the reserved name `Model` (`src/Output`'s printing fixes,
       no flag) excepted, and asserts that set equals `CorrectionSet`'s members other
       than `None` and `All`, that each member has the value `API.md` lists and that
-      `All` is their sum. 2026-10-18, `tests/Particle.Tests`, `CorrectionMemberRowTests`
-      (21 cases, `CorrectionMemberRowCheck`): right on the real page, whose
+      `All` is their sum. 2026-10-19, `tests/Particle.Tests`, `CorrectionMemberRowTests`
+      (20 cases, `CorrectionMemberRowCheck`): right on the real page, whose
       members (`ExactConstants` in two rows, `Model` absent) equal the enum's, and on
       the real `API.md`. Red on scratch pages through the same path: a member's only
       row set back to `unchanged` (each but that one; `ExactConstants`, which has two
@@ -267,7 +267,7 @@ beforehand.
       on the real files: `WindowLowerEdge = 16` in `API.md`, and a `Phantom = 4096`
       member in `CorrectionSet.cs`. Committed with the criterion's own condition met:
       the last row flipped on the target branch (Particle: `BridgeFrustum`,
-      `WindowLowerEdge`, `ExactConstants`; `Statistics`: the other eight).
+      `WindowLowerEdge`, `ExactConstants`; `Statistics`: the other seven).
       `CorrectionSet` is internal: `PublicSurface.approved.txt` does not move for it.
 
   ⚠ 2026-10-18: was "not written" with `ExactConstants` and the eight `Statistics`
@@ -275,3 +275,5 @@ beforehand.
   `fixed (<Flag>)` row (T13a).
 
   ⚠ 2026-10-18: was twelve flags, `Fmkarm2OnAcceptance` among them, now eleven, the member's value 4 retired and `All` 4091; the criterion's case count 22, now 21, `AMemberWhoseOnlyRowReadsUnchangedIsReported` having one member less → HISTORY.md#fmkarm2-on-acceptance-withdrawn-2026-10-18
+
+  ⚠ 2026-10-19: was eleven flags, now ten, `CategoriesEmptyRowsMerged` withdrawn, its value 1024 retired and `All` 3067; the case count 21, now 20; re-verified the same day → HISTORY.md#categories-empty-rows-merged-withdrawn-2026-10-19

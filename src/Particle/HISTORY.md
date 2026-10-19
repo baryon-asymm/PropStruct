@@ -8,6 +8,47 @@ following a dated pointer left in `BOOT.md` at the place the text used to stand.
 
 ---
 
+<a id="corrections-page-rerun-u7-2026-10-19"></a>
+
+## 2026-10-19 — from "## Corrected model" and "## Defects of the original" — the place of the correction-effects page in the rows 1616–1627, 469… and 595 (U7)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+4558ce1 after `CategoriesEmptyRowsMerged` was withdrawn (fourteen arms, seeds `k · 2¹⁶`
+as before). The three rows cited it as "the re-run at 8b29342"; they cite single-flag
+arms (`BridgeFrustum`, `ExactConstants`, `WindowLowerEdge`), whose shifts, standard
+errors and differing-cell counts are the same on both pages, so no figure moved, only
+the place: "the page at 4558ce1". Only the `All` and `AllBut<Flag>` arms moved (their
+`DPRow` and category cells, `src/Statistics/HISTORY.md#corrections-page-rerun-u7-2026-10-19`),
+and these rows do not quote them. The positive control of `WindowLowerEdge` in
+`ACCEPTANCE.md` is read from the page's controls, unchanged.
+
+<a id="categories-empty-rows-merged-withdrawn-2026-10-19"></a>
+
+## 2026-10-19 — from `API.md`, "## Corrected model" — the member `CategoriesEmptyRowsMerged` withdrawn, the enum block and the sentence on retired values as they stood
+
+Owner decision of 2026-10-19 ("3 снять"): the flag is withdrawn from the `Corrected` model
+(`src/Statistics/BOOT.md`, "## Corrected model", for the reasons and the figures). Its value
+1024 is retired and never reused; `All` is 3067. This node owned the enum and nothing else
+about the flag: the member carried a line of `Statistics` and meant nothing in
+`Attempt.Run`. The text as it stood:
+
+```text
+    CategoriesLastRowRecomputed = 512,   // Statistics, Fortran 947–959
+    CategoriesEmptyRowsMerged = 1024,    // Statistics, Fortran 869–871, 915, 947
+    PdoksmallFirstCell = 2048,           // Statistics, Fortran 1059–1061
+    All = 4091,                          // the Corrected model: every member above
+```
+
+```text
+The values are explicit powers of two and are never renumbered or reused (the value 4 is
+retired, 2026-10-18); `All` is their sum.
+```
+
+The criterion of `ACCEPTANCE.md` that holds the members against the defect page read
+"twelve flags" at its first writing and "eleven" after the withdrawal of
+`Fmkarm2OnAcceptance`, with 21 cases of `CorrectionMemberRowTests` and `All` 4091; it
+reads ten flags, 20 cases and 3067.
+
 <a id="real4-membership-design-2026-10-18"></a>
 
 ## 2026-10-18 — from "## Accumulators" and "## Corrected model" — the design decision of 2026-09-24 on the generated membership, and the paragraph of line 720, in full

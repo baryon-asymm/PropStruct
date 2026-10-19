@@ -22,7 +22,14 @@ internal sealed record SetupTables(
     double[] Share,             // ZX, NMM
     byte[] PocketForming,       // SFR, NMM
     double Zss,                 // PARAM's own ZS, "## Setup plane"
-    double[] MassShare);        // GDOK as read/rounded, NMM ("## Setup plane", "One stored setup")
+    double[] MassShare,         // GDOK as read/rounded, NMM ("## Setup plane", "One stored setup")
+    int DminCell);              // int(Dmin/Di), Fortran 1001: exact under Binary64 ("## Line map")
+
+internal static class LengthQuotient
+{
+    // The integer part of numerator / denominator as an exact rational of the values as written.
+    public static int Truncated(Length numerator, Length denominator);
+}
 
 internal sealed record SetupInputs(          // every setup-plane input CycleStatistics/Output need,
     double OxidizerDensity, double PropellantDensity,   // as stored ("## Setup plane", "One stored setup")
@@ -86,6 +93,15 @@ internal static class Binary32
     public static long TruncatedQuotientOfProduct(double product, double denominator);
 }
 ```
+
+**`SetupTables.DminCell`** (2026-10-19) is Fortran 1001's `int(Dmin/Di)`, the 0-based
+`FMDOK` cell `Compute` reads, computed once by `Prepare`: under `Binary64` by
+`LengthQuotient.Truncated(parameters.Dmin, parameters.CellSize)`, the exact quotient of the
+values as written (preconditions: finite, `Dmin` not negative, `Di` positive, which
+`Prepare` checks; an infinite `Di` is `InvalidCellSize`); under `Original` the truncated
+quotient of the stored binary32 values, as before. `BOOT.md`, "## Line map".
+
+⚠ 2026-10-19: was `Compute` truncating the quotient of `setup.Dmin` and `setup.CellSize` itself, with no such member → HISTORY.md#dmin-cell-index-binary64-2026-10-19
 
 **Setup hand-off** (decided 2026-09-18, `../Simulation/API.md`'s own "Setup hand-off"
 section): `Prepare` computes every pure-`double` part of the setup, including

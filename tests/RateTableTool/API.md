@@ -33,6 +33,13 @@ Both subcommands print progress to stdout and the fixture path they wrote; `rate
 reports any per-job failure to stderr and exits `1` without writing the file rather than
 writing a table with holes in it.
 
+## Internal surface used by the neighbour
+
+`ReferenceModeRunner.Fingerprint(formulation, options)` hashes one run; the overload
+`Fingerprint(formulation, options, reshapeForJson)` applies a function to the
+`SimulationResult` before its JSON is hashed and leaves the `results.m` hash alone. The
+guards use the first; `tests/Simulation.Tests/DminCellRunTests` the second.
+
 ## Side effects
 
 Runs the simulator through `ReferenceModeRunner.RunSeed` (a temp file per run for

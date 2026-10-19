@@ -12,6 +12,7 @@ original's program out of the repository on 2026-10-04; since then:
 | `LineMapCoverageTests` | fast | `tests/Fixtures/cases/source/executable_lines.json`; its failure message names line numbers, never a source line |
 | `OriginalModelGuardTests` | `Long` (23 cases: the `seed0/*` ones and three slow P312 extras), fast (13: 12 cases and the file holds the guard's cases) | `Snapshots/OriginalModelGuard.approved.txt`, written by `tests/RateTableTool` |
 | `CorrectedModelGuardTests` | `Long` (2 cases: the P312 ones), fast (9: 8 cases and the file holds the snapshot's cases) | `Snapshots/CorrectedModelSnapshot.approved.txt`, written by `tests/RateTableTool` (`corrected-model-snapshot`) |
+| `DminCellRunTests` | fast | `tests/Fixtures/Legacy/formulations/P312.dat` |
 
 ## Category of the hand-run measurement ✅
 

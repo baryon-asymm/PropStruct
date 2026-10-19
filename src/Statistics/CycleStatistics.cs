@@ -414,7 +414,7 @@ internal static class CycleStatistics
         var plot1 = inputs.OxidizerDensity;
         var plot2 = inputs.PropellantDensity;
 
-        var fmdokIndex = (int)(setup.Dmin / di); // FMDOK(int(Dmin/Di)+1), 1-based; 0-based fmdok[fmdokIndex].
+        var fmdokIndex = tables.DminCell; // FMDOK(int(Dmin/Di)+1), 1-based; 0-based fmdok[fmdokIndex].
         var gdokleftFirst = rounding.Store(fmdok[fmdokIndex] * ggg); // Fortran 1001
 
         // 1004: the register sum is added unrounded into 1006.

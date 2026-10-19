@@ -82,8 +82,8 @@ public class GdokleftOnceTests
 
     /// <summary>
     /// Right at the size of the effect, the evidence case of the criterion: PSAN02 read with its pocket-forming flags
-    /// at <c>Dmin = 20 um</c> and <c>Di = 10 um</c> (both as the menu converts them, so that <c>Dmin/Di</c> is exactly 2
-    /// and <c>b = 20 um</c>), <c>None</c> minus the flag is 0.0119 of the propellant (0.0175 of the oxidizer), to the
+    /// at <c>Dmin = 20 um</c> and <c>Di = 10 um</c> (both written in um, and <c>Dmin/Di</c> is exactly 2 and <c>b = 20 um</c>
+    /// whichever unit each is written in since 2026-10-19: <c>src/Statistics/BOOT.md</c>, "## Line map"), <c>None</c> minus the flag is 0.0119 of the propellant (0.0175 of the oxidizer), to the
     /// three digits the arbiter's computation states. The difference is <c>GGG Sum GDOK phi(b)</c> and does not depend
     /// on the totals.
     /// </summary>
@@ -158,10 +158,10 @@ public class GdokleftOnceTests
             this.formulation = formulation;
             this.parameters = parameters;
             var status = Setup.Prepare(formulation, parameters, PrecisionKind.Binary64, 1000, 1000,
-                out var setup, out _, out _, out _, out _);
+                out var setup, out var tables, out _, out _, out _);
             Assert.Equal(SetupStatus.Ok, status);
 
-            var index = (int)(setup.Dmin / setup.CellSize);
+            var index = tables.DminCell;
             Below = index * setup.CellSize;
             Fmdok = index <= 1 ? 0.0 : (index - 1.0) / (setup.Ndok - 1.0);
             Ggg = Report(PrecisionKind.Binary64, CorrectionSet.None, null).Ggg;

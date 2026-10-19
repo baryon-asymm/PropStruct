@@ -2,7 +2,7 @@
 
 P312 over three cycles, particles per cycle reduced from 5000 to 40. Batched mode, CPU accelerator, `Independent` layout, `Binary64`; seeds `k * 2^16`, k = 0..7 (8 seeds); 3 cycle(s) of 40 particles; `Dmin` 10 um, `Di` 10 um, `Dj` 10 um.
 
-Work: 817 s over 16 arms (Original 56, All 50, ExactConstants 50, BridgeFrustum 50, WindowLowerEdge 51, VdokTotalOnCopy 56, ZdoksmallCoarseShare 48, GdokleftOnce 49, DoksdConsistent 48, CategoriesOnCopy 51, CategoriesLastRowRecomputed 49, CategoriesEmptyRowsMerged 56, PdoksmallFirstCell 49, AllButCategoriesOnCopy 50, AllButCategoriesLastRowRecomputed 52, AllButCategoriesEmptyRowsMerged 49 s).
+Work: 724 s over 14 arms (Original 48, All 58, ExactConstants 57, BridgeFrustum 49, WindowLowerEdge 52, VdokTotalOnCopy 49, ZdoksmallCoarseShare 48, GdokleftOnce 49, DoksdConsistent 50, CategoriesOnCopy 51, CategoriesLastRowRecomputed 50, PdoksmallFirstCell 57, AllButCategoriesOnCopy 49, AllButCategoriesLastRowRecomputed 58 s).
 
 Failed runs: none.
 
@@ -44,11 +44,9 @@ Builds behind the runs: 1 distinct (a rebuild of unchanged source is a new one).
 | DoksdConsistent | 0 +- 1.214 | 0 +- 1.711 | 0 +- 1.372 | 0 +- 0.034 | 0 +- 0.180 | 0 +- 0.161 | 0 +- 1.214 | 0 +- 1.709 | 0 +- 1.368 | 0 +- 0.013 | 0 +- 0.048 | 0 +- 0 | 0 +- 0.225 | abs 0 +- 0 | 0 +- 0 | [2] 0 +- 0.236 |
 | CategoriesOnCopy | 0 +- 1.214 | 0 +- 1.711 | 0 +- 1.372 | 0 +- 0.034 | 0 +- 0.180 | 0 +- 0.161 | 0 +- 1.214 | 0 +- 1.709 | 0 +- 1.368 | 0 +- 0.013 | 0 +- 0.048 | 0 +- 0 | 0 +- 0.225 | abs 0 +- 0 | +93.750 +- 6.250* | [2] 0 +- 0.236 |
 | CategoriesLastRowRecomputed | 0 +- 1.214 | 0 +- 1.711 | 0 +- 1.372 | 0 +- 0.034 | 0 +- 0.180 | 0 +- 0.161 | 0 +- 1.214 | 0 +- 1.709 | 0 +- 1.368 | 0 +- 0.013 | 0 +- 0.048 | 0 +- 0 | 0 +- 0.225 | abs 0 +- 0 | -50.000 +- 0* | [2] 0 +- 0.236 |
-| CategoriesEmptyRowsMerged | 0 +- 1.214 | 0 +- 1.711 | 0 +- 1.372 | 0 +- 0.034 | 0 +- 0.180 | 0 +- 0.161 | 0 +- 1.214 | 0 +- 1.709 | 0 +- 1.368 | 0 +- 0.013 | 0 +- 0.048 | 0 +- 0 | 0 +- 0.225 | abs 0 +- 0 | 0 +- 0 | [2] 0 +- 0.236 |
 | PdoksmallFirstCell | 0 +- 1.214 | 0 +- 1.711 | 0 +- 1.372 | 0 +- 0.034 | 0 +- 0.180 | 0 +- 0.161 | 0 +- 1.214 | 0 +- 1.709 | 0 +- 1.368 | 0 +- 0.013 | 0 +- 0.048 | 0 +- 0 | 0 +- 0.225 | abs 0 +- 0 | 0 +- 0 | [2] 0 +- 0.236 |
 | AllButCategoriesOnCopy | +0.046 +- 1.199 | +0.026 +- 1.699 | +0.202 +- 1.388 | 0 +- 0.034 | +2.550 +- 0.147* | -0.486 +- 0.135 | +0.034 +- 1.198 | +0.015 +- 1.697 | +0.191 +- 1.385 | -9.998e-3 +- 0.012 | -3.954 +- 0.052* | 0 +- 0 | -0.023 +- 0.211 | abs 0 +- 0 | -50.000 +- 0* | [3] -20.695 +- 0.189* |
 | AllButCategoriesLastRowRecomputed | +0.046 +- 1.199 | +0.026 +- 1.699 | +0.202 +- 1.388 | 0 +- 0.034 | +2.550 +- 0.147* | -0.486 +- 0.135 | +0.034 +- 1.198 | +0.015 +- 1.697 | +0.191 +- 1.385 | -9.998e-3 +- 0.012 | -3.954 +- 0.052* | 0 +- 0 | -0.023 +- 0.211 | abs 0 +- 0 | +87.500 +- 8.183* | [3] -20.695 +- 0.189* |
-| AllButCategoriesEmptyRowsMerged | +0.046 +- 1.199 | +0.026 +- 1.699 | +0.202 +- 1.388 | 0 +- 0.034 | +2.550 +- 0.147* | -0.486 +- 0.135 | +0.034 +- 1.198 | +0.015 +- 1.697 | +0.191 +- 1.385 | -9.998e-3 +- 0.012 | -3.954 +- 0.052* | 0 +- 0 | -0.023 +- 0.211 | abs 0 +- 0 | +87.500 +- 8.183* | [3] -20.695 +- 0.189* |
 
 ### Welch t, with the paired t over the shared seeds in brackets
 
@@ -64,11 +62,9 @@ Builds behind the runs: 1 distinct (a rebuild of unchanged source is a new one).
 | DoksdConsistent | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) |
 | CategoriesOnCopy | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | +15.0 (+15.0) | 0.0 (0.0) |
 | CategoriesLastRowRecomputed | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | -inf (-inf) | 0.0 (0.0) |
-| CategoriesEmptyRowsMerged | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) |
 | PdoksmallFirstCell | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) | 0.0 (0.0) |
 | AllButCategoriesOnCopy | 0.0 (+0.4) | 0.0 (+0.2) | +0.1 (+2.2) | 0.0 (0.0) | +17.3 (+34.2) | -3.6 (-6.3) | 0.0 (+0.3) | 0.0 (+0.1) | +0.1 (+2.1) | -0.8 (-6.7) | -76.7 (-258.8) | 0.0 (0.0) | -0.1 (-0.9) | 0.0 (0.0) | -inf (-inf) | -109.3 (-209.3) |
 | AllButCategoriesLastRowRecomputed | 0.0 (+0.4) | 0.0 (+0.2) | +0.1 (+2.2) | 0.0 (0.0) | +17.3 (+34.2) | -3.6 (-6.3) | 0.0 (+0.3) | 0.0 (+0.1) | +0.1 (+2.1) | -0.8 (-6.7) | -76.7 (-258.8) | 0.0 (0.0) | -0.1 (-0.9) | 0.0 (0.0) | +10.7 (+10.7) | -109.3 (-209.3) |
-| AllButCategoriesEmptyRowsMerged | 0.0 (+0.4) | 0.0 (+0.2) | +0.1 (+2.2) | 0.0 (0.0) | +17.3 (+34.2) | -3.6 (-6.3) | 0.0 (+0.3) | 0.0 (+0.1) | +0.1 (+2.1) | -0.8 (-6.7) | -76.7 (-258.8) | 0.0 (0.0) | -0.1 (-0.9) | 0.0 (0.0) | +10.7 (+10.7) | -109.3 (-209.3) |
 
 ### Cells: `TwoSampleBiasOfSets` against `Original`, family-wise alpha 10^-3
 
@@ -88,9 +84,7 @@ Floor of the comparison, `Original` even seeds (4) against odd seeds (4): 0 / 13
 | DoksdConsistent | 0 / 1402 | none |
 | CategoriesOnCopy | 5 / 1402 | fqdokkarm(2,:) (2), Dkarmcat (1), dokkarm10 (1), dokkarm43 (1) |
 | CategoriesLastRowRecomputed | 5 / 1379 | fqdokkarm(1,:) (3), Dkarmcat (1), dokkarm43 (1) |
-| CategoriesEmptyRowsMerged | 0 / 1402 | none |
 | PdoksmallFirstCell | 0 / 1402 | none |
 | AllButCategoriesOnCopy | 70 / 1378 | fqmkm2 (45), pdoksmall (17), fqdokkarm(1,:) (4), Dkarmcat (1), Dqmkm2 (1), Zkarm (1), dokkarm43 (1) |
 | AllButCategoriesLastRowRecomputed | 69 / 1401 | fqmkm2 (45), pdoksmall (17), fqdokkarm(2,:) (2), Dkarmcat (1), Dqmkm2 (1), Zkarm (1), dokkarm10 (1), dokkarm43 (1) |
-| AllButCategoriesEmptyRowsMerged | 69 / 1401 | fqmkm2 (45), pdoksmall (17), fqdokkarm(2,:) (2), Dkarmcat (1), Dqmkm2 (1), Zkarm (1), dokkarm10 (1), dokkarm43 (1) |
 

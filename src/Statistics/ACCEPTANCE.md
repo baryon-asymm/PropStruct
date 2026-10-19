@@ -37,11 +37,9 @@
   rounding site it is independent. In cycle 0 the nine print-time `*Normalized`/`*Nmax`
   entries are not asserted. `CycleStatisticsTests` keeps its hand-derived identities.
 
-  ⚠ 2026-09-18: was one criterion, now split three ways once `Categories` turned out
-  to need the formula-script treatment on its own → HISTORY.md#cycle-statistics-criterion-split-2026-09-18
+  ⚠ 2026-09-18: was one criterion, now split three ways once `Categories` turned out to need the formula-script treatment on its own → HISTORY.md#cycle-statistics-criterion-split-2026-09-18
 
-  ⚠ 2026-09-18 (audit): was "short, branch-free" covering `SmallParticles` too, now
-  narrowed to the seven pieces it fits → HISTORY.md#small-particles-branches-note-2026-09-18
+  ⚠ 2026-09-18 (audit): was "short, branch-free" covering `SmallParticles` too, now narrowed to the seven pieces it fits → HISTORY.md#small-particles-branches-note-2026-09-18
 - [x] 2026-09-18: for the five reference formulations, the setup quantities the
   reference `results.m` prints (`Dok43a`, `Dok43sd`, `Ddok_max`) equal it at print
   precision, and the modified `alfa` equals the unmodified one (all five have
@@ -69,8 +67,7 @@
   `.PrepareRejectsInvalidNnWindowWhenNnMinIsNotBelowNnMax`; "## Constraints" carries
   the defect this closes).
 
-  ⚠ 2026-09-26: was the audit's own finding (`InvalidCoefficients` untested for
-  `Ak2 > 1`) told in full, now moved → HISTORY.md#precondition-criterion-audit-narration-2026-09-26
+  ⚠ 2026-09-26: was the audit's own finding (`InvalidCoefficients` untested for `Ak2 > 1`) told in full, now moved → HISTORY.md#precondition-criterion-audit-narration-2026-09-26
 - [x] 2026-09-18 (`Nkarm`/`Ncat` evidence 2026-09-24): `Ndok` equals the length printed
   in the archived outputs of C166, T56, CSPX01, P18050 and PSAN01, and the binary32
   quotient helper equals exact rational truncation on a generated set of operands.
@@ -81,14 +78,11 @@
   `.SizesUsesTheUnroundedProductForNcat`,
   `.SizesNkarmAndNcatOfC166AreUnaffectedByTheProductRoundingFix`; "## Invariants", S-2).
 
-  ⚠ 2026-09-26: was the fixture-case wording and the archive-absence reason told in
-  full, now the confirmation alone → HISTORY.md#ndok-criterion-narration-2026-09-26
+  ⚠ 2026-09-26: was the fixture-case wording and the archive-absence reason told in full, now the confirmation alone → HISTORY.md#ndok-criterion-narration-2026-09-26
 
-  ⚠ 2026-09-18 (audit): was a test typing its five printed lengths as literals, now
-  parsing each archive directly (all unchanged: 71, 71, 23, 20, 62) → HISTORY.md#ndok-archive-test-typed-literals-audit-2026-09-18
+  ⚠ 2026-09-18 (audit): was a test typing its five printed lengths as literals, now parsing each archive directly (all unchanged: 71, 71, 23, 20, 62) → HISTORY.md#ndok-archive-test-typed-literals-audit-2026-09-18
 
-  ⚠ 2026-09-24 (S-2): was `Nkarm`/`Ncat` checked through `Ndok`'s own helper, now
-  through `Binary32.TruncatedQuotientOfProduct` → HISTORY.md#nkarm-ncat-product-rounding-s2-2026-09-24
+  ⚠ 2026-09-24 (S-2): was `Nkarm`/`Ncat` checked through `Ndok`'s own helper, now through `Binary32.TruncatedQuotientOfProduct` → HISTORY.md#nkarm-ncat-product-rounding-s2-2026-09-24
 - [x] 2026-09-18: the binary32 exception extended to `DPRow` and the whole-fraction
   count of `pdoksmall` (root BOOT.md, "Double precision only") is plumbed through,
   proven by a constructed boundary case each; no archived or reference formulation's
@@ -107,16 +101,14 @@
   not to reach `pdoksmall`, `fmdok` nor `Dok43all[1]` at all (`## Report`, "REAL*4
   accumulation, carried through"; `AccumulationConsequenceTests`, thirty cases).
 
-  ⚠ 2026-09-21, three times the same day: was "overstated", then closed, then re-run
-  against `Particle`'s re-measured epsilon (every case passes; only verdicts move) → HISTORY.md#accumulation-consequence-verdict-history-2026-09-21
+  ⚠ 2026-09-21, three times the same day: was "overstated", then closed, then re-run against `Particle`'s re-measured epsilon (every case passes; only verdicts move) → HISTORY.md#accumulation-consequence-verdict-history-2026-09-21
 - [x] 2026-09-20: `CycleReport.Pdoksmall` is `Ndok − 1` elements, matching the archived
   `pdoksmall` (`tests/Statistics.Tests/PdoksmallReportLengthTests`, ten cases); the
   category-merge threshold defect ("## Defects of the original", Fortran 911–959) is
   confirmed as the mechanism
   (`MergeThresholdSensitivityTests.EpsydokThresholdFlipsWithinOneBinary32UlpOfTheBoundary`).
 
-  ⚠ 2026-09-26: was the archive framing and elimination argument told in full, now
-  the confirmation alone → HISTORY.md#pdoksmall-length-criterion-narration-2026-09-26
+  ⚠ 2026-09-26: was the archive framing and elimination argument told in full, now the confirmation alone → HISTORY.md#pdoksmall-length-criterion-narration-2026-09-26
 - [x] 2026-09-21: the `fmkarm`/`fqkarm`/`fmkarm_cor`/`fmkarm_cor2`/`fqkarm_cor`
   print-length escalation ("## Report" above) is resolved: `Output`'s formula matches
   the archive on all five formulations for the first pair, four of five for the
@@ -389,6 +381,14 @@
   `GGG·GDOK·φ(b)` and the flag equals it, under both laws; `b` at or below the bound:
   bit-identical; PSAN02 `--sfr`, `Dmin` 20 µm, `Di` 10 µm: `None` minus the flag 0.0119,
   0.0175 of the oxidizer (`GdokleftOnceTests`, red on each mutation).
+- [x] 2026-10-19: The cell index `int(Dmin/Di)` (Fortran 1001) is, under `Binary64`,
+  the exact quotient of the values as written in either unit, under `Original` the
+  stored binary32 quotient, unchanged (`DminCellTests`, 11 cases): equal to the
+  integer division of 144,120 generated pairs (units of 0.1 µm, each written in µm
+  and in metres) and, in `Setup.Prepare`, of 4,128; 20 µm and 20e-6 m give one index
+  and one `CycleReport` to the bit, the default keeps 1. Red on the doubles' quotient:
+  the unit cases and `Prepare`'s property (10 of 4,128); reverted, green. Figures:
+  `BOOT.md`, "## Line map".
 - [x] 2026-10-18: Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, through
   `pdoksmall`: for a `vdokstr` whole in cell 1, `AK2 = 2` and `gdokleft > 0`, where
   1021–1056 give `zdoksmall` ½ in cell 1 and 1 beyond before the scaling and `ddoksmall`
@@ -412,8 +412,8 @@
   totals with `VmkmTotal = Vsmkm`, `VdokTotal = Svd` (P312, three cycles) `DolM2 = DolM3 =
   DolM1` in every cycle under the flag, to 1e-12 (one product in other orders over `Ndok`
   terms), under `None` in cycle 1 only; red with the store back in place (3 of 7). Program
-  (`P312-Cycles3`, eight distinct seeds `k·2¹⁶`, the page
-  `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` at 8b29342): `Zkarm_cor`
+  (`P312-Cycles3`, eight distinct seeds `k·2¹⁶`, the page of 2026-10-19
+  `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` at 4558ce1): `Zkarm_cor`
   −2.960 ± 0.168 % of the `Original` mean against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
   ⚠ 2026-10-18: was −2.944 ± 0.153 % on the first run's apparatus, now −2.960 ± 0.168 % → HISTORY.md#corrections-page-rerun-2026-10-18
 - [x] 2026-10-18: Corrected, `CategoriesOnCopy`: the totals are byte-identical after a call
@@ -427,12 +427,12 @@
   quotient of the sums over its merged rows and a second call from the final rows merges
   nothing, on the case file's cascade and a four-row one, `None` keeping the stale quotient
   (`CategoriesLastRowRecomputedTests`, red without the return, 5 of 8); 10 of 61 draws move, no reference.
-- [x] 2026-10-18: Corrected, `CategoriesEmptyRowsMerged`: an empty middle or last row merges
-  where `None` keeps it, all rows empty end at one, a `QDOKSS = 1` row is left alone
-  (`CategoriesEmptyRowsMergedTests`, red on the read removed, 4 of 7, and on `QDOKSS <= 1`, 1).
-  Reported (`CategoryFlagsOnOracleTotalsTests`): 13 of 61 draws move; HPEPA3 yes, PSAN02n, HMX no.
-  Program runs, the page at 8b29342: `DPRow` −15.0 ± 0.4 % (inpt), −10.2 ± 0.2 % (PSAN02n)
-  inside the `Corrected` model, the oracle chain blind to it (`BOOT.md`, row 869–871).
+- [x] 2026-10-19: Corrected, `CategoriesEmptyRowsMerged` withdrawn (an empty row is no
+  more an explicit error than a one-particle row): under `None` and `All` the empty rows
+  and a one-particle row stay, bit for bit (`CategoriesEmptyRowsKeptTests`, 4 cases; red
+  with the flag restored, 3 of 4). `BOOT.md`, "## Corrected model".
+  ⚠ 2026-10-19: was "an empty middle or last row merges where `None` keeps it", now kept under both → HISTORY.md#categories-empty-rows-merged-withdrawn-2026-10-19
 - [x] 2026-10-18: Corrected, the rows: each `fixed (<Flag>)` of `## Defects of the original` landed
-  with its flag's code and these criteria's evidence; a reference's seed-zero effect is
+  with its flag's code and these criteria's evidence (`CategoriesEmptyRowsMerged` left it
+  2026-10-19, its row `unchanged`); a reference's seed-zero effect is
   `Simulation`'s (`HISTORY.md#corrected-category-flags-every-formulation-2026-10-18`).
