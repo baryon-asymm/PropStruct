@@ -4,6 +4,43 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="corrections-page-rerun-u7-2026-10-19"></a>
+
+## 2026-10-19 — from "## Corrected model" and "## Defects of the original" — the inside-the-model figures of the category rows, before the page was re-run without `CategoriesEmptyRowsMerged` (U7)
+
+The page `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` was re-run at
+4558ce1 after the flag was withdrawn: fourteen arms, seeds `k · 2¹⁶` as before. Its
+`All` and `AllBut<Flag>` arms at 8b29342 held the withdrawn flag, so what they showed
+inside the model on inpt and PSAN02n was that flag's. No single-flag figure moved (every
+single-flag shift and cell count of the page is the same on both runs). The fragments as
+they stood, the page at 8b29342.
+
+Row 911–958, `CategoriesOnCopy`, the inside-the-model clause and the cells:
+
+> inside the `Corrected` model (`All` against `AllButCategoriesOnCopy`) it is the same on HPEPA3 (+23.1 ± 1.5 % against 0 ± 1.5 %), P33 (+84.4 ± 1.0 % against −2.1 ± 2.1 %) and HMX (+16.2 ± 5.5 % against +0.7 ± 5.6 %), while on inpt and PSAN02n `All` falls (−15.0 ± 0.4 %, −10.2 ± 0.2 %) against −0.2 ± 0.5 % and +0.2 ± 0.4 % without the copy, the effect of `CategoriesEmptyRowsMerged`, which shows only with it; differing cells against `Original` (`TwoSampleBiasOfSets`, 10⁻³, 1519 to 7625 compared, floor 0 of every case): HPEPA3 62, P33 27, PSAN02n 40, inpt 5, HMX 1095
+
+Row 947–959, `CategoriesLastRowRecomputed`, the inside-the-model clause:
+
+> inside the `Corrected` model it is invisible at this resolution: `All` and `AllButCategoriesLastRowRecomputed` show the same `DPRow` shift on eight of the nine cases (P312 at 5 µm: 0 against +20.7 ± 24.9 %, inside the noise) and the same count of differing cells on eight (PSAN02n 538 against 537 of 2049)
+
+At 4558ce1 the same clause reads 0 ± 30.8 % on P312 at 5 µm and the same count on all
+nine (PSAN02n 128 against 128 of 2157). On that page the counts of `All` against
+`AllButCategoriesOnCopy` are 158 against 96 of 2138 (HPEPA3), 120 against 115 of 1518
+(P33), 128 against 88 of 2157 (PSAN02n), 103 against 98 of 2643 (inpt) and 1196 against
+98 of 7624 (HMX); at 8b29342 `All` on inpt was 428 of 2409 and `AllButCategoriesOnCopy`
+172 of 2643, on PSAN02n 538 of 2049 and 186 of 2157, on PSAN02 read with its
+pocket-forming flags 122 of 5969 and 53 of 6189 (24 and 24 of 6189 at 4558ce1).
+
+Row 869–871, 915, 947, `CategoriesEmptyRowsMerged`, the place of its evidence:
+
+> (`tests/Simulation.Tests/Measurements/corrections-2026-10-18.md`, the re-run at 8b29342; batched, CPU, `Independent`, `Binary64`, sixteen distinct seeds `k·2¹⁶`; shift of the printed `DPRow` in per cent of the `Original` mean ± the standard error of the shift)
+
+Row 1145, 1150, `VdokTotalOnCopy`, and the entry of `CategoriesEmptyRowsMerged` in
+"## Corrected model": the page was cited as "the re-run at 8b29342" (its figure, `Zkarm_cor`
+−2.960 ± 0.168 %, is the same at 4558ce1), and the entry's sentence read:
+
+> Its one visible effect was the printed category axis (row 869–871: `DPRow` −15.0 ± 0.4 % inpt, −10.2 ± 0.2 % PSAN02n inside `All`), no statistic.
+
 <a id="categories-empty-rows-merged-withdrawn-2026-10-19"></a>
 
 ## 2026-10-19 — from "## Corrected model", "## Categories", "## Line map" and "## Defects of the original" — `CategoriesEmptyRowsMerged` withdrawn, the claims about it in full

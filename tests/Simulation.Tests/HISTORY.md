@@ -4,6 +4,62 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="correction-effects-reticked-u7-2026-10-19"></a>
+## 2026-10-19 — `ACCEPTANCE.md`, the correction-effects criterion on the page at 8b29342, and U6's note (U7)
+
+The page `Measurements/corrections-2026-10-18.md` was re-run at 4558ce1 after
+`CategoriesEmptyRowsMerged` was withdrawn (`All` no longer holds it; 14 arms), seeds
+`k · 2¹⁶` as before. The criterion as it stood (U4, 2026-10-18), on the page at 8b29342,
+whose figures were the arms of sixteen, the withdrawn flag among them:
+
+```text
+- [x] 2026-10-18 (U4): the effect of each correction is measured on the five references
+      (sixteen distinct seeds `k·2¹⁶`) and four extra cases (8 seeds), per arm and printed
+      quantity (`CorrectionEffectsMeasurement`, the page
+      `Measurements/corrections-2026-10-18.md` at 8b29342; `BOOT.md`, "## Correction-effects
+      measurement"; 9 cases, 16 arms, 1792 runs, none failed, 6356 s of work on the CPU;
+      174 facts green in 1.83 h, among them U3's fast fact that every case's seeds have
+      distinct phases). Positive controls pass: [the rest of the criterion unchanged, and
+      in `ACCEPTANCE.md` as before]
+```
+
+U6's note (2026-10-19), below it:
+
+```text
+⚠ 2026-10-19 (U6): was "eleven single flags and the three `AllBut` arms" (16 arms with
+`Original` and `All`), now ten single flags and two `AllBut` arms, 14 arms, the arm
+list being generated from `CorrectionSet` and `CorrectionArm.CategoryFlags`; the flag
+`CategoriesEmptyRowsMerged` is withdrawn and `TheCategoryFlagsAreTheThree...` is now
+`TheCategoryFlagsAreTheTwoAndEachAllButArmSetsEveryOtherFlag`. The figures of the U4
+criterion above (16 arms, 1792 runs) are those of the page at 8b29342, which this task
+did not touch and the next measurement run replaces.
+```
+
+The figures that moved with the re-run: arms 16 → 14, runs 1792 → 1568 (the first run's
+count again, now with distinct seeds), work 6356 s → 5425 s, facts 174 → 156, 1.83 h →
+1.56 h. The positive controls and the negative control (0 of 1234 to 7139 in all nine
+cases) read the same on both pages.
+
+<a id="correction-effects-arms-u7-2026-10-19"></a>
+## 2026-10-19 — `BOOT.md`, "## Correction-effects measurement", the arms bullet (U7)
+
+The bullet named the three category flags and `AllBut<Flag>` for each, a count that
+`CategoriesEmptyRowsMerged`'s withdrawal (2026-10-19) made two; the arm list, generated
+from the enum, is sixteen on the page at 8b29342 and fourteen at 4558ce1. As it stood:
+
+```text
+- **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
+  seam `SimulationOptions.Corrections`; and, for the three category flags, which act on
+  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All read
+  from the enum
+  (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
+  and budgets, seeds `k * 2^16` (U3). CUDA not used: other sessions share the GPU.
+```
+
+The floor bullet read "(measured 2026-10-18, the re-run at 8b29342)" and now reads
+"(measured 2026-10-19, the page at 4558ce1)"; its figure, 0 differing of 1234 to 7139
+compared cells in all nine cases, is the same on both pages.
+
 <a id="guard-provenance-ac1fc20-2026-10-19"></a>
 ## 2026-10-19 — `BOOT.md`, "## The Original-model guard", the lines generated at `ac1fc20`
 

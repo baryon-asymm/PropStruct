@@ -244,13 +244,15 @@
       `PROPSTRUCT_MEASUREMENT_SEEDS=2`, `AnalyseCase` on P33 and PSAN02: 16 arms, the
       new columns and the three `AllBut` rows in `case-P33.md` and `raw-P33.csv`; the
       generated files restored after, the run store deleted.
-- [x] 2026-10-18 (U4): the effect of each correction is measured on the five references
-      (sixteen distinct seeds `k·2¹⁶`) and four extra cases (8 seeds), per arm and printed
-      quantity (`CorrectionEffectsMeasurement`, the page
-      `Measurements/corrections-2026-10-18.md` at 8b29342; `BOOT.md`, "## Correction-effects
-      measurement"; 9 cases, 16 arms, 1792 runs, none failed, 6356 s of work on the CPU;
-      174 facts green in 1.83 h, among them U3's fast fact that every case's seeds have
-      distinct phases). Positive controls pass: `WindowLowerEdge` alone in reference mode
+- [x] 2026-10-19 (U7): the effect of each correction is measured on the five references
+      (sixteen distinct seeds `k·2¹⁶`) and four extra cases (8 seeds), per arm and
+      printed quantity (`CorrectionEffectsMeasurement`, the page
+      `Measurements/corrections-2026-10-18.md` at 4558ce1; `BOOT.md`, "##
+      Correction-effects measurement"; 9 cases, 14 arms (`Original`, `All`, ten single
+      flags, two `AllBut` arms), 1568 runs = 14 × (5 × 16 + 4 × 8), none failed, 5425 s
+      of work on the CPU, the sum of the page's "Work per case"; 156 facts green in
+      1.56 h, among them U3's fast fact that every case's seeds have distinct phases).
+      Positive controls pass: `WindowLowerEdge` alone in reference mode
       lies inside the 2026-09-24 audit's range on all five references (`Dqmkm2` -2.82 % on
       inpt to -6.95 % on HPEPA3, `Zkarm` +4.91 % on HMX to +13.51 % on PSAN02n, the
       standard errors 0.01 to 1.7 points; the range's two ends are reproduced to the
@@ -270,13 +272,9 @@
 
   ⚠ 2026-10-18 (U4): was unticked, now re-ticked on the page at 8b29342, 16 arms and 1792 runs where it had 14 and 1568, the negative control clean where it had 0 to 9 differing cells → HISTORY.md#correction-effects-reticked-u4-2026-10-18
 
-  ⚠ 2026-10-19 (U6): was "eleven single flags and the three `AllBut` arms" (16 arms with
-  `Original` and `All`), now ten single flags and two `AllBut` arms, 14 arms, the arm
-  list being generated from `CorrectionSet` and `CorrectionArm.CategoryFlags`; the flag
-  `CategoriesEmptyRowsMerged` is withdrawn and `TheCategoryFlagsAreTheThree...` is now
-  `TheCategoryFlagsAreTheTwoAndEachAllButArmSetsEveryOtherFlag`. The figures of the U4
-  criterion above (16 arms, 1792 runs) are those of the page at 8b29342, which this task
-  did not touch and the next measurement run replaces.
+  ⚠ 2026-10-19 (U6): was "eleven single flags and the three `AllBut` arms" (16 arms), now ten single flags and two `AllBut` arms (14), `CategoriesEmptyRowsMerged` withdrawn → HISTORY.md#correction-effects-reticked-u7-2026-10-19
+
+  ⚠ 2026-10-19 (U7): was the page at 8b29342 (16 arms, 1792 runs, 6356 s, 174 facts in 1.83 h), now the page at 4558ce1 (14 arms, 1568 runs, 5425 s, 156 facts in 1.56 h) → HISTORY.md#correction-effects-reticked-u7-2026-10-19
 - [x] 2026-10-19 (U6): a Dmin written in micrometres and the same value in metres are
       one run at the public path (`DminCellRunTests`, 3 facts, fast, 8 s in Debug): P312
       at 10 particles per cycle, `Binary64`, batched, CPU, `Independent`, seed 0

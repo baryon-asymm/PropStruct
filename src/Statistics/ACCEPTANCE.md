@@ -412,8 +412,8 @@
   totals with `VmkmTotal = Vsmkm`, `VdokTotal = Svd` (P312, three cycles) `DolM2 = DolM3 =
   DolM1` in every cycle under the flag, to 1e-12 (one product in other orders over `Ndok`
   terms), under `None` in cycle 1 only; red with the store back in place (3 of 7). Program
-  (`P312-Cycles3`, eight distinct seeds `k·2¹⁶`, the page
-  `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` at 8b29342): `Zkarm_cor`
+  (`P312-Cycles3`, eight distinct seeds `k·2¹⁶`, the page of 2026-10-19
+  `tests/Simulation.Tests/Measurements/corrections-2026-10-18.md` at 4558ce1): `Zkarm_cor`
   −2.960 ± 0.168 % of the `Original` mean against (1/q² + 1/q + 1)/3 = 1.320, q = 0.774.
   ⚠ 2026-10-18: was −2.944 ± 0.153 % on the first run's apparatus, now −2.960 ± 0.168 % → HISTORY.md#corrections-page-rerun-2026-10-18
 - [x] 2026-10-18: Corrected, `CategoriesOnCopy`: the totals are byte-identical after a call
