@@ -108,8 +108,7 @@
   confirmed as the mechanism
   (`MergeThresholdSensitivityTests.EpsydokThresholdFlipsWithinOneBinary32UlpOfTheBoundary`).
 
-  ⚠ 2026-09-26: was the archive framing and elimination argument told in full, now
-  the confirmation alone → HISTORY.md#pdoksmall-length-criterion-narration-2026-09-26
+  ⚠ 2026-09-26: was the archive framing and elimination argument told in full, now the confirmation alone → HISTORY.md#pdoksmall-length-criterion-narration-2026-09-26
 - [x] 2026-09-21: the `fmkarm`/`fqkarm`/`fmkarm_cor`/`fmkarm_cor2`/`fqkarm_cor`
   print-length escalation ("## Report" above) is resolved: `Output`'s formula matches
   the archive on all five formulations for the first pair, four of five for the
@@ -382,13 +381,14 @@
   `GGG·GDOK·φ(b)` and the flag equals it, under both laws; `b` at or below the bound:
   bit-identical; PSAN02 `--sfr`, `Dmin` 20 µm, `Di` 10 µm: `None` minus the flag 0.0119,
   0.0175 of the oxidizer (`GdokleftOnceTests`, red on each mutation).
-- [x] 2026-10-19: The cell index `int(Dmin/Di)` (Fortran 1001) is, under `Binary64`, the
-  exact quotient of the values as written in either unit, under `Original` the stored
-  binary32 quotient, unchanged (`DminCellTests`, 11 cases): equal to the integer division
-  of 144,120 generated pairs (units of 0.1 µm, each written in µm and in metres) and, in
-  `Setup.Prepare`, of 4,128; 20 µm and 20e-6 m give one index and one `CycleReport` to the
-  bit, the default keeps 1. Red on the doubles' quotient: the unit cases and `Prepare`'s
-  property (10 of 4,128); reverted, green. Figures: `BOOT.md`, "## Line map".
+- [x] 2026-10-19: The cell index `int(Dmin/Di)` (Fortran 1001) is, under `Binary64`,
+  the exact quotient of the values as written in either unit, under `Original` the
+  stored binary32 quotient, unchanged (`DminCellTests`, 11 cases): equal to the
+  integer division of 144,120 generated pairs (units of 0.1 µm, each written in µm
+  and in metres) and, in `Setup.Prepare`, of 4,128; 20 µm and 20e-6 m give one index
+  and one `CycleReport` to the bit, the default keeps 1. Red on the doubles' quotient:
+  the unit cases and `Prepare`'s property (10 of 4,128); reverted, green. Figures:
+  `BOOT.md`, "## Line map".
 - [x] 2026-10-18: Corrected, `ZdoksmallCoarseShare` and `PdoksmallFirstCell`, through
   `pdoksmall`: for a `vdokstr` whole in cell 1, `AK2 = 2` and `gdokleft > 0`, where
   1021–1056 give `zdoksmall` ½ in cell 1 and 1 beyond before the scaling and `ddoksmall`

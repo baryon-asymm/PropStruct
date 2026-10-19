@@ -6,7 +6,8 @@ namespace PropStruct.Particle;
 /// powers of two and are never renumbered or reused; <see cref="All"/> is their sum. The
 /// value 4 is retired: 2026-10-18, it was <c>Fmkarm2OnAcceptance</c> (BOOT.md,
 /// "## Corrected model"); so is the value 1024: 2026-10-19, it was
-/// <c>CategoriesEmptyRowsMerged</c> (<c>Statistics</c>' BOOT.md, "## Corrected model"). A member is named in its defect rows' <c>Corrected</c> column as
+/// <c>CategoriesEmptyRowsMerged</c> (<c>Statistics</c>' BOOT.md,
+/// "## Corrected model"). A member is named in its defect rows' <c>Corrected</c> column as
 /// <c>fixed (&lt;Member&gt;)</c>. <c>Attempt.Run</c> acts on <see cref="ExactConstants"/>,
 /// <see cref="BridgeFrustum"/> and <see cref="WindowLowerEdge"/> only; the others fix lines of
 /// <c>Statistics</c> and mean nothing here.
