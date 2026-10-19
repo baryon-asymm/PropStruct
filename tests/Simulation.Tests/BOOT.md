@@ -432,11 +432,12 @@ measurement"). Its pages are generated into `Measurements/corrections-2026-10-18
 folder, never typed.
 
 - **Arms**: `Original`; `All` (the `Corrected` model, no seam); each single flag through the
-  seam `SimulationOptions.Corrections`; and, for the three category flags, which act on
-  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All read
-  from the enum
-  (`CorrectionMeasurementToolingTests`). Batched, CPU, `Independent`, `Binary64`, default batch
-  and budgets, seeds `k * 2^16` (U3). CUDA not used: other sessions share the GPU.
+  seam `SimulationOptions.Corrections`; and, for the two category flags, which act on
+  the same arrays and so interact, `AllBut<Flag>`: the seam `All & ~flag` (U3). All
+  read from the enum (`CorrectionMeasurementToolingTests`); fourteen at 4558ce1.
+  Batched, CPU, `Independent`, `Binary64`, default batch and budgets, seeds `k * 2^16`
+  (U3). CUDA not used: other sessions share the GPU.
+  ⚠ 2026-10-19: was "the three category flags", sixteen arms, now two, fourteen → HISTORY.md#correction-effects-arms-u7-2026-10-19
 - **Seeds are phases**: the streams jump by `seed · 2^80` in a period of 2^100, so seeds
   equal modulo 2^20 are copies. `k * 2^17` repeated after eight seeds; `k * 2^16` gives
   sixteen distinct phases. A fast fact asserts it for every case, and the report refuses
@@ -457,7 +458,7 @@ folder, never typed.
 - **Controls**: the seam with `None` equals `Original` (`ModelKindTests`). Negative: `Original`
   even against odd seeds. Positive: `WindowLowerEdge` in reference mode over `k = 0..7`,
   `DoksdConsistent` on P33, `ExactConstants` on `Setup.Lambda`.
-- **Floor** (measured 2026-10-18, the re-run at 8b29342): the negative control is clean,
+- **Floor** (measured 2026-10-19, the page at 4558ce1): the negative control is clean,
   0 differing of 1234 to 7139 compared cells in all nine cases, `Original` even seeds
   against odd (8 against 8 on the references, 4 against 4 on the extras).
   `TwoSampleBiasOfSets` has no count floor or print resolution (`tests/Harness/API.md`),
