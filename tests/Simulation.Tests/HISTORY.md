@@ -4,6 +4,121 @@ Append-only. Newest first. Each entry carries the date, the section of `BOOT.md`
 came from, and the original text in full. Read only by following a dated pointer from
 `BOOT.md`; the start procedure (AGENTS.md §10) does not read this file.
 
+<a id="guard-provenance-ac1fc20-2026-10-19"></a>
+## 2026-10-19 — `BOOT.md`, "## The Original-model guard", the lines generated at `ac1fc20`
+
+Three paragraphs of the section as they stood before U6 regenerated two lines of the file at the head. The second and third say that a line was generated from `src/` at `ac1fc20`, which stays true of the lines they name and stopped being true of the file as a whole; the first said that `GdokleftOnce` cannot move a bit in `extra/PSAN02-sfr-dmin20` and that two flags rest on one case each, which held under the double quotient of the Dmin cell index and not after the exact one (`ACCEPTANCE.md`, the per-flag tables); moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+**Fast set and `Long`** (U3, 2026-10-18, `GuardCase.IsLong`): the guard was wholly
+`Category=Long`, so CI never ran it. The `batched/*` and `extra/*` cases run in the fast
+set, 12 cases, 32 s in Debug together with the Corrected snapshot's; `seed0/*` and the
+three P312 extras that took 44 to 94 s in Debug (`-defaults`, `-cycles3`,
+`-homogenized0.1`) stay `Long`, 23 cases. The 12 still see every flag of `CorrectionSet`
+(`ACCEPTANCE.md`, the fast-subset criterion); the two flags that rest on one case each
+have it in the fast set: `extra/P312-dmin5` (`PdoksmallFirstCell`, 0.07 s) and
+`extra/PSAN02-sfr-dmin20-di10` (`GdokleftOnce`).
+
+`PSAN02-sfr-dmin20-di10` (2026-10-18, T13): `PSAN02-sfr-dmin20` keeps the default `Di`, and
+`1.9999999999999998e-05 / 1e-05` truncates to 1, so its `b` is 10 µm, `φ(b)` is 0 and
+`GdokleftOnce` cannot move a bit there (the per-flag table in `ACCEPTANCE.md` shows no case
+saw it); with `Di` 10 µm `b` is 20 µm. Its line was generated with the product code of the
+original port: `src/` checked out at `ac1fc20` (the tree removed and checked out again from
+that commit), the generator built and run in Release, `src/` restored from `HEAD`. The
+regenerated file differs from the committed one by that one added line, and the 34 cases
+pass at the head, `Original` unchanged.
+
+`extra/PSAN02-sfr-dmin20-cycles3/Original` (2026-10-18, U3) was generated the same way:
+the tree removed and `src/` checked out at `ac1fc20`, `tests/RateTableTool` as at the
+base of U3 but for the case (`Program.cs` without the `corrected-model-snapshot`
+subcommand and `CorrectedModelGuard.cs` set aside, since a `Corrected` model does not
+exist at `ac1fc20`), `original-model-guard` run in Release (35 cases, 6 m 45 s), `src/`
+and the tool restored from `HEAD`. The file differs from the committed one by that one
+line; the 34 older lines came out byte-identical, the old model's product code
+reproducing them. The case is green at the head.
+```
+
+<a id="corrected-snapshot-empty-rows-2026-10-19"></a>
+## 2026-10-19 — `BOOT.md`, "## The Corrected-model snapshot", the two batched cases
+
+The text before the flag `CategoriesEmptyRowsMerged` (1024) was withdrawn (U5); moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+`extra/P2-defaults`) and `batched/inpt`, `batched/PSAN02n`, which show
+`CategoriesEmptyRowsMerged`; each is the Original guard's case run under
+`ModelKind.Corrected` with no seam, ids prefixed `corrected/`. `P312-homogenized0.1` is
+left out: the other P312 cases cover it. The two P312 cases that take 47 and 102 s in
+Debug are `Category=Long`; the other eight run in the fast set (about 10 s).
+`Snapshots/CorrectedModelSnapshot.approved.txt` is written by `dotnet run --project
+tests/RateTableTool -- corrected-model-snapshot` at the head (Release, 10 cases, 52 s),
+never typed; green in Debug. It asserts that the `Corrected` results are those approved,
+not that they are right: a regeneration is the owner's decision, in the commit that
+changes the model. Its per-flag proof is in `ACCEPTANCE.md`: dropping any of the eleven
+flags from the mapping turns at least one fast case red.
+```
+
+<a id="budget-ladder-paired-shift"></a>
+## 2026-10-19 — `BOOT.md`, "## Budget ladder (2026-10-01)", the paired shift
+
+The paragraph written 2026-10-01 (the decision, 8192, and its figure "all 50 rows green" stay); moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+Paired shift, 8192 against 32, host threads, eight seeds (a size, not a verdict): cells
+that differ at all — HMX 107, inpt 52, PSAN02n 39, HPEPA3 18, P33 0; the largest mean
+paired shift is 0.28 of the 32-row's seed sd (PSAN02n `Dqmkm2[0]`; HMX 0.21, HPEPA3 0.14,
+inpt 0.11). Link 3 itself resolves only shifts of about 4.6–5 seed sd (budget decision,
+F3), so this record, not the GREEN rows, bounds the staleness of the coarser QKS1
+refresh. The null-budget red of the echo assertion is the test author's record, not re-run.
+The ladder theory was deleted when the default moved (C5); it stays reproducible at
+3ea6471.
+```
+
+<a id="statistical-criterion-row-date-2026-10-02"></a>
+## 2026-10-19 — `BOOT.md`, "## Purpose", the date of the statistical-criterion row
+
+The ⚠ correction written 2026-10-02; moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+⚠ 2026-10-02: the statistical-criterion row was dated 2026-09-24, the day its text was
+realigned. The evidence it names was obtained later: the seed-0 snapshot was
+re-approved and link 3 re-run at the attempt budget 8192 on 2026-10-01 (874d81c, 82f1de2,
+3ea6471; `git log` of `StatisticalCriterionTests.cs` and the snapshot ends at 874d81c),
+the date the root's batched criterion carries for the same evidence
+(`ACCEPTANCE.md`, "Batched mode"; the rule: a date is the day the evidence now in the
+tree was obtained after the last change to what it reads, AGENTS.md §6). Found by the
+2026-10-02 arbitration's D4 reading. Not re-run for this correction (`Category=Long`):
+3630af3 (2026-10-02) changed the failure path of `Simulator` only, no byte of a
+completed run, and the figure "40 cases" is as recorded 2026-09-24.
+```
+
+<a id="table-marks-redated-2026-09-19"></a>
+## 2026-10-19 — `BOOT.md`, "## Purpose", the marks of the level table
+
+The ⚠ correction written 2026-09-19; moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+⚠ 2026-09-19: the ✅ marks of this table were first dated 2026-09-18 by a session that
+ended at a usage limit, and two of them did not hold when this session started. The
+completeness row was red: `Ggg` had been removed from `RunHeader` for a mutation and
+never restored. The counter row passed vacuously for conditions 6–9 (wrong denominator,
+absolute floor of 1.0; `src/Simulation/BOOT.md`, "## Counter check"). Every row was
+re-proven on 2026-09-19 by the mutations below, each seen red and reverted.
+```
+
+<a id="mutation-row-renamed-2026-09-23"></a>
+## 2026-10-19 — `BOOT.md`, "## Mutations", the renamed fact of the Independent-layout row
+
+The ⚠ note written 2026-09-23; moved here on 2026-10-19 (U6, §15), the pointer left in `BOOT.md`.
+
+```text
+⚠ 2026-09-23: the row above named `ReferenceMode_IndependentLayout_SatisfiesCriterion_AgainstIndependentReplicas`,
+which the same day's realignment renamed to
+`ReferenceMode_IndependentLayout_OriginalPrecision_MatchesIndependentReplicas_ExceptKnownCells` and changed from
+`PrecisionKind.Binary64` to `PrecisionKind.Original`; the row is kept as the historical record of the proof it was
+(swapping `ReplicaKind` breaks the comparison) rather than rewritten, since a mutation record is provenance, not
+current truth (AGENTS.md §8).
+```
+
 <a id="correction-effects-floor-first-run-2026-10-18"></a>
 ## 2026-10-18 — `BOOT.md`, "## Correction-effects measurement", the floor of the first run
 
