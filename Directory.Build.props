@@ -20,7 +20,7 @@
 
   <!-- The one version of both packages (root BOOT.md, ## Delivery): a release tag v<version> must equal it. -->
   <PropertyGroup>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.2.0</VersionPrefix>
   </PropertyGroup>
 
   <!--

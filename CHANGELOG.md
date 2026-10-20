@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
 ### Added
 - The model kind of a run: `Original`, the default, the original's model exactly as
   before, and `Corrected`, which fixes the explicit errors of the original program and
@@ -18,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   step comment reads `(step = 0.001)`, the condition labels 3–5 carry the run's AK
   ratios, and `fineoxy_fr` is the share of the whole oxidizer; the JSON result carries
   `RunDiagnostics.Model` and `StoredSetup.Ak1`, `Ak2`, `Ak4`. An `Original` run's
-  `results.m` and JSON are byte for byte as in 0.1.0.
+  `results.m` and JSON are byte for byte as in 0.1.0 but for the fix under "Fixed".
 
 ### Fixed
 - Under the `Binary64` precision kind, a `Dmin` written in micrometres (`--dmin 10`,
@@ -72,5 +74,6 @@ released together under one version. Below 1.0.0 a minor version may break the s
 - The original program is not distributed. Its defects are reproduced or declared in
   `docs/ORIGINAL-DEFECTS.md`.
 
-[Unreleased]: https://github.com/baryon-asymm/PropStruct/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/baryon-asymm/PropStruct/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/baryon-asymm/PropStruct/releases/tag/v0.2.0
 [0.1.0]: https://github.com/baryon-asymm/PropStruct/releases/tag/v0.1.0
