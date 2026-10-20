@@ -184,9 +184,12 @@ class SourceMappingTest(unittest.TestCase):
     """A `PropStruct` of the same version on the public source must never be restored instead of
     the packed one. Two local folders stand for the packed feed and the public source, each
     holding a package `PropStruct` 0.1.0 whose description says where it came from. A project
-    restoring through the session's config gets the packed one; through a config without the
-    mapping, and with the public source first, it gets the other, so the instrument sees the
-    difference. Restoring from folders needs dotnet and no network."""
+    restoring through the session's config gets the packed one; through the same config with
+    the two folders swapped, so that the mapping names the other folder, it gets the other:
+    the mapping decides, and the instrument sees the difference. (A config without the
+    mapping decides nothing: NuGet asks every source at once and takes the first answer, so
+    it was red on a hosted runner, 2026-10-20.) Restoring from folders needs dotnet and no
+    network."""
 
     def make_feed(self, directory: Path, origin: str) -> Path:
         directory.mkdir(parents=True)
@@ -214,7 +217,7 @@ class SourceMappingTest(unittest.TestCase):
         self.assertIsNotNone(found)
         return found.group(1) if found else ""
 
-    def test_the_packed_feed_wins_for_propstruct_and_loses_without_the_mapping(self) -> None:
+    def test_the_mapping_decides_which_feed_propstruct_is_restored_from(self) -> None:
         with tempfile.TemporaryDirectory(prefix="propstruct_packages_test_") as temporary:
             root = Path(temporary)
             packed = self.make_feed(root / "packed", "from the packed feed")
@@ -223,11 +226,10 @@ class SourceMappingTest(unittest.TestCase):
             session.work.mkdir()
             mapped = session.nuget_config(public_source=str(public))
             self.assertEqual(self.restored_origin(root / "mapped", mapped), "from the packed feed")
-            unmapped = root / "unmapped.config"
-            unmapped.write_text(
-                f'<configuration><packageSources><clear /><add key="public" value="{public}" />'
-                f'<add key="packed" value="{packed}" /></packageSources></configuration>', encoding="utf-8")
-            self.assertEqual(self.restored_origin(root / "unmapped", unmapped), "from the public source")
+            swapped = root / "swapped.config"
+            swapped.write_text(packages.NUGET_CONFIG.replace("{feed}", str(public)).replace("{public}", str(packed)),
+                               encoding="utf-8")
+            self.assertEqual(self.restored_origin(root / "swapped", swapped), "from the public source")
 
 
 def problems_are_lines(problems: List[str]) -> bool:

@@ -31,9 +31,11 @@ checks the self-hosted GPU runner. Each has a test with a red and a right.
   never restored instead of the one just packed; the tool and sample stages restore
   through a config that maps `PropStruct*` to the feed alone, so that a published one
   is never restored either (`test_check_packages.py`, `SourceMappingTest`: two feeds
-  holding different packages of one id and version, the packed one wins, and without the
-  mapping the other does). ILGPU is restored from nuget.org into it; nothing else leaves
-  the machine.
+  holding different packages of one id and version, the packed one wins, and with the
+  two feeds swapped under the same mapping the other does: the mapping decides). ILGPU is
+  restored from nuget.org into it; nothing else leaves the machine.
+
+  ⚠ 2026-10-20: was "without the mapping the other does", now the feeds swapped under the mapping; without it NuGet takes whichever source answers first (red on the hosted runner, run 39406892891) → HISTORY.md#source-mapping-control-2026-10-20
 - **The example is compared with the source, byte for byte.** The installed tool's
   `results.m` for the approved example equals the source-built tool's, and the sample
   built against the package equals the sample built against the projects, each with
